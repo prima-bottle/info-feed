@@ -39,10 +39,15 @@ feeds:
   - {name: Süddeutsche, url: "https://rss.sueddeutsche.de/rss/Topthemen", section: 德国, stance: "中间偏左自由派"}
   - {name: DW, url: "https://rss.dw.com/rdf/rss-de-all", section: 德国, stance: "联邦出资对外广播，德国官方与西方视角"}
   - {name: FAZ, url: "https://www.faz.net/rss/aktuell/", section: 德国, stance: "中间偏右，保守自由派，经济界视角"}
-  # 本地
-  - {name: ms-aktuell, url: "https://ms-aktuell.de/feed/", section: 本地, stance: "明斯特本地新闻网站"}
-  - {name: Alles Münster, url: "https://www.allesmuenster.de/feed/", section: 本地, stance: "明斯特本地生活杂志"}
-  - {name: Stadt Münster, url: "https://news.google.com/rss/search?q=site:stadt-muenster.de+when:2d&hl=de&gl=DE&ceid=DE:de", section: 本地, stance: "市政府官方新闻"}
+  # 明斯特本地：只留少量，主要看和日常生活相关的（交通、住房、安全）
+  - {name: ms-aktuell, url: "https://ms-aktuell.de/feed/", section: 明斯特, max: 3, stance: "明斯特本地新闻网站"}
+  - {name: Alles Münster, url: "https://www.allesmuenster.de/feed/", section: 明斯特, max: 2, stance: "明斯特本地生活杂志"}
+  - {name: Stadt Münster, url: "https://news.google.com/rss/search?q=site%3Astadt-muenster.de+when%3A2d&hl=de&gl=DE&ceid=DE:de", section: 明斯特, max: 2, stance: "市政府官方新闻"}
+  # 地方新闻：按社运、工人、左翼议题筛过的搜索结果，权重低
+  - {name: NRW 社运·劳工, url: "https://news.google.com/rss/search?q=%28NRW+OR+Dortmund+OR+K%C3%B6ln+OR+Essen+OR+Duisburg+OR+Bochum+OR+D%C3%BCsseldorf+OR+Gelsenkirchen+OR+Bielefeld%29+%28Streik+OR+Warnstreik+OR+Demo+OR+Demonstration+OR+Protest+OR+Gewerkschaft+OR+Betriebsrat+OR+Stellenabbau+OR+Entlassungen+OR+Mieter+OR+Mieten+OR+R%C3%A4umung+OR+Linke+OR+Antifa+OR+Kundgebung%29+when%3A2d&hl=de&gl=DE&ceid=DE:de", section: 地方·北威州, max: 5, stance: "Google 新闻聚合，来源各异"}
+  - {name: 下萨克森 社运·劳工, url: "https://news.google.com/rss/search?q=%28Niedersachsen+OR+Hannover+OR+Braunschweig+OR+Wolfsburg+OR+Osnabr%C3%BCck+OR+Oldenburg+OR+Emden+OR+Salzgitter%29+%28Streik+OR+Warnstreik+OR+Demo+OR+Demonstration+OR+Protest+OR+Gewerkschaft+OR+Betriebsrat+OR+Stellenabbau+OR+Entlassungen+OR+Mieter+OR+Mieten+OR+R%C3%A4umung+OR+Linke+OR+Antifa+OR+Kundgebung%29+when%3A2d&hl=de&gl=DE&ceid=DE:de", section: 地方·下萨克森, max: 5, stance: "Google 新闻聚合，来源各异"}
+  - {name: 柏林 社运·劳工, url: "https://news.google.com/rss/search?q=%28Berlin%29+%28Streik+OR+Warnstreik+OR+Demo+OR+Demonstration+OR+Protest+OR+Gewerkschaft+OR+Betriebsrat+OR+Stellenabbau+OR+Entlassungen+OR+Mieter+OR+Mieten+OR+R%C3%A4umung+OR+Linke+OR+Antifa+OR+Kundgebung%29+when%3A2d&hl=de&gl=DE&ceid=DE:de", section: 地方·柏林, max: 5, stance: "Google 新闻聚合，来源各异"}
+  - {name: 法兰克福 社运·劳工, url: "https://news.google.com/rss/search?q=%28Frankfurt+OR+Offenbach+OR+Hessen%29+%28Streik+OR+Warnstreik+OR+Demo+OR+Demonstration+OR+Protest+OR+Gewerkschaft+OR+Betriebsrat+OR+Stellenabbau+OR+Entlassungen+OR+Mieter+OR+Mieten+OR+R%C3%A4umung+OR+Linke+OR+Antifa+OR+Kundgebung%29+when%3A2d&hl=de&gl=DE&ceid=DE:de", section: 地方·法兰克福, max: 5, stance: "Google 新闻聚合，来源各异"}
   # 左翼
   - {name: junge Welt, url: "https://news.google.com/rss/search?q=site:jungewelt.de+when:2d&hl=de&gl=DE&ceid=DE:de", section: 左翼视角, stance: "马克思主义日报，反北约，对中俄较缓和"}
   - {name: nd, url: "https://www.nd-aktuell.de/rss/aktuell.php", section: 左翼视角, stance: "民主社会主义，接近左翼党"}

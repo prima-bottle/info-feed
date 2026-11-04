@@ -58,13 +58,20 @@ def parse_feed(url: str, source: dict, kind: str, max_items: int, max_age_h: flo
         if ts and now - ts > max_age_h * 3600:
             continue
         link = e.get("link", "")
+        title, src_name = e.get("title", ""), source["name"]
+        if "news.google.com" in url:
+            pub = (e.get("source") or {}).get("title", "")
+            if pub and title.endswith(" - " + pub):
+                title = title[: -len(pub) - 3]
+            if pub and source.get("section", "").startswith("地方"):
+                src_name = pub
         out.append({
             "id": hashlib.sha1((link or e.get("title", "")).encode()).hexdigest()[:10],
             "kind": kind,
-            "source": source["name"],
+            "source": src_name,
             "section": source["section"],
             "stance": source.get("stance", ""),
-            "title": _clean(e.get("title", ""), 200),
+            "title": _clean(title, 200),
             "summary": _clean(e.get("summary", "")),
             "link": link,
             "image": _image(e),
@@ -110,7 +117,7 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
         if f.get("enabled", True) is False:
             continue
         try:
-            got = parse_feed(f["url"], f, "article", s["max_items_per_source"], s["max_age_hours"])
+            got = parse_feed(f["url"], f, "article", f.get("max", s["max_items_per_source"]), s["max_age_hours"])
             items += got
             status.append({"source": f["name"], "ok": True, "count": len(got)})
         except Exception as ex:  # noqa: BLE001
