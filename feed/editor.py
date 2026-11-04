@@ -51,7 +51,7 @@ SCHEMA = """输出格式（JSON）：
 def _compact(items: list[dict]) -> str:
     lines = []
     for it in items:
-        if it["kind"] == "bili":
+        if it["kind"] == "bili" and it["section"] in ("B站·影视娱乐", "B站·组织动态"):
             continue
         lines.append(json.dumps({
             "id": it["id"], "src": it["source"], "sec": it["section"], "kind": it["kind"],
@@ -80,11 +80,22 @@ def _parse_json(text: str) -> dict:
     return json.loads(text[start:end + 1])
 
 
-def edit(items: list[dict], cfg: dict, history: dict, date: str) -> dict:
+UPDATE_SCHEMA = """这是午间增量更新：上午的日报已经发出，下面只有上午之后的新条目。输出格式（JSON）：
+{
+  "headline": "如果有比上午更重要的新事，用一句话概括；没有就留空字符串",
+  "threads": [ 同上午格式，只为有新进展的主线输出，update 只写新进展 ],
+  "picks": [ 0到2篇，只有真正重要或和读者直接相关时才写，格式同上 ],
+  "briefs": [ 10到25条简讯，格式同上 ],
+  "videos": [ 给新视频写一句中文看点，格式同上 ]
+}"""
+
+
+def edit(items: list[dict], cfg: dict, history: dict, date: str, mode: str = "full") -> dict:
     profile = os.environ.get("READER_PROFILE", "（未设置）")
     client = anthropic.Anthropic()
     user = (f"日期：{date}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n## 长期主线\n{_threads(cfg, history)}\n\n"
-            f"## 今天的条目（每行一个 JSON）\n{_compact(items)}\n\n{SCHEMA}")
+            f"## 今天的条目（每行一个 JSON）\n{_compact(items)}\n\n"
+            + (SCHEMA if mode == "full" else SCHEMA + "\n\n" + UPDATE_SCHEMA))
     with client.messages.stream(
         model=MODEL,
         max_tokens=32000,

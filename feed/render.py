@@ -1,7 +1,8 @@
-"""把 AI 编辑结果和原始条目渲染成手机网页。"""
+"""把当天的一期（可能有早间、午间两次运行）合并渲染成手机网页。"""
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -9,39 +10,86 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 WEEKDAYS = "一二三四五六日"
 
 
-def render(digest: dict, items: list[dict], status: list[dict], cfg: dict,
-           history: dict, date: str, root: Path, archive: list[str]) -> str:
-    env = Environment(loader=FileSystemLoader(root / "templates"),
-                      autoescape=select_autoescape(["html"]))
-    by_id = {it["id"]: it for it in items}
+def _key(prefix: str, *parts) -> str:
+    return prefix + hashlib.sha1("|".join(map(str, parts)).encode()).hexdigest()[:10]
+
+
+def merge(edition: dict, cfg: dict, history: dict) -> dict:
+    """较新的运行排在前面；每个元素带上 ts（来自哪次运行）和 key（用于记录已读）。"""
+    date = edition["date"]
+    runs = sorted(edition["runs"], key=lambda r: -r["ts"])
     titles = {t["id"]: t["title"] for t in cfg.get("threads", [])}
+    m = {"headline": "", "picks": [], "briefs": [], "german": [], "creative": [],
+         "hooks": {}, "items": {}, "threads": {}, "status": runs[0]["status"] if runs else []}
+
+    for r in runs:
+        d, ts = r["digest"], r["ts"]
+        for it in r["items"]:
+            m["items"].setdefault(it["id"], {**it, "ts": ts})
+        if not m["headline"] and d.get("headline"):
+            m["headline"] = d["headline"]
+        for p in d.get("picks", []):
+            m["picks"].append({**p, "ts": ts, "key": _key("p", date, p.get("title"))})
+        for b in d.get("briefs", []):
+            m["briefs"].append({**b, "ts": ts, "key": _key("b", b.get("item_id"), b.get("text"))})
+        for v in d.get("videos", []):
+            m["hooks"].setdefault(v.get("item_id"), v.get("hook", ""))
+        m["german"] += d.get("german", [])
+        m["creative"] += d.get("creative", [])
+        for t in d.get("threads", []):
+            if t.get("id") not in titles:
+                continue
+            cur = m["threads"].get(t["id"])
+            if cur is None:
+                m["threads"][t["id"]] = {**t, "title": titles[t["id"]], "ts": ts,
+                                         "update": list(t.get("update", [])),
+                                         "item_ids": list(t.get("item_ids", []))}
+            else:  # 较早的运行：补充今天更早的进展
+                cur["update"] += [u for u in t.get("update", []) if u not in cur["update"]]
+                cur["item_ids"] += [i for i in t.get("item_ids", []) if i not in cur["item_ids"]]
 
     threads = []
-    for t in digest.get("threads", []):
-        if t.get("id") not in titles:
-            continue
-        past = [p for p in history.get(t["id"], []) if p["date"] != date][-5:]
-        threads.append({**t, "title": titles[t["id"]], "past": past})
+    for t in m["threads"].values():
+        t["past"] = [p for p in history.get(t["id"], []) if p["date"] != date][-5:]
+        t["key"] = _key("t", date, t["id"], len(t["update"]))
+        threads.append(t)
+    threads.sort(key=lambda t: -t["ts"])
+    m["threads"] = threads
+    return m
+
+
+def render(edition: dict, cfg: dict, history: dict, root: Path, archive: list[str]) -> str:
+    env = Environment(loader=FileSystemLoader(root / "templates"),
+                      autoescape=select_autoescape(["html"]))
+    m = merge(edition, cfg, history)
+    items = m["items"]
 
     seen, sections = set(), []
-    for b in digest.get("briefs", []):
+    for b in m["briefs"]:
         if b.get("section") and b["section"] not in seen:
             seen.add(b["section"])
             sections.append(b["section"])
 
-    hooks = {v["item_id"]: v.get("hook", "") for v in digest.get("videos", [])}
-    vids = [it for it in items if it["kind"] in ("video", "bili")]
-    vids.sort(key=lambda x: (x["id"] not in hooks, -x["published"]))
+    folded = set("B站·" + g for g in cfg.get("bilibili", {}).get("folded_groups", []))
+    hooks = m["hooks"]
+    vids = [it for it in items.values() if it["kind"] in ("video", "bili")]
+    vids.sort(key=lambda x: (-x["ts"], x["id"] not in hooks, -x["published"]))
     groups: dict[str, list] = {}
     for v in vids:
         groups.setdefault(v["section"], []).append(v)
-    shorts = sorted([it for it in items if it["kind"] == "short"], key=lambda x: -x["published"])
+    order = sorted(groups, key=lambda g: (g in folded, g.startswith("B站·其他")))
+    video_groups = [(g, groups[g], g in folded) for g in order]
+    shorts = sorted([it for it in items.values() if it["kind"] == "short"], key=lambda x: -x["published"])
 
-    d = dt.date.fromisoformat(date)
+    runs = sorted(edition["runs"], key=lambda r: r["ts"])
+    d = dt.date.fromisoformat(edition["date"])
+    run_label = " · ".join(("早间 " if r["mode"] == "full" else "午间 ") + r["label"] for r in runs)
+    status = m["status"]
     return env.get_template("page.html").render(
-        d=digest, date=date, date_label=f"{d.month}月{d.day}日 周{WEEKDAYS[d.weekday()]}",
-        items=by_id, threads=threads, brief_sections=sections,
-        video_groups=list(groups.items()), shorts=shorts[:12], hooks=hooks,
+        m=m, date=edition["date"], date_label=f"{d.month}月{d.day}日 周{WEEKDAYS[d.weekday()]}",
+        run_label=run_label, latest_ts=runs[-1]["ts"] if runs else 0,
+        items=items, threads=m["threads"], brief_sections=sections,
+        video_groups=video_groups, shorts=shorts[:12], hooks=hooks,
         status=status, ok_count=sum(s["ok"] for s in status),
         fail_count=sum(not s["ok"] for s in status), archive=archive,
     )

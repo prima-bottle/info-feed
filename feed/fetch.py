@@ -6,6 +6,7 @@ import hashlib
 import html
 import json
 import re
+import os
 import time
 from pathlib import Path
 
@@ -143,17 +144,59 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
     cache_file.write_text(json.dumps(cache, ensure_ascii=False, indent=1))
 
     b = cfg.get("bilibili", {})
-    if b.get("enabled"):
-        for up in b.get("ups", []):
-            if not up.get("uid"):
-                continue
-            src = {"name": up["name"], "section": "B站·" + up["group"], "stance": ""}
-            try:
-                got = parse_feed(f'{b["rsshub"]}/bilibili/user/video/{up["uid"]}',
-                                 src, "bili", 3, 24 * 7)
-                items += got
-                status.append({"source": up["name"], "ok": True, "count": len(got)})
-            except Exception as ex:  # noqa: BLE001
-                status.append({"source": up["name"], "ok": False, "error": str(ex)[:120]})
+    sess = os.environ.get("BILI_SESSDATA", "").strip()
+    if b.get("enabled") and sess:
+        try:
+            got = fetch_bilibili(b, sess, s.get("video_age_days", 10))
+            items += got
+            status.append({"source": "B站关注动态", "ok": True, "count": len(got)})
+        except Exception as ex:  # noqa: BLE001
+            status.append({"source": "B站关注动态", "ok": False, "error": str(ex)[:160]})
+    elif b.get("enabled"):
+        status.append({"source": "B站关注动态", "ok": False, "error": "没有设置 BILI_SESSDATA"})
 
     return items, status
+
+
+def fetch_bilibili(b: dict, sessdata: str, age_days: int) -> list[dict]:
+    """读取账号的"关注动态"里的视频，按 sources.yaml 里的分组归类。"""
+    groups = {u["name"]: u["group"] for u in b.get("ups", [])}
+    headers = {"User-Agent": UA.replace("personal news reader", "Windows NT 10.0; Win64; x64"),
+               "Referer": "https://t.bilibili.com/", "Origin": "https://t.bilibili.com",
+               "Cookie": f"SESSDATA={sessdata}"}
+    cutoff, out, offset = time.time() - age_days * 86400, [], ""
+    for _ in range(b.get("pages", 4)):
+        r = requests.get("https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all",
+                         params={"type": "video", "offset": offset, "timezone_offset": -60},
+                         headers=headers, timeout=TIMEOUT)
+        r.raise_for_status()
+        j = r.json()
+        if j.get("code") != 0:
+            raise RuntimeError(f'B站返回 code={j.get("code")} {j.get("message")}')
+        data, stop = j["data"], False
+        for it in data.get("items", []):
+            mod = it.get("modules", {})
+            author = mod.get("module_author", {})
+            ts = author.get("pub_ts") or 0
+            if ts and ts < cutoff:
+                stop = True
+                continue
+            arc = (mod.get("module_dynamic", {}).get("major") or {}).get("archive")
+            if not arc:
+                continue
+            name = author.get("name", "")
+            link = arc.get("jump_url", "")
+            link = "https:" + link if link.startswith("//") else link
+            cover = arc.get("cover", "")
+            out.append({
+                "id": hashlib.sha1(arc.get("bvid", link).encode()).hexdigest()[:10],
+                "kind": "bili", "source": name,
+                "section": "B站·" + groups.get(name, "其他"), "stance": "",
+                "title": _clean(arc.get("title", ""), 200), "summary": _clean(arc.get("desc", ""), 300),
+                "link": link, "image": ("https:" + cover) if cover.startswith("//") else cover,
+                "published": ts or time.time(),
+            })
+        offset = data.get("offset", "")
+        if stop or not data.get("has_more"):
+            break
+    return out

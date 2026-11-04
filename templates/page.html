@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -79,12 +80,20 @@ h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;let
 .end .dot{font-size:22px;display:block;margin-bottom:4px}
 footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
 footer details{border:0}
+.runs{font-size:12.5px;color:var(--muted);margin-top:4px}
+.new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
+[data-key].read{opacity:.55}
+.folded{margin:14px 0 4px;border:0;padding:0}
+.folded>summary{font-size:13.5px;color:var(--muted);padding:8px 4px}
+.vgroup{margin:0;border:0;padding:0}
+.vgroup>summary{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
 </style>
 </head>
-<body>
+<body data-latest="{{ latest_ts }}" data-date="{{ date }}">
 <header>
   <div class="date">{{ date_label }}</div>
-  <div class="headline">{{ d.headline }}</div>
+  <div class="headline">{{ m.headline }}</div>
+  <div class="runs">{{ run_label }}</div>
 </header>
 <nav><div class="tabs" id="tabs">
   <button class="tab on" data-p="rec">推荐</button>
@@ -100,7 +109,7 @@ footer details{border:0}
 {%- endmacro %}
 
 {% macro thread_card(t) -%}
-<article class="card thread">
+<article class="card thread" data-key="{{ t.key }}" data-ts="{{ t.ts }}">
   <span class="label">主线 · {{ t.title }}</span>
   <ul class="tl">
     {% for u in t['update'] %}<li class="today"><b>今天</b>{{ u }}</li>{% endfor %}
@@ -117,9 +126,17 @@ footer details{border:0}
 </article>
 {%- endmacro %}
 
+{% macro vid_card(v) -%}
+<a class="vid" href="{{ v.link }}" target="_blank" rel="noopener" data-key="v{{ v.id }}" data-ts="{{ v.ts }}">
+  <div class="thumb" {% if v.image %}style="background-image:url('{{ v.image }}')"{% endif %}>{% if not v.image %}▶{% endif %}</div>
+  <div class="body"><div class="t">{{ v.title }}</div>
+    <div class="h">{{ v.source }}{% if hooks.get(v.id) %} · {{ hooks[v.id] }}{% endif %}</div></div>
+</a>
+{%- endmacro %}
+
 <section class="panel on" id="rec">
-  {% for p in d.picks %}
-  <article class="card">
+  {% for p in m.picks %}
+  <article class="card" data-key="{{ p.key }}" data-ts="{{ p.ts }}">
     <span class="label">精选</span>
     <h2>{{ p.title }}</h2>
     <p>{{ p.summary }}</p>
@@ -127,7 +144,6 @@ footer details{border:0}
     {% if p.background %}<details><summary>来龙去脉</summary><p>{{ p.background }}</p></details>{% endif %}
     {{ sources(p.item_ids or []) }}
   </article>
-  {% if loop.index == 2 and threads %}{{ thread_card(threads[0]) }}{% endif %}
   {% endfor %}
   <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
 </section>
@@ -142,8 +158,8 @@ footer details{border:0}
     <button class="chip on" data-s="">全部</button>
     {% for s in brief_sections %}<button class="chip" data-s="{{ s }}">{{ s }}</button>{% endfor %}
   </div>
-  {% for b in d.briefs %}
-  <a class="brief" data-s="{{ b.section }}" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener">
+  {% for b in m.briefs %}
+  <a class="brief" data-s="{{ b.section }}" data-key="{{ b.key }}" data-ts="{{ b.ts }}" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener">
     <div class="meta">{{ b.section }}{% if b.item_id in items %} · {{ items[b.item_id].source }}{% endif %}</div>
     {{ b.text }}
   </a>
@@ -159,26 +175,22 @@ footer details{border:0}
       <div class="t">{{ v.title }}</div>
     </a>{% endfor %}
   </div>{% endif %}
-  {% for group, vids in video_groups %}
-  <h3 class="sub">{{ group }}</h3>
-  {% for v in vids %}
-  <a class="vid" href="{{ v.link }}" target="_blank" rel="noopener">
-    <div class="thumb" {% if v.image %}style="background-image:url('{{ v.image }}')"{% endif %}>{% if not v.image %}▶{% endif %}</div>
-    <div class="body"><div class="t">{{ v.title }}</div>
-      <div class="h">{{ v.source }}{% if hooks.get(v.id) %} · {{ hooks[v.id] }}{% endif %}</div></div>
-  </a>
-  {% endfor %}{% endfor %}
+  {% for group, vids, fold in video_groups %}
+  {% if fold %}<details class="vgroup"><summary>{{ group }}（{{ vids|length }}）</summary>{% else %}<h3 class="sub">{{ group }}</h3>{% endif %}
+  {% for v in vids %}{{ vid_card(v) }}{% endfor %}
+  {% if fold %}</details>{% endif %}
+  {% endfor %}
   {% if not video_groups and not shorts %}<div class="end">今天没有新视频</div>{% else %}<div class="end"><span class="dot">·</span>视频看完了</div>{% endif %}
 </section>
 
 <section class="panel" id="de">
   <h3 class="sub">今日德语</h3>
-  {% for w in d.german %}
+  {% for w in m.german %}
   <div class="card"><div class="word"><b>{{ w.word }}</b><span>{{ w.meaning }}</span></div>
     {% if w.example %}<div class="ex">{{ w.example }}</div>{% endif %}</div>
   {% endfor %}
   <h3 class="sub">创作素材</h3>
-  {% for c in d.creative %}
+  {% for c in m.creative %}
   <div class="card"><h2>{{ c.idea }}</h2><p>{{ c.why }}</p>{{ sources(c.item_ids or []) }}</div>
   {% endfor %}
   <div class="end"><span class="dot">·</span>今天就到这里</div>
@@ -202,6 +214,30 @@ document.querySelector('main').addEventListener('touchend',e=>{const dx=e.change
  const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
 document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
  document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
+
+/* 已读记录：只存在这台手机的浏览器里 */
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const latest=+document.body.dataset.latest, prevSeen=LS.get('seenRun',0);
+let read=LS.get('read',{});
+const cutoff=Date.now()/1000-3*86400; for(const k in read){if(read[k]<cutoff)delete read[k]}
+const cards=[...document.querySelectorAll('[data-key]')];
+// 1. 上次打开后新增的内容标"新"
+if(prevSeen&&latest>prevSeen){cards.forEach(c=>{if(+c.dataset.ts>prevSeen&&!read[c.dataset.key]){
+  const b=document.createElement('span');b.className='new';b.textContent='新';
+  (c.querySelector('.label,h2,.meta,.t')||c).prepend(b)}})}
+LS.set('seenRun',latest);
+// 2. 之前看过的收进每个板块底部的"已看过"
+panels.forEach(p=>{const old=[...p.querySelectorAll(':scope > [data-key], :scope > a[data-key]')].filter(c=>read[c.dataset.key]);
+  if(!old.length)return;const d=document.createElement('details');d.className='folded';
+  d.innerHTML='<summary>已看过 '+old.length+' 条</summary>';old.forEach(c=>{c.classList.add('read');d.appendChild(c)});
+  const end=p.querySelector(':scope > .end');p.insertBefore(d,end)});
+cards.forEach(c=>{if(read[c.dataset.key])c.classList.add('read')});
+// 3. 在屏幕上停留超过 1.5 秒或点开过，算看过
+const timers=new Map();
+const io=new IntersectionObserver(es=>es.forEach(e=>{const k=e.target.dataset.key;
+  if(e.isIntersecting){timers.set(k,setTimeout(()=>{read[k]=Date.now()/1000;LS.set('read',read);io.unobserve(e.target)},1500))}
+  else{clearTimeout(timers.get(k))}}),{threshold:.6});
+cards.forEach(c=>{if(!read[c.dataset.key]){io.observe(c);c.addEventListener('click',()=>{read[c.dataset.key]=Date.now()/1000;LS.set('read',read)})}});
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>

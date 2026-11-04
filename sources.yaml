@@ -114,10 +114,12 @@ youtube:
 shorts_from: [德国创作者, 德国青年文化]   # 这些分组的频道额外抓 Shorts
 
 # ---------- B 站（第二版启用，需要 UID） ----------
+# 读取账号"关注动态"，需要在 GitHub 密钥里设置 BILI_SESSDATA。
+# 下面的名单只用来分组；没列出的 UP 主归到"其他"。
 bilibili:
-  enabled: false
-  rsshub: "https://rsshub.app"
-  weekly_digest_groups: [组织动态]    # 这些分组每周汇总一次，不进每日信息流
+  enabled: true
+  pages: 4                      # 每次最多翻几页动态
+  folded_groups: [组织动态, 影视娱乐]   # 这些分组在视频页折叠显示
   ups:
     - {name: 未明子, uid: "", group: 时政理论}
     - {name: 未明子官方切片号, uid: "", group: 时政理论}

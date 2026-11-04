@@ -1,9 +1,24 @@
 name: 每日信息台
 
 on:
+  # GitHub 只认 UTC 时间。每个时段设两个触发点，覆盖冬令时和夏令时，
+  # 先到的那次生成，后到的会自动跳过。
   schedule:
-    - cron: "23 4 * * *"   # UTC 4:23，柏林冬令时 5:23 / 夏令时 6:23
-  workflow_dispatch: {}     # 允许在网页上手动点"Run workflow"
+    - cron: "17 4 * * *"    # 早间：柏林冬令时 5:17 / 夏令时 6:17
+    - cron: "17 5 * * *"    # 早间备用：冬令时 6:17
+    - cron: "37 9 * * *"    # 午间：冬令时 10:37 / 夏令时 11:37
+    - cron: "37 10 * * *"   # 午间备用：冬令时 11:37
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "auto 按时间判断 / full 完整版 / update 午间增量"
+        default: auto
+        type: choice
+        options: [auto, full, update]
+      force:
+        description: "这个时段已经跑过也重新跑"
+        default: true
+        type: boolean
 
 permissions:
   contents: write
@@ -28,6 +43,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           READER_PROFILE: ${{ secrets.READER_PROFILE }}
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+          BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
+          RUN_MODE: ${{ inputs.mode }}
+          FORCE_RUN: ${{ inputs.force }}
         run: python main.py
       - name: 保存结果
         run: |

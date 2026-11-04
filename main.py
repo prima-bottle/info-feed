@@ -1,8 +1,11 @@
-"""每天运行一次：抓取 → AI 编辑 → 生成网页。
+"""一天运行两次：早间完整版 + 午间增量。抓取 → AI 编辑 → 合并成当天的一期 → 生成网页。
 
 用法：
-  python main.py            正式运行（需要环境变量 ANTHROPIC_API_KEY）
-  python main.py --sample   用 sample/ 里的示例数据，不联网、不花钱
+  python main.py                   按当前时间自动判断早间或午间
+  python main.py --mode full       强制完整版
+  python main.py --mode update     强制增量
+  python main.py --force           同一时段已经跑过也再跑一次
+  python main.py --sample          用 sample/ 示例数据，不联网、不花钱
 """
 from __future__ import annotations
 
@@ -28,61 +31,84 @@ def load_json(p: Path, default):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sample", action="store_true")
+    ap.add_argument("--mode", choices=["auto", "full", "update"], default=os.environ.get("RUN_MODE") or "auto")
+    ap.add_argument("--force", action="store_true", default=os.environ.get("FORCE_RUN") == "true")
     args = ap.parse_args()
 
     cfg = yaml.safe_load((ROOT / "sources.yaml").read_text())
     DATA.mkdir(exist_ok=True)
     (DOCS / "archive").mkdir(parents=True, exist_ok=True)
-    date = dt.datetime.now(ZoneInfo(cfg["settings"]["timezone"])).date().isoformat()
+    now = dt.datetime.now(ZoneInfo(cfg["settings"]["timezone"]))
+    date = now.date().isoformat()
     history = load_json(DATA / "threads.json", {})
+
+    edition = load_json(DATA / "edition.json", {})
+    if edition.get("date") != date:
+        edition = {"date": date, "runs": []}
+    done = {r["mode"] for r in edition["runs"]}
+    mode = args.mode
+    if mode == "auto":
+        mode = "full" if now.hour < 10 or "full" not in done else "update"
+    if mode in done and not args.force and not args.sample:
+        print(f"今天的{'早间' if mode == 'full' else '午间'}版已经生成过，跳过")
+        return 0
 
     if args.sample:
         items = load_json(ROOT / "sample" / "items.json", [])
-        status = [{"source": "示例数据", "ok": True, "count": len(items)},
-                  {"source": "Stadt Münster", "ok": False, "error": "示例：抓取失败时会显示在这里"}]
+        status = [{"source": "示例数据", "ok": True, "count": len(items)}]
         digest = load_json(ROOT / "sample" / "digest.json", {})
-        now = time.time()
         for i, it in enumerate(items):
-            it.setdefault("published", now - i * 600)
+            it.setdefault("published", time.time() - i * 600)
+        edition = {"date": date, "runs": []}
     else:
         from feed.editor import edit
         from feed.fetch import fetch_all
 
         items, status = fetch_all(cfg, DATA)
         for st in status:
-            print(("OK  " if st["ok"] else "失败 ") + st["source"] + (f' {st.get("count")}条' if st["ok"] else f' {st["error"]}'))
+            print(("OK  " if st["ok"] else "失败 ") + st["source"]
+                  + (f' {st.get("count")}条' if st["ok"] else f' {st["error"]}'))
         if not os.environ.get("ANTHROPIC_API_KEY"):
-            print("错误：没有读到 ANTHROPIC_API_KEY，请检查仓库 Settings → Secrets and variables → Actions 里的名字是否完全一致", file=sys.stderr)
+            print("错误：没有读到 ANTHROPIC_API_KEY", file=sys.stderr)
             return 1
         seen = load_json(DATA / "seen.json", {})
-        cutoff = time.time() - 7 * 86400
+        cutoff = time.time() - 10 * 86400
         seen = {k: v for k, v in seen.items() if v > cutoff}
         items = [it for it in items if it["id"] not in seen]
         if not items:
-            print("今天没有新条目", file=sys.stderr)
+            print("没有新条目")
             return 0
-        digest = edit(items, cfg, history, date)
+        digest = edit(items, cfg, history, date, mode)
         for it in items:
             seen[it["id"]] = time.time()
         (DATA / "seen.json").write_text(json.dumps(seen))
-        print(f"条目 {len(items)}，token 用量 {digest.get('usage')}")
+        print(f"{mode}：条目 {len(items)}，token 用量 {digest.get('usage')}")
 
-    # 主线时间线累积
+    run = {"mode": mode, "ts": int(time.time()), "label": now.strftime("%H:%M"),
+           "digest": digest, "items": items, "status": status}
+    edition["runs"] = [r for r in edition["runs"] if r["mode"] != mode] + [run]
+    edition["runs"].sort(key=lambda r: r["ts"])
+    (DATA / "edition.json").write_text(json.dumps(edition, ensure_ascii=False))
+
+    # 主线时间线累积（同一天多次更新合并到当天）
     for t in digest.get("threads", []):
         if t.get("update"):
-            h = [p for p in history.get(t["id"], []) if p["date"] != date]
-            h.append({"date": date, "update": t["update"]})
+            h = history.get(t["id"], [])
+            if h and h[-1]["date"] == date:
+                h[-1]["update"] = [u for u in h[-1]["update"] if u not in t["update"]] + t["update"]
+            else:
+                h.append({"date": date, "update": t["update"]})
             history[t["id"]] = h[-30:]
     (DATA / "threads.json").write_text(json.dumps(history, ensure_ascii=False, indent=1))
 
     from feed.render import render
 
     archive = sorted((p.stem for p in (DOCS / "archive").glob("*.html") if p.stem != date), reverse=True)[:14]
-    page = render(digest, items, status, cfg, history, date, ROOT, archive)
+    page = render(edition, cfg, history, ROOT, archive)
     (DOCS / "index.html").write_text(page)
     (DOCS / "archive" / f"{date}.html").write_text(page.replace('href="archive/', 'href="'))
     (DOCS / ".nojekyll").touch()
-    print(f"已生成 docs/index.html（{date}）")
+    print(f"已生成 docs/index.html（{date} {run['label']}）")
     return 0
 
 
