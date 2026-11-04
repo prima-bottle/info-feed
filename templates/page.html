@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="信息台">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<title>信息台 · {{ date }}</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --thread:#2f5d8a; --thread-soft:#e2ecf5;
+  --chip:#efe9e0; --radius:14px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{padding:20px 16px 4px;max-width:680px;margin:0 auto}
+.date{font-size:13px;color:var(--muted);letter-spacing:.04em}
+.headline{font-size:21px;font-weight:700;line-height:1.4;margin-top:4px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:680px;margin:0 auto;padding:10px 12px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:6px 14px;border-radius:999px;font-size:15px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--ink);color:var(--bg);font-weight:600}
+main{max-width:680px;margin:0 auto;padding:12px 12px 40px}
+section.panel{display:none}section.panel.on{display:block}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.label{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+.card h2{font-size:18px;line-height:1.45;margin-bottom:6px}
+.card p{font-size:15px;color:var(--ink)}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+summary{font-size:14px;color:var(--muted);cursor:pointer;list-style:none}
+summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+details p{margin-top:6px;font-size:14.5px}
+.foryou{margin-top:10px;font-size:14.5px;padding:8px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.srcs{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.src{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.thread{border-left:4px solid var(--thread)}
+.thread .label{color:var(--thread);background:var(--thread-soft)}
+.tl{margin-top:10px;padding-left:14px;border-left:2px solid var(--line)}
+.tl li{list-style:none;position:relative;font-size:14px;color:var(--muted);margin-bottom:6px}
+.tl li::before{content:"";position:absolute;left:-19px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tl li.today{color:var(--ink)}.tl li.today::before{background:var(--thread)}
+.tl b{font-weight:600;color:var(--thread);margin-right:4px}
+.persp li{list-style:none;font-size:14px;margin-top:6px}.persp b{margin-right:4px}
+.signals{margin-top:6px;font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:13.5px;padding:5px 12px;border-radius:999px;background:var(--chip);border:0;color:var(--muted);font-family:inherit;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff}
+.brief{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:15px}
+.brief .meta{font-size:12px;color:var(--muted);margin-bottom:2px}
+.vid{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.thumb{aspect-ratio:16/9;background:var(--chip) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted)}
+.vid .body{padding:12px 14px}
+.vid .t{font-weight:600;font-size:15.5px;line-height:1.45}
+.vid .h{font-size:14px;color:var(--muted);margin-top:4px}
+.shorts{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:4px}
+.shorts::-webkit-scrollbar{display:none}
+.short{flex:none;width:130px}
+.short .thumb{aspect-ratio:9/16;border-radius:12px}
+.short .t{font-size:13px;margin-top:6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+.word{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.word b{font-size:17px}.word span{color:var(--muted);font-size:14px}
+.ex{font-size:14px;color:var(--muted);font-style:italic;margin-top:4px}
+.end{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 8px}
+.end .dot{font-size:22px;display:block;margin-bottom:4px}
+footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
+footer details{border:0}
+</style>
+</head>
+<body>
+<header>
+  <div class="date">{{ date_label }}</div>
+  <div class="headline">{{ d.headline }}</div>
+</header>
+<nav><div class="tabs" id="tabs">
+  <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="threads">主线</button>
+  <button class="tab" data-p="briefs">简讯</button>
+  <button class="tab" data-p="video">视频</button>
+  <button class="tab" data-p="de">德语·创作</button>
+</div></nav>
+<main>
+
+{% macro sources(ids) -%}
+<div class="srcs">{% for i in ids if i in items %}<a class="src" href="{{ items[i].link }}" target="_blank" rel="noopener">{{ items[i].source }} ↗</a>{% endfor %}</div>
+{%- endmacro %}
+
+{% macro thread_card(t) -%}
+<article class="card thread">
+  <span class="label">主线 · {{ t.title }}</span>
+  <ul class="tl">
+    {% for u in t['update'] %}<li class="today"><b>今天</b>{{ u }}</li>{% endfor %}
+    {% for p in t.past|reverse %}<li><b>{{ p.date[5:] }}</b>{{ p['update']|join("；") }}</li>{% endfor %}
+  </ul>
+  {% if t.for_you %}<div class="foryou">{{ t.for_you }}</div>{% endif %}
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    {% if t.background %}<p>{{ t.background }}</p>{% endif %}
+    {% if t.perspectives %}<ul class="persp">{% for p in t.perspectives %}<li><b>{{ p.source }}</b>{{ p.angle }}</li>{% endfor %}</ul>{% endif %}
+    {% if t.outlook %}<p><b>研判：</b>{{ t.outlook }}</p>{% endif %}
+    {% if t.signals %}<p class="signals">观察信号：{{ t.signals|join(" · ") }}</p>{% endif %}
+  </details>
+  {{ sources(t.item_ids or []) }}
+</article>
+{%- endmacro %}
+
+<section class="panel on" id="rec">
+  {% for p in d.picks %}
+  <article class="card">
+    <span class="label">精选</span>
+    <h2>{{ p.title }}</h2>
+    <p>{{ p.summary }}</p>
+    {% if p.for_you %}<div class="foryou">{{ p.for_you }}</div>{% endif %}
+    {% if p.background %}<details><summary>来龙去脉</summary><p>{{ p.background }}</p></details>{% endif %}
+    {{ sources(p.item_ids or []) }}
+  </article>
+  {% if loop.index == 2 and threads %}{{ thread_card(threads[0]) }}{% endif %}
+  {% endfor %}
+  <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
+</section>
+
+<section class="panel" id="threads">
+  {% for t in threads %}{{ thread_card(t) }}{% else %}<div class="end">今天主线没有新进展</div>{% endfor %}
+  {% if threads %}<div class="end"><span class="dot">·</span>主线看完了</div>{% endif %}
+</section>
+
+<section class="panel" id="briefs">
+  <div class="chips" id="chips">
+    <button class="chip on" data-s="">全部</button>
+    {% for s in brief_sections %}<button class="chip" data-s="{{ s }}">{{ s }}</button>{% endfor %}
+  </div>
+  {% for b in d.briefs %}
+  <a class="brief" data-s="{{ b.section }}" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener">
+    <div class="meta">{{ b.section }}{% if b.item_id in items %} · {{ items[b.item_id].source }}{% endif %}</div>
+    {{ b.text }}
+  </a>
+  {% endfor %}
+  <div class="end"><span class="dot">·</span>简讯就这些</div>
+</section>
+
+<section class="panel" id="video">
+  {% if shorts %}<h3 class="sub">短视频</h3>
+  <div class="shorts">{% for v in shorts %}
+    <a class="short" href="{{ v.link }}" target="_blank" rel="noopener">
+      <div class="thumb" {% if v.image %}style="background-image:url('{{ v.image }}')"{% endif %}>{% if not v.image %}▶{% endif %}</div>
+      <div class="t">{{ v.title }}</div>
+    </a>{% endfor %}
+  </div>{% endif %}
+  {% for group, vids in video_groups %}
+  <h3 class="sub">{{ group }}</h3>
+  {% for v in vids %}
+  <a class="vid" href="{{ v.link }}" target="_blank" rel="noopener">
+    <div class="thumb" {% if v.image %}style="background-image:url('{{ v.image }}')"{% endif %}>{% if not v.image %}▶{% endif %}</div>
+    <div class="body"><div class="t">{{ v.title }}</div>
+      <div class="h">{{ v.source }}{% if hooks.get(v.id) %} · {{ hooks[v.id] }}{% endif %}</div></div>
+  </a>
+  {% endfor %}{% endfor %}
+  {% if not video_groups and not shorts %}<div class="end">今天没有新视频</div>{% else %}<div class="end"><span class="dot">·</span>视频看完了</div>{% endif %}
+</section>
+
+<section class="panel" id="de">
+  <h3 class="sub">今日德语</h3>
+  {% for w in d.german %}
+  <div class="card"><div class="word"><b>{{ w.word }}</b><span>{{ w.meaning }}</span></div>
+    {% if w.example %}<div class="ex">{{ w.example }}</div>{% endif %}</div>
+  {% endfor %}
+  <h3 class="sub">创作素材</h3>
+  {% for c in d.creative %}
+  <div class="card"><h2>{{ c.idea }}</h2><p>{{ c.why }}</p>{{ sources(c.item_ids or []) }}</div>
+  {% endfor %}
+  <div class="end"><span class="dot">·</span>今天就到这里</div>
+</section>
+</main>
+<footer>
+  <details><summary>来源状态：{{ ok_count }} 个正常，{{ fail_count }} 个失败</summary>
+    {% for s in status if not s.ok %}<div>✕ {{ s.source }}：{{ s.error }}</div>{% endfor %}
+  </details>
+  {% if archive %}<p style="margin-top:8px">往期：{% for a in archive %}<a href="archive/{{ a }}.html" style="text-decoration:underline">{{ a[5:] }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endif %}
+</footer>
+<script>
+const tabs=[...document.querySelectorAll('.tab')],panels=[...document.querySelectorAll('.panel')];
+function show(id){tabs.forEach(t=>t.classList.toggle('on',t.dataset.p===id));panels.forEach(p=>p.classList.toggle('on',p.id===id));window.scrollTo({top:0});try{sessionStorage.setItem('tab',id)}catch(e){}}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.p));
+try{const s=sessionStorage.getItem('tab');if(s)show(s)}catch(e){}
+const order=tabs.map(t=>t.dataset.p);let sx=0,sy=0;
+document.querySelector('main').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.querySelector('main').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const cur=order.indexOf(document.querySelector('.tab.on').dataset.p);
+ const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+ document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
+</script>
+</body>
+</html>

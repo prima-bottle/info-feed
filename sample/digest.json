@@ -1,0 +1,218 @@
+{
+ "headline": "民主党拿下国会两院；大众劳资谈判下月在埃姆登开场",
+ "threads": [
+  {
+   "id": "us-iran",
+   "update": [
+    "民主党将从明年1月起同时控制众议院和参议院",
+    "选前一天美军空袭伊朗格什姆岛"
+   ],
+   "background": "2月开战以来油价和通胀是选举的核心议题，这次结果被普遍看作对战争和物价的投票。",
+   "perspectives": [
+    {
+     "source": "Tagesschau",
+     "angle": "侧重选举结果本身和翻转的州"
+    },
+    {
+     "source": "WSWS",
+     "angle": "强调民主党同样支持对伊战争，换党不等于换政策"
+    },
+    {
+     "source": "Al Jazeera",
+     "angle": "把空袭和海湾国家受到的冲击放在一起报道"
+    }
+   ],
+   "outlook": "新国会最可能用拨款和战争授权限制对伊行动，但特朗普仍有否决权，降温要看1月后的博弈。",
+   "signals": [
+    "战争授权决议",
+    "油价",
+    "深圳 APEC 是否中美会面"
+   ],
+   "for_you": "如果战事降温，油价回落会传导到德国能源价格，最终影响你明年的取暖和电费结算。",
+   "item_ids": [
+    "a1",
+    "a2",
+    "a3"
+   ]
+  },
+  {
+   "id": "vw-igmetall",
+   "update": [
+    "谈判11月24日在埃姆登开始，大众要求尽快压低劳动成本"
+   ],
+   "background": "大众9月底单方面终止2024年的工资协议，并计划到2030年再裁1.2万人。",
+   "perspectives": [
+    {
+     "source": "IG Metall",
+     "angle": "称之为背信，要求涨薪5%，拒绝转岗公司方案"
+    }
+   ],
+   "outlook": "12月31日和平义务结束前很难达成协议，1月起可能出现警告性罢工。",
+   "signals": [
+    "11月24日第一轮结果",
+    "是否提到埃姆登厂的产能安排"
+   ],
+   "for_you": "你的培训合同已签，一般不受直接影响，但这决定了你明年进厂时的工厂状态和以后的留用机会。",
+   "item_ids": [
+    "a8"
+   ]
+  },
+  {
+   "id": "berlin-linke",
+   "update": [
+    "柏林左翼党党代会通过，与绿党、社民党开始组阁谈判"
+   ],
+   "background": "左翼党9月以近26%成为柏林第一大党，埃拉尔普可能成为该党首位柏林执政市长。",
+   "perspectives": [
+    {
+     "source": "nd",
+     "angle": "强调试探文件里的房租、交通等社会诉求"
+    },
+    {
+     "source": "Tichys Einblick",
+     "angle": "用身份政治和安全问题框定这次组阁"
+    }
+   ],
+   "outlook": "最大分歧是住房企业社会化，很可能以分阶段或先立法框架的方式妥协。",
+   "signals": [
+    "联合协议对社会化的写法"
+   ],
+   "for_you": "",
+   "item_ids": [
+    "a6",
+    "a7"
+   ]
+  }
+ ],
+ "picks": [
+  {
+   "title": "AI 代理还没那么火：DoorDash 只收到几百单",
+   "summary": "DoorDash 透露，第三方 AI 代理迄今只下过几百单，而它每天大约配送300万单。极客圈天天说 AI 代理要接管网上操作，但真实使用量还非常小。",
+   "background": "今年各大公司都在推能替你购物、订餐的 AI 代理。",
+   "for_you": "判断哪些 AI 方向值得你花时间学时，这类真实数据比宣传更有参考价值。",
+   "item_ids": [
+    "a12"
+   ]
+  },
+  {
+   "title": "10月通胀回落到2.8%，但能源仍贵12%",
+   "summary": "燃油税临时下调让10月物价比9月略降，核心通胀2.1%。能源同比仍上涨12.2%，政府预计明年通胀还会到3%左右。",
+   "background": "美伊战争导致霍尔木兹海峡基本封锁，推高了全球油气价格。",
+   "for_you": "燃油税优惠只到12月底；房租里的预付水电费值得看一眼够不够。",
+   "item_ids": [
+    "a11"
+   ]
+  },
+  {
+   "title": "中共五中全会开始整治'老好人'",
+   "summary": "决议要求领导干部开会时'最后发言'，并把回避冲突、对违纪视而不见的官员列为整治对象。清洗正从查腐败扩展到查不作为。",
+   "background": "上周全会开除了33名中央委员会成员，明年秋天召开二十一大。",
+   "for_you": "",
+   "item_ids": [
+    "a4",
+    "a5"
+   ]
+  },
+  {
+   "title": "配音演员因 AI 克隆声音起诉 Netflix",
+   "summary": "德国配音演员 Matti Klemm 发现自己的声音被 AI 使用，准备起诉 Netflix。这是德国第一批由劳动者本人发起的 AI 版权诉讼之一。",
+   "background": "",
+   "for_you": "适合做成'AI 和劳动者'的德语短内容。",
+   "item_ids": [
+    "a14"
+   ]
+  }
+ ],
+ "briefs": [
+  {
+   "section": "本地",
+   "text": "今天 Aaseestadt 排查四处疑似未爆弹，必要时 Weseler Straße 一带封路。",
+   "item_id": "a9"
+  },
+  {
+   "section": "本地",
+   "text": "ADAC 中型城市出行排名中，明斯特排第一。",
+   "item_id": "a10"
+  },
+  {
+   "section": "工作",
+   "text": "大众与 IG Metall 第一轮谈判定在11月24日埃姆登。",
+   "item_id": "a8"
+  },
+  {
+   "section": "AI",
+   "text": "通义千问3.5 9B 量化版在8GB 显卡上运行良好，社区实测每秒50到80词元。",
+   "item_id": "a13"
+  },
+  {
+   "section": "国际",
+   "text": "美军在选前空袭伊朗格什姆岛。",
+   "item_id": "a3"
+  },
+  {
+   "section": "中国",
+   "text": "五中全会决议要求领导干部开会'最后发言'。",
+   "item_id": "a5"
+  },
+  {
+   "section": "德国",
+   "text": "10月通胀2.8%，能源同比仍涨12.2%。",
+   "item_id": "a11"
+  }
+ ],
+ "videos": [
+  {
+   "item_id": "v1",
+   "hook": "Tilo Jung 请嘉宾拆解中期选举对欧洲的影响"
+  },
+  {
+   "item_id": "v2",
+   "hook": "全职工作也租不到房的德国年轻人"
+  }
+ ],
+ "german": [
+  {
+   "word": "die Friedenspflicht",
+   "meaning": "和平义务，劳资协议有效期内不能罢工",
+   "example": "Die Friedenspflicht endet am 31. Dezember."
+  },
+  {
+   "word": "der Blindgänger",
+   "meaning": "未爆弹",
+   "example": "In der Aaseestadt wird ein Blindgänger vermutet."
+  },
+  {
+   "word": "die Kerninflation",
+   "meaning": "核心通胀",
+   "example": "Die Kerninflation lag bei 2,1 Prozent."
+  },
+  {
+   "word": "die Vergesellschaftung",
+   "meaning": "社会化，把私有财产转为公共所有",
+   "example": "Die Linke pocht auf Vergesellschaftung."
+  },
+  {
+   "word": "jemanden mundtot machen",
+   "meaning": "让某人闭嘴",
+   "example": "Er lässt sich nicht mundtot machen."
+  }
+ ],
+ "creative": [
+  {
+   "idea": "AI 偷走配音演员的声音",
+   "why": "德国本地案例，适合做'AI 与劳动者'的德语 Instagram 帖子。",
+   "item_ids": [
+    "a14"
+   ]
+  },
+  {
+   "idea": "同一场选举，四家媒体四种讲法",
+   "why": "把主线里的多方对比做成图文，正好练习你的媒体分析框架。",
+   "item_ids": [
+    "a1",
+    "a2",
+    "a3"
+   ]
+  }
+ ]
+}

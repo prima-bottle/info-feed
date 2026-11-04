@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="信息台">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<title>信息台 · 2026-11-04</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --thread:#2f5d8a; --thread-soft:#e2ecf5;
+  --chip:#efe9e0; --radius:14px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{padding:20px 16px 4px;max-width:680px;margin:0 auto}
+.date{font-size:13px;color:var(--muted);letter-spacing:.04em}
+.headline{font-size:21px;font-weight:700;line-height:1.4;margin-top:4px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:680px;margin:0 auto;padding:10px 12px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:6px 14px;border-radius:999px;font-size:15px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--ink);color:var(--bg);font-weight:600}
+main{max-width:680px;margin:0 auto;padding:12px 12px 40px}
+section.panel{display:none}section.panel.on{display:block}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.label{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+.card h2{font-size:18px;line-height:1.45;margin-bottom:6px}
+.card p{font-size:15px;color:var(--ink)}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+summary{font-size:14px;color:var(--muted);cursor:pointer;list-style:none}
+summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+details p{margin-top:6px;font-size:14.5px}
+.foryou{margin-top:10px;font-size:14.5px;padding:8px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.srcs{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.src{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.thread{border-left:4px solid var(--thread)}
+.thread .label{color:var(--thread);background:var(--thread-soft)}
+.tl{margin-top:10px;padding-left:14px;border-left:2px solid var(--line)}
+.tl li{list-style:none;position:relative;font-size:14px;color:var(--muted);margin-bottom:6px}
+.tl li::before{content:"";position:absolute;left:-19px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tl li.today{color:var(--ink)}.tl li.today::before{background:var(--thread)}
+.tl b{font-weight:600;color:var(--thread);margin-right:4px}
+.persp li{list-style:none;font-size:14px;margin-top:6px}.persp b{margin-right:4px}
+.signals{margin-top:6px;font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:13.5px;padding:5px 12px;border-radius:999px;background:var(--chip);border:0;color:var(--muted);font-family:inherit;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff}
+.brief{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:15px}
+.brief .meta{font-size:12px;color:var(--muted);margin-bottom:2px}
+.vid{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.thumb{aspect-ratio:16/9;background:var(--chip) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted)}
+.vid .body{padding:12px 14px}
+.vid .t{font-weight:600;font-size:15.5px;line-height:1.45}
+.vid .h{font-size:14px;color:var(--muted);margin-top:4px}
+.shorts{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:4px}
+.shorts::-webkit-scrollbar{display:none}
+.short{flex:none;width:130px}
+.short .thumb{aspect-ratio:9/16;border-radius:12px}
+.short .t{font-size:13px;margin-top:6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+.word{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.word b{font-size:17px}.word span{color:var(--muted);font-size:14px}
+.ex{font-size:14px;color:var(--muted);font-style:italic;margin-top:4px}
+.end{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 8px}
+.end .dot{font-size:22px;display:block;margin-bottom:4px}
+footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
+footer details{border:0}
+</style>
+</head>
+<body>
+<header>
+  <div class="date">11月4日 周三</div>
+  <div class="headline">民主党拿下国会两院；大众劳资谈判下月在埃姆登开场</div>
+</header>
+<nav><div class="tabs" id="tabs">
+  <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="threads">主线</button>
+  <button class="tab" data-p="briefs">简讯</button>
+  <button class="tab" data-p="video">视频</button>
+  <button class="tab" data-p="de">德语·创作</button>
+</div></nav>
+<main>
+
+
+
+
+
+<section class="panel on" id="rec">
+  
+  <article class="card">
+    <span class="label">精选</span>
+    <h2>AI 代理还没那么火：DoorDash 只收到几百单</h2>
+    <p>DoorDash 透露，第三方 AI 代理迄今只下过几百单，而它每天大约配送300万单。极客圈天天说 AI 代理要接管网上操作，但真实使用量还非常小。</p>
+    <div class="foryou">判断哪些 AI 方向值得你花时间学时，这类真实数据比宣传更有参考价值。</div>
+    <details><summary>来龙去脉</summary><p>今年各大公司都在推能替你购物、订餐的 AI 代理。</p></details>
+    <div class="srcs"><a class="src" href="https://simonwillison.net/" target="_blank" rel="noopener">Simon Willison ↗</a></div>
+  </article>
+  
+  
+  <article class="card">
+    <span class="label">精选</span>
+    <h2>10月通胀回落到2.8%，但能源仍贵12%</h2>
+    <p>燃油税临时下调让10月物价比9月略降，核心通胀2.1%。能源同比仍上涨12.2%，政府预计明年通胀还会到3%左右。</p>
+    <div class="foryou">燃油税优惠只到12月底；房租里的预付水电费值得看一眼够不够。</div>
+    <details><summary>来龙去脉</summary><p>美伊战争导致霍尔木兹海峡基本封锁，推高了全球油气价格。</p></details>
+    <div class="srcs"><a class="src" href="https://www.spiegel.de/" target="_blank" rel="noopener">Spiegel ↗</a></div>
+  </article>
+  <article class="card thread">
+  <span class="label">主线 · 美国政治与美伊战争</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>民主党将从明年1月起同时控制众议院和参议院</li><li class="today"><b>今天</b>选前一天美军空袭伊朗格什姆岛</li>
+    
+  </ul>
+  <div class="foryou">如果战事降温，油价回落会传导到德国能源价格，最终影响你明年的取暖和电费结算。</div>
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>2月开战以来油价和通胀是选举的核心议题，这次结果被普遍看作对战争和物价的投票。</p>
+    <ul class="persp"><li><b>Tagesschau</b>侧重选举结果本身和翻转的州</li><li><b>WSWS</b>强调民主党同样支持对伊战争，换党不等于换政策</li><li><b>Al Jazeera</b>把空袭和海湾国家受到的冲击放在一起报道</li></ul>
+    <p><b>研判：</b>新国会最可能用拨款和战争授权限制对伊行动，但特朗普仍有否决权，降温要看1月后的博弈。</p>
+    <p class="signals">观察信号：战争授权决议 · 油价 · 深圳 APEC 是否中美会面</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.tagesschau.de/" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.wsws.org/" target="_blank" rel="noopener">WSWS ↗</a><a class="src" href="https://www.aljazeera.com/" target="_blank" rel="noopener">Al Jazeera ↗</a></div>
+</article>
+  
+  <article class="card">
+    <span class="label">精选</span>
+    <h2>中共五中全会开始整治&#39;老好人&#39;</h2>
+    <p>决议要求领导干部开会时&#39;最后发言&#39;，并把回避冲突、对违纪视而不见的官员列为整治对象。清洗正从查腐败扩展到查不作为。</p>
+    
+    <details><summary>来龙去脉</summary><p>上周全会开除了33名中央委员会成员，明年秋天召开二十一大。</p></details>
+    <div class="srcs"><a class="src" href="https://www.scmp.com/" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://theinitium.com/" target="_blank" rel="noopener">端传媒 ↗</a></div>
+  </article>
+  
+  
+  <article class="card">
+    <span class="label">精选</span>
+    <h2>配音演员因 AI 克隆声音起诉 Netflix</h2>
+    <p>德国配音演员 Matti Klemm 发现自己的声音被 AI 使用，准备起诉 Netflix。这是德国第一批由劳动者本人发起的 AI 版权诉讼之一。</p>
+    <div class="foryou">适合做成&#39;AI 和劳动者&#39;的德语短内容。</div>
+    
+    <div class="srcs"><a class="src" href="https://ms-aktuell.de/" target="_blank" rel="noopener">ms-aktuell ↗</a></div>
+  </article>
+  
+  
+  <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
+</section>
+
+<section class="panel" id="threads">
+  <article class="card thread">
+  <span class="label">主线 · 美国政治与美伊战争</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>民主党将从明年1月起同时控制众议院和参议院</li><li class="today"><b>今天</b>选前一天美军空袭伊朗格什姆岛</li>
+    
+  </ul>
+  <div class="foryou">如果战事降温，油价回落会传导到德国能源价格，最终影响你明年的取暖和电费结算。</div>
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>2月开战以来油价和通胀是选举的核心议题，这次结果被普遍看作对战争和物价的投票。</p>
+    <ul class="persp"><li><b>Tagesschau</b>侧重选举结果本身和翻转的州</li><li><b>WSWS</b>强调民主党同样支持对伊战争，换党不等于换政策</li><li><b>Al Jazeera</b>把空袭和海湾国家受到的冲击放在一起报道</li></ul>
+    <p><b>研判：</b>新国会最可能用拨款和战争授权限制对伊行动，但特朗普仍有否决权，降温要看1月后的博弈。</p>
+    <p class="signals">观察信号：战争授权决议 · 油价 · 深圳 APEC 是否中美会面</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.tagesschau.de/" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.wsws.org/" target="_blank" rel="noopener">WSWS ↗</a><a class="src" href="https://www.aljazeera.com/" target="_blank" rel="noopener">Al Jazeera ↗</a></div>
+</article><article class="card thread">
+  <span class="label">主线 · 大众与 IG Metall 劳资谈判</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>谈判11月24日在埃姆登开始，大众要求尽快压低劳动成本</li>
+    
+  </ul>
+  <div class="foryou">你的培训合同已签，一般不受直接影响，但这决定了你明年进厂时的工厂状态和以后的留用机会。</div>
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>大众9月底单方面终止2024年的工资协议，并计划到2030年再裁1.2万人。</p>
+    <ul class="persp"><li><b>IG Metall</b>称之为背信，要求涨薪5%，拒绝转岗公司方案</li></ul>
+    <p><b>研判：</b>12月31日和平义务结束前很难达成协议，1月起可能出现警告性罢工。</p>
+    <p class="signals">观察信号：11月24日第一轮结果 · 是否提到埃姆登厂的产能安排</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.igmetall.de/" target="_blank" rel="noopener">IG Metall ↗</a></div>
+</article><article class="card thread">
+  <span class="label">主线 · 柏林左翼党组阁</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>柏林左翼党党代会通过，与绿党、社民党开始组阁谈判</li>
+    
+  </ul>
+  
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>左翼党9月以近26%成为柏林第一大党，埃拉尔普可能成为该党首位柏林执政市长。</p>
+    <ul class="persp"><li><b>nd</b>强调试探文件里的房租、交通等社会诉求</li><li><b>Tichys Einblick</b>用身份政治和安全问题框定这次组阁</li></ul>
+    <p><b>研判：</b>最大分歧是住房企业社会化，很可能以分阶段或先立法框架的方式妥协。</p>
+    <p class="signals">观察信号：联合协议对社会化的写法</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.nd-aktuell.de/" target="_blank" rel="noopener">nd ↗</a><a class="src" href="https://www.tichyseinblick.de/" target="_blank" rel="noopener">Tichys Einblick ↗</a></div>
+</article>
+  <div class="end"><span class="dot">·</span>主线看完了</div>
+</section>
+
+<section class="panel" id="briefs">
+  <div class="chips" id="chips">
+    <button class="chip on" data-s="">全部</button>
+    <button class="chip" data-s="本地">本地</button><button class="chip" data-s="工作">工作</button><button class="chip" data-s="AI">AI</button><button class="chip" data-s="国际">国际</button><button class="chip" data-s="中国">中国</button><button class="chip" data-s="德国">德国</button>
+  </div>
+  
+  <a class="brief" data-s="本地" href="https://ms-aktuell.de/" target="_blank" rel="noopener">
+    <div class="meta">本地 · ms-aktuell</div>
+    今天 Aaseestadt 排查四处疑似未爆弹，必要时 Weseler Straße 一带封路。
+  </a>
+  
+  <a class="brief" data-s="本地" href="https://ms-aktuell.de/" target="_blank" rel="noopener">
+    <div class="meta">本地 · ms-aktuell</div>
+    ADAC 中型城市出行排名中，明斯特排第一。
+  </a>
+  
+  <a class="brief" data-s="工作" href="https://www.igmetall.de/" target="_blank" rel="noopener">
+    <div class="meta">工作 · IG Metall</div>
+    大众与 IG Metall 第一轮谈判定在11月24日埃姆登。
+  </a>
+  
+  <a class="brief" data-s="AI" href="https://news.ycombinator.com/" target="_blank" rel="noopener">
+    <div class="meta">AI · Hacker News 热门</div>
+    通义千问3.5 9B 量化版在8GB 显卡上运行良好，社区实测每秒50到80词元。
+  </a>
+  
+  <a class="brief" data-s="国际" href="https://www.aljazeera.com/" target="_blank" rel="noopener">
+    <div class="meta">国际 · Al Jazeera</div>
+    美军在选前空袭伊朗格什姆岛。
+  </a>
+  
+  <a class="brief" data-s="中国" href="https://theinitium.com/" target="_blank" rel="noopener">
+    <div class="meta">中国 · 端传媒</div>
+    五中全会决议要求领导干部开会&#39;最后发言&#39;。
+  </a>
+  
+  <a class="brief" data-s="德国" href="https://www.spiegel.de/" target="_blank" rel="noopener">
+    <div class="meta">德国 · Spiegel</div>
+    10月通胀2.8%，能源同比仍涨12.2%。
+  </a>
+  
+  <div class="end"><span class="dot">·</span>简讯就这些</div>
+</section>
+
+<section class="panel" id="video">
+  <h3 class="sub">短视频</h3>
+  <div class="shorts">
+    <a class="short" href="https://www.youtube.com/@MrWissen2go" target="_blank" rel="noopener">
+      <div class="thumb" >▶</div>
+      <div class="t">Midterms in 60 Sekunden</div>
+    </a>
+    <a class="short" href="https://www.youtube.com/@maiLab" target="_blank" rel="noopener">
+      <div class="thumb" >▶</div>
+      <div class="t">Warum Energie so teuer bleibt</div>
+    </a>
+    <a class="short" href="https://www.youtube.com/@STRG_F" target="_blank" rel="noopener">
+      <div class="thumb" >▶</div>
+      <div class="t">So teuer ist WG-Leben 2026</div>
+    </a>
+  </div>
+  
+  <h3 class="sub">德国创作者</h3>
+  
+  <a class="vid" href="https://www.youtube.com/@JungNaiv" target="_blank" rel="noopener">
+    <div class="thumb" >▶</div>
+    <div class="body"><div class="t">Folge 820: Was jetzt nach den US-Midterms?</div>
+      <div class="h">JungNaiv · Tilo Jung 请嘉宾拆解中期选举对欧洲的影响</div></div>
+  </a>
+  
+  <a class="vid" href="https://www.youtube.com/@YKollektiv" target="_blank" rel="noopener">
+    <div class="thumb" >▶</div>
+    <div class="body"><div class="t">Keine Wohnung trotz Vollzeitjob</div>
+      <div class="h">YKollektiv · 全职工作也租不到房的德国年轻人</div></div>
+  </a>
+  
+  <h3 class="sub">AI</h3>
+  
+  <a class="vid" href="https://www.youtube.com/@TwoMinutePapers" target="_blank" rel="noopener">
+    <div class="thumb" >▶</div>
+    <div class="body"><div class="t">AI that edits other neural networks</div>
+      <div class="h">TwoMinutePapers</div></div>
+  </a>
+  
+  <div class="end"><span class="dot">·</span>视频看完了</div>
+</section>
+
+<section class="panel" id="de">
+  <h3 class="sub">今日德语</h3>
+  
+  <div class="card"><div class="word"><b>die Friedenspflicht</b><span>和平义务，劳资协议有效期内不能罢工</span></div>
+    <div class="ex">Die Friedenspflicht endet am 31. Dezember.</div></div>
+  
+  <div class="card"><div class="word"><b>der Blindgänger</b><span>未爆弹</span></div>
+    <div class="ex">In der Aaseestadt wird ein Blindgänger vermutet.</div></div>
+  
+  <div class="card"><div class="word"><b>die Kerninflation</b><span>核心通胀</span></div>
+    <div class="ex">Die Kerninflation lag bei 2,1 Prozent.</div></div>
+  
+  <div class="card"><div class="word"><b>die Vergesellschaftung</b><span>社会化，把私有财产转为公共所有</span></div>
+    <div class="ex">Die Linke pocht auf Vergesellschaftung.</div></div>
+  
+  <div class="card"><div class="word"><b>jemanden mundtot machen</b><span>让某人闭嘴</span></div>
+    <div class="ex">Er lässt sich nicht mundtot machen.</div></div>
+  
+  <h3 class="sub">创作素材</h3>
+  
+  <div class="card"><h2>AI 偷走配音演员的声音</h2><p>德国本地案例，适合做&#39;AI 与劳动者&#39;的德语 Instagram 帖子。</p><div class="srcs"><a class="src" href="https://ms-aktuell.de/" target="_blank" rel="noopener">ms-aktuell ↗</a></div></div>
+  
+  <div class="card"><h2>同一场选举，四家媒体四种讲法</h2><p>把主线里的多方对比做成图文，正好练习你的媒体分析框架。</p><div class="srcs"><a class="src" href="https://www.tagesschau.de/" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.wsws.org/" target="_blank" rel="noopener">WSWS ↗</a><a class="src" href="https://www.aljazeera.com/" target="_blank" rel="noopener">Al Jazeera ↗</a></div></div>
+  
+  <div class="end"><span class="dot">·</span>今天就到这里</div>
+</section>
+</main>
+<footer>
+  <details><summary>来源状态：1 个正常，1 个失败</summary>
+    <div>✕ Stadt Münster：示例：抓取失败时会显示在这里</div>
+  </details>
+  
+</footer>
+<script>
+const tabs=[...document.querySelectorAll('.tab')],panels=[...document.querySelectorAll('.panel')];
+function show(id){tabs.forEach(t=>t.classList.toggle('on',t.dataset.p===id));panels.forEach(p=>p.classList.toggle('on',p.id===id));window.scrollTo({top:0});try{sessionStorage.setItem('tab',id)}catch(e){}}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.p));
+try{const s=sessionStorage.getItem('tab');if(s)show(s)}catch(e){}
+const order=tabs.map(t=>t.dataset.p);let sx=0,sy=0;
+document.querySelector('main').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.querySelector('main').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const cur=order.indexOf(document.querySelector('.tab.on').dataset.p);
+ const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+ document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+[
+ {
+  "id": "a1",
+  "kind": "article",
+  "source": "Tagesschau",
+  "section": "国际",
+  "stance": "",
+  "title": "Demokraten erobern Repräsentantenhaus und Senat",
+  "summary": "",
+  "link": "https://www.tagesschau.de/",
+  "image": ""
+ },
+ {
+  "id": "a2",
+  "kind": "article",
+  "source": "WSWS",
+  "section": "左翼视角",
+  "stance": "",
+  "title": "Democrats take Congress, war policy unchanged",
+  "summary": "",
+  "link": "https://www.wsws.org/",
+  "image": ""
+ },
+ {
+  "id": "a3",
+  "kind": "article",
+  "source": "Al Jazeera",
+  "section": "国际",
+  "stance": "",
+  "title": "US strikes Qeshm Island as Trump downplays war risk",
+  "summary": "",
+  "link": "https://www.aljazeera.com/",
+  "image": ""
+ },
+ {
+  "id": "a4",
+  "kind": "article",
+  "source": "SCMP China",
+  "section": "中国",
+  "stance": "",
+  "title": "Plenum targets passive 'nice guys' in anti-graft push",
+  "summary": "",
+  "link": "https://www.scmp.com/",
+  "image": ""
+ },
+ {
+  "id": "a5",
+  "kind": "article",
+  "source": "端传媒",
+  "section": "中国",
+  "stance": "",
+  "title": "五中全会决议：领导干部'最后发言'",
+  "summary": "",
+  "link": "https://theinitium.com/",
+  "image": ""
+ },
+ {
+  "id": "a6",
+  "kind": "article",
+  "source": "nd",
+  "section": "左翼视角",
+  "stance": "",
+  "title": "Berliner Linke stimmt für Koalitionsverhandlungen",
+  "summary": "",
+  "link": "https://www.nd-aktuell.de/",
+  "image": ""
+ },
+ {
+  "id": "a7",
+  "kind": "article",
+  "source": "Tichys Einblick",
+  "section": "德国",
+  "stance": "",
+  "title": "Berlin: Eigene rote Linien gelten nicht",
+  "summary": "",
+  "link": "https://www.tichyseinblick.de/",
+  "image": ""
+ },
+ {
+  "id": "a8",
+  "kind": "article",
+  "source": "IG Metall",
+  "section": "工作",
+  "stance": "",
+  "title": "Tarifrunde VW startet am 24. November in Emden",
+  "summary": "",
+  "link": "https://www.igmetall.de/",
+  "image": ""
+ },
+ {
+  "id": "a9",
+  "kind": "article",
+  "source": "ms-aktuell",
+  "section": "本地",
+  "stance": "",
+  "title": "Blindgängerverdacht in der Aaseestadt",
+  "summary": "",
+  "link": "https://ms-aktuell.de/",
+  "image": ""
+ },
+ {
+  "id": "a10",
+  "kind": "article",
+  "source": "ms-aktuell",
+  "section": "本地",
+  "stance": "",
+  "title": "Münster Platz eins beim ADAC-Mobilitätsmonitor",
+  "summary": "",
+  "link": "https://ms-aktuell.de/",
+  "image": ""
+ },
+ {
+  "id": "a11",
+  "kind": "article",
+  "source": "Spiegel",
+  "section": "德国",
+  "stance": "",
+  "title": "Inflation sinkt auf 2,8 Prozent – Energie bleibt teuer",
+  "summary": "",
+  "link": "https://www.spiegel.de/",
+  "image": ""
+ },
+ {
+  "id": "a12",
+  "kind": "article",
+  "source": "Simon Willison",
+  "section": "AI",
+  "stance": "",
+  "title": "DoorDash: only a few hundred orders from AI agents",
+  "summary": "",
+  "link": "https://simonwillison.net/",
+  "image": ""
+ },
+ {
+  "id": "a13",
+  "kind": "article",
+  "source": "Hacker News 热门",
+  "section": "AI",
+  "stance": "",
+  "title": "Qwen 3.5 9B runs well on 8GB GPUs",
+  "summary": "",
+  "link": "https://news.ycombinator.com/",
+  "image": ""
+ },
+ {
+  "id": "a14",
+  "kind": "article",
+  "source": "ms-aktuell",
+  "section": "本地",
+  "stance": "",
+  "title": "Synchronsprecher will wegen KI-Stimme gegen Netflix klagen",
+  "summary": "",
+  "link": "https://ms-aktuell.de/",
+  "image": ""
+ },
+ {
+  "id": "v1",
+  "kind": "video",
+  "source": "JungNaiv",
+  "section": "德国创作者",
+  "stance": "",
+  "title": "Folge 820: Was jetzt nach den US-Midterms?",
+  "summary": "",
+  "link": "https://www.youtube.com/@JungNaiv",
+  "image": ""
+ },
+ {
+  "id": "v2",
+  "kind": "video",
+  "source": "YKollektiv",
+  "section": "德国创作者",
+  "stance": "",
+  "title": "Keine Wohnung trotz Vollzeitjob",
+  "summary": "",
+  "link": "https://www.youtube.com/@YKollektiv",
+  "image": ""
+ },
+ {
+  "id": "v3",
+  "kind": "video",
+  "source": "TwoMinutePapers",
+  "section": "AI",
+  "stance": "",
+  "title": "AI that edits other neural networks",
+  "summary": "",
+  "link": "https://www.youtube.com/@TwoMinutePapers",
+  "image": ""
+ },
+ {
+  "id": "s1",
+  "kind": "short",
+  "source": "MrWissen2go",
+  "section": "德国创作者",
+  "stance": "",
+  "title": "Midterms in 60 Sekunden",
+  "summary": "",
+  "link": "https://www.youtube.com/@MrWissen2go",
+  "image": ""
+ },
+ {
+  "id": "s2",
+  "kind": "short",
+  "source": "maiLab",
+  "section": "德国创作者",
+  "stance": "",
+  "title": "Warum Energie so teuer bleibt",
+  "summary": "",
+  "link": "https://www.youtube.com/@maiLab",
+  "image": ""
+ },
+ {
+  "id": "s3",
+  "kind": "short",
+  "source": "STRG_F",
+  "section": "德国创作者",
+  "stance": "",
+  "title": "So teuer ist WG-Leben 2026",
+  "summary": "",
+  "link": "https://www.youtube.com/@STRG_F",
+  "image": ""
+ }
+]

@@ -1,0 +1,137 @@
+# ============================================================
+# 信息台的全部订阅都在这个文件里。改这里就能增删来源。
+#   section: 归到哪个板块（简讯里的分组）
+#   stance:  立场卡，AI 做多方对比时会参考
+#   enabled: false 表示暂时关闭
+# ============================================================
+
+settings:
+  max_items_per_source: 8      # 每个来源最多取几条
+  max_age_hours: 36            # 只要最近多少小时内的内容
+  timezone: Europe/Berlin
+
+# ---------- 长期跟踪的主线（推特串形式，会累积时间线） ----------
+threads:
+  - id: us-iran
+    title: 美国政治与美伊战争
+    keywords: [Iran, Hormuz, Midterm, Kongress, Congress, Trump, 伊朗, 霍尔木兹]
+  - id: china-elite
+    title: 中国高层政治
+    keywords: [Xi, Politbüro, Politburo, Zentralkomitee, Plenum, 全会, 中纪委, PLA, 军委, purge]
+  - id: berlin-linke
+    title: 柏林左翼党组阁
+    keywords: [Eralp, Linke Berlin, rot-grün-rot, Koalitionsverhandlungen, Vergesellschaftung]
+  - id: vw-igmetall
+    title: 大众与 IG Metall 劳资谈判
+    keywords: [Volkswagen, VW, IG Metall, Emden, Tarif, Zwickau]
+
+# ---------- 媒体 RSS ----------
+feeds:
+  # 德国主流
+  - {name: Tagesschau, url: "https://www.tagesschau.de/xml/rss2/", section: 德国, stance: "ARD 公共广播，主流建制，相对平衡"}
+  - {name: Spiegel, url: "https://www.spiegel.de/schlagzeilen/index.rss", section: 德国, stance: "中间偏左自由派，调查报道强"}
+  - {name: Zeit Online, url: "https://newsfeed.zeit.de/index", section: 德国, stance: "中间偏左自由派，评论多"}
+  - {name: Süddeutsche, url: "https://rss.sueddeutsche.de/rss/Topthemen", section: 德国, stance: "中间偏左自由派"}
+  - {name: DW, url: "https://rss.dw.com/rdf/rss-de-all", section: 德国, stance: "联邦出资对外广播，德国官方与西方视角"}
+  - {name: FAZ, url: "https://www.faz.net/rss/aktuell/", section: 德国, stance: "中间偏右，保守自由派，经济界视角"}
+  # 本地
+  - {name: ms-aktuell, url: "https://ms-aktuell.de/feed/", section: 本地, stance: "明斯特本地新闻网站"}
+  - {name: Stadt Münster, url: "https://www.stadt-muenster.de/rss/presse.xml", section: 本地, stance: "市政府官方新闻"}
+  # 左翼
+  - {name: junge Welt, url: "https://www.jungewelt.de/feeds/newsticker.rss", section: 左翼视角, stance: "马克思主义日报，反北约，对中俄较缓和"}
+  - {name: nd, url: "https://www.nd-aktuell.de/rss/aktuell.php", section: 左翼视角, stance: "民主社会主义，接近左翼党"}
+  - {name: taz, url: "https://taz.de/!p4608;rss/", section: 左翼视角, stance: "左翼自由派，接近绿党与社会运动"}
+  - {name: Jacobin DE, url: "https://jacobin.de/rss", section: 左翼视角, stance: "民主社会主义，工人阶级政治"}
+  - {name: Jacobin, url: "https://jacobin.com/feed", section: 左翼视角, stance: "美国民主社会主义杂志"}
+  - {name: analyse & kritik, url: "https://www.akweb.de/feed/", section: 左翼视角, stance: "运动左翼，非教条"}
+  - {name: Unsere Zeit, url: "https://www.unsere-zeit.de/feed/", section: 左翼视角, stance: "德共周报，马列路线"}
+  - {name: Klasse Gegen Klasse, url: "https://www.klassegegenklasse.org/feed/", section: 左翼视角, stance: "托派，同时批评中俄政府"}
+  - {name: Monthly Review, url: "https://monthlyreview.org/feed/", section: 左翼视角, stance: "马克思主义政治经济学"}
+  - {name: Peoples Dispatch, url: "https://peoplesdispatch.org/feed/", section: 左翼视角, stance: "聚焦全球南方社会运动"}
+  - {name: WSWS, url: "https://www.wsws.org/en/rss.xml", section: 左翼视角, stance: "托派日更，对所有政府批判"}
+  - {name: L'Humanité, url: "https://www.humanite.fr/feed", section: 左翼视角, stance: "法共背景日报"}
+  # 国际
+  - {name: BBC World, url: "https://feeds.bbci.co.uk/news/world/rss.xml", section: 国际, stance: "英国公共广播，西方主流"}
+  - {name: Guardian World, url: "https://www.theguardian.com/world/rss", section: 国际, stance: "英国中左自由派"}
+  - {name: Al Jazeera, url: "https://www.aljazeera.com/xml/rss/all.xml", section: 国际, stance: "卡塔尔出资，全球南方视角"}
+  - {name: Le Monde, url: "https://www.lemonde.fr/international/rss_full.xml", section: 国际, stance: "法国中左主流"}
+  - {name: France 24, url: "https://www.france24.com/en/rss", section: 国际, stance: "法国政府出资对外广播"}
+  - {name: TASS, url: "https://tass.com/rss/v2.xml", section: 国际, stance: "俄罗斯国家通讯社，官方立场"}
+  - {name: Meduza, url: "https://meduza.io/rss/en/all", section: 国际, stance: "流亡俄罗斯独立媒体，反克宫"}
+  - {name: Brasil de Fato, url: "https://www.brasildefato.com.br/rss2.xml", section: 国际, stance: "巴西左翼，接近无地农民运动"}
+  - {name: teleSUR, url: "https://www.telesurenglish.net/rss/", section: 国际, stance: "拉美左翼政府出资，反美"}
+  - {name: El País América, url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/america/portada", section: 国际, stance: "西班牙中左建制"}
+  - {name: The Economist, url: "https://www.economist.com/international/rss.xml", section: 国际, stance: "古典自由主义，亲市场"}
+  # 中国
+  - {name: 新华社, url: "http://www.xinhuanet.com/politics/news_politics.xml", section: 中国, stance: "国家通讯社，官方立场"}
+  - {name: 端传媒, url: "https://theinitium.com/newsfeed/", section: 中国, stance: "香港起家的中文独立媒体，自由派"}
+  - {name: 中国数字时代, url: "https://chinadigitaltimes.net/chinese/feed/", section: 中国, stance: "收集被删内容，明确批评审查"}
+  - {name: China Media Project, url: "https://chinamediaproject.org/feed/", section: 中国, stance: "研究中共话语，批判取向"}
+  - {name: SCMP China, url: "https://www.scmp.com/rss/4/feed", section: 中国, stance: "阿里巴巴旗下香港英文报"}
+  # AI 与极客
+  - {name: Simon Willison, url: "https://simonwillison.net/atom/everything/", section: AI, stance: "独立开发者博客"}
+  - {name: Hacker News 热门, url: "https://hnrss.org/frontpage?points=150", section: AI, stance: "程序员社区热门"}
+  - {name: Show HN, url: "https://hnrss.org/show?points=80", section: AI, stance: "开发者展示自己的作品"}
+  - {name: Anthropic, url: "https://www.anthropic.com/rss.xml", section: AI, stance: "公司官方"}
+  - {name: OpenAI, url: "https://openai.com/news/rss.xml", section: AI, stance: "公司官方"}
+  - {name: Google DeepMind, url: "https://deepmind.google/blog/rss.xml", section: AI, stance: "公司官方"}
+  # 工作和行业
+  - {name: IG Metall, url: "https://www.igmetall.de/rss", section: 工作, stance: "工会官方"}
+
+# ---------- YouTube 频道（用 @账号名，运行时自动查频道 ID） ----------
+youtube:
+  - {handle: "@JungNaiv", section: 德国创作者, note: "Tilo Jung 深度政治采访"}
+  - {handle: "@MrWissen2go", section: 德国创作者, note: "政治时事解读"}
+  - {handle: "@maiLab", section: 德国创作者, note: "科学与社会"}
+  - {handle: "@YKollektiv", section: 德国创作者, note: "funk 社会纪录片"}
+  - {handle: "@STRG_F", section: 德国创作者, note: "funk 调查报道"}
+  - {handle: "@TwoMinutePapers", section: AI, note: "AI 论文速读"}
+shorts_from: [德国创作者]       # 这些分组的频道额外抓 Shorts
+
+# ---------- B 站（第二版启用，需要 UID） ----------
+bilibili:
+  enabled: false
+  rsshub: "https://rsshub.app"
+  weekly_digest_groups: [组织动态]    # 这些分组每周汇总一次，不进每日信息流
+  ups:
+    - {name: 未明子, uid: "", group: 时政理论}
+    - {name: 未明子官方切片号, uid: "", group: 时政理论}
+    - {name: 来辰, uid: "", group: 时政理论}
+    - {name: 下桩, uid: "", group: 时政理论}
+    - {name: Omsis, uid: "", group: 时政理论}
+    - {name: 塔禁, uid: "", group: 时政理论}
+    - {name: 杨凡YangFan, uid: "", group: 时政理论}
+    - {name: 行走的豆沙包_, uid: "", group: 时政理论}
+    - {name: 马孔多香蕉工人, uid: "", group: 时政理论}
+    - {name: 海绵宝宝上单儿, uid: "", group: 时政理论}
+    - {name: 于秀英説漢語, uid: "", group: 时政理论}
+    - {name: AI科技评论, uid: "", group: 技术动手}
+    - {name: 科技手工折腾局, uid: "", group: 技术动手}
+    - {name: 机器人核心零部件工坊, uid: "", group: 技术动手}
+    - {name: 北美青械交流UGCraft, uid: "", group: 技术动手}
+    - {name: 钳工1999, uid: "", group: 技术动手}
+    - {name: 人机和谐, uid: "", group: 技术动手}
+    - {name: 香港茜帆植青俱乐部, uid: "", group: 组织动态}
+    - {name: 植青娱乐频道, uid: "", group: 组织动态}
+    - {name: 主义主义植青生活服务, uid: "", group: 组织动态}
+    - {name: 嘉兴桐菊植青宿舍, uid: "", group: 组织动态}
+    - {name: 正禾实践, uid: "", group: 组织动态}
+    - {name: 正禾植青卫生健康组, uid: "", group: 组织动态}
+    - {name: 共利培训-成都, uid: "", group: 组织动态}
+    - {name: 共利培训-上海, uid: "", group: 组织动态}
+    - {name: 共利培训-徐州, uid: "", group: 组织动态}
+    - {name: 共利培训-深圳, uid: "", group: 组织动态}
+    - {name: 共利培训-苏州, uid: "", group: 组织动态}
+    - {name: 共利培训-广州, uid: "", group: 组织动态}
+    - {name: 德国占禾青年, uid: "", group: 组织动态}
+    - {name: 外劳联络站, uid: "", group: 组织动态}
+    - {name: 反殖民警戒, uid: "", group: 组织动态}
+    - {name: 青合俱乐部, uid: "", group: 组织动态}
+    - {name: 小青年-你还有未来吗, uid: "", group: 组织动态}
+    - {name: Bone-8, uid: "", group: 组织动态}
+    - {name: 穿10号的莱奥, uid: "", group: 影视娱乐}
+    - {name: 杨亚月月鸟, uid: "", group: 影视娱乐}
+    - {name: 電気信号のEVE, uid: "", group: 影视娱乐}
+    - {name: ludwig-lll, uid: "", group: 影视娱乐}
+    - {name: 4K影视搬运工, uid: "", group: 影视娱乐}
+    - {name: 登墙摘星, uid: "", group: 影视娱乐}
