@@ -49,6 +49,8 @@ def _get(url: str) -> bytes:
 
 def parse_feed(url: str, source: dict, kind: str, max_items: int, max_age_h: float) -> list[dict]:
     parsed = feedparser.parse(_get(url))
+    if kind in ("video", "short") and parsed.feed.get("title") and not source.get("name_fixed"):
+        source = {**source, "name": parsed.feed["title"]}
     now, out = time.time(), []
     for e in parsed.entries[: max_items * 3]:
         ts = _ts(e)
@@ -72,14 +74,31 @@ def parse_feed(url: str, source: dict, kind: str, max_items: int, max_age_h: flo
     return out
 
 
-def resolve_youtube(handle: str, cache: dict) -> str | None:
-    if handle in cache:
-        return cache[handle]
-    page = _get(f"https://www.youtube.com/{handle}").decode("utf-8", "ignore")
-    m = re.search(r'"(?:channelId|externalId)":"(UC[\w-]{22})"', page)
-    if m:
-        cache[handle] = m.group(1)
-    return cache.get(handle)
+def _channel_from(page: str) -> str | None:
+    m = re.search(r'"(?:channelId|externalId|browseId)":"(UC[\w-]{22})"', page)
+    return m.group(1) if m else None
+
+
+def resolve_youtube(ch: dict, cache: dict) -> str | None:
+    """依次尝试：直接给的 channel_id → @账号名 → 按名字搜索。结果缓存。"""
+    key = ch.get("channel_id") or ch.get("handle") or ch.get("search")
+    if ch.get("channel_id"):
+        return ch["channel_id"]
+    if key in cache:
+        return cache[key]
+    cid = None
+    if ch.get("handle"):
+        try:
+            cid = _channel_from(_get(f"https://www.youtube.com/{ch['handle']}").decode("utf-8", "ignore"))
+        except Exception:  # noqa: BLE001
+            cid = None
+    if not cid:
+        q = requests.utils.quote(ch.get("search") or ch.get("name") or ch["handle"].lstrip("@"))
+        page = _get(f"https://www.youtube.com/results?search_query={q}&sp=EgIQAg%253D%253D").decode("utf-8", "ignore")
+        cid = _channel_from(page)
+    if cid:
+        cache[key] = cid
+    return cid
 
 
 def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
@@ -100,14 +119,14 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
     cache = json.loads(cache_file.read_text()) if cache_file.exists() else {}
     shorts_groups = set(cfg.get("shorts_from", []))
     for ch in cfg.get("youtube", []):
-        src = {"name": ch.get("name") or ch["handle"].lstrip("@"),
-               "section": ch["section"], "stance": ch.get("note", "")}
+        label = ch.get("name") or ch.get("handle", "").lstrip("@") or ch.get("search")
+        src = {"name": label, "section": ch["section"], "stance": ch.get("note", "")}
         try:
-            cid = resolve_youtube(ch["handle"], cache)
+            cid = resolve_youtube(ch, cache)
             if not cid:
                 raise ValueError("找不到频道 ID")
             got = parse_feed(f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}",
-                             src, "video", 4, 24 * 7)
+                             src, "video", s.get("videos_per_channel", 5), s.get("video_age_days", 10) * 24)
             if ch["section"] in shorts_groups:
                 try:
                     shorts = parse_feed(
@@ -118,9 +137,9 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
                 except Exception:  # noqa: BLE001
                     pass
             items += got
-            status.append({"source": ch["handle"], "ok": True, "count": len(got)})
+            status.append({"source": label, "ok": True, "count": len(got)})
         except Exception as ex:  # noqa: BLE001
-            status.append({"source": ch["handle"], "ok": False, "error": str(ex)[:120]})
+            status.append({"source": label, "ok": False, "error": str(ex)[:120]})
     cache_file.write_text(json.dumps(cache, ensure_ascii=False, indent=1))
 
     b = cfg.get("bilibili", {})

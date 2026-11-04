@@ -36,7 +36,7 @@ SCHEMA = """输出格式（JSON）：
   "briefs": [    // 20到40条简讯，每条一两句话，覆盖各板块
     {"section": "板块名", "text": "", "item_id": "..."}
   ],
-  "videos": [    // 给值得看的视频写一句看点，最多10个
+  "videos": [    // 给每个视频写一句中文看点（德语/英语视频尤其要写），最多25个
     {"item_id": "...", "hook": "一句话看点"}
   ],
   "german": [    // 从当天德语条目里挑5个实用词或表达
@@ -85,12 +85,13 @@ def edit(items: list[dict], cfg: dict, history: dict, date: str) -> dict:
     client = anthropic.Anthropic()
     user = (f"日期：{date}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n## 长期主线\n{_threads(cfg, history)}\n\n"
             f"## 今天的条目（每行一个 JSON）\n{_compact(items)}\n\n{SCHEMA}")
-    msg = client.messages.create(
+    with client.messages.stream(
         model=MODEL,
-        max_tokens=16000,
+        max_tokens=32000,
         system=SYSTEM.format(profile=profile),
         messages=[{"role": "user", "content": user}],
-    )
+    ) as stream:
+        msg = stream.get_final_message()
     text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
     digest = _parse_json(text)
     digest["usage"] = {"input": msg.usage.input_tokens, "output": msg.usage.output_tokens}

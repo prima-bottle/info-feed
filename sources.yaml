@@ -8,6 +8,8 @@
 settings:
   max_items_per_source: 8      # 每个来源最多取几条
   max_age_hours: 36            # 只要最近多少小时内的内容
+  videos_per_channel: 5        # 每个 YouTube 频道最多取几个视频
+  video_age_days: 10           # 视频只要最近多少天的
   timezone: Europe/Berlin
 
 # ---------- 长期跟踪的主线（推特串形式，会累积时间线） ----------
@@ -36,9 +38,10 @@ feeds:
   - {name: FAZ, url: "https://www.faz.net/rss/aktuell/", section: 德国, stance: "中间偏右，保守自由派，经济界视角"}
   # 本地
   - {name: ms-aktuell, url: "https://ms-aktuell.de/feed/", section: 本地, stance: "明斯特本地新闻网站"}
-  - {name: Stadt Münster, url: "https://www.stadt-muenster.de/rss/presse.xml", section: 本地, stance: "市政府官方新闻"}
+  - {name: Alles Münster, url: "https://www.allesmuenster.de/feed/", section: 本地, stance: "明斯特本地生活杂志"}
+  - {name: Stadt Münster, url: "https://news.google.com/rss/search?q=site:stadt-muenster.de+when:2d&hl=de&gl=DE&ceid=DE:de", section: 本地, stance: "市政府官方新闻"}
   # 左翼
-  - {name: junge Welt, url: "https://www.jungewelt.de/feeds/newsticker.rss", section: 左翼视角, stance: "马克思主义日报，反北约，对中俄较缓和"}
+  - {name: junge Welt, url: "https://news.google.com/rss/search?q=site:jungewelt.de+when:2d&hl=de&gl=DE&ceid=DE:de", section: 左翼视角, stance: "马克思主义日报，反北约，对中俄较缓和"}
   - {name: nd, url: "https://www.nd-aktuell.de/rss/aktuell.php", section: 左翼视角, stance: "民主社会主义，接近左翼党"}
   - {name: taz, url: "https://taz.de/!p4608;rss/", section: 左翼视角, stance: "左翼自由派，接近绿党与社会运动"}
   - {name: Jacobin DE, url: "https://jacobin.de/rss", section: 左翼视角, stance: "民主社会主义，工人阶级政治"}
@@ -59,34 +62,56 @@ feeds:
   - {name: TASS, url: "https://tass.com/rss/v2.xml", section: 国际, stance: "俄罗斯国家通讯社，官方立场"}
   - {name: Meduza, url: "https://meduza.io/rss/en/all", section: 国际, stance: "流亡俄罗斯独立媒体，反克宫"}
   - {name: Brasil de Fato, url: "https://www.brasildefato.com.br/rss2.xml", section: 国际, stance: "巴西左翼，接近无地农民运动"}
-  - {name: teleSUR, url: "https://www.telesurenglish.net/rss/", section: 国际, stance: "拉美左翼政府出资，反美"}
+  - {name: teleSUR, url: "https://news.google.com/rss/search?q=site:telesurenglish.net+when:3d&hl=en&gl=US&ceid=US:en", section: 国际, stance: "拉美左翼政府出资，反美"}
   - {name: El País América, url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/america/portada", section: 国际, stance: "西班牙中左建制"}
   - {name: The Economist, url: "https://www.economist.com/international/rss.xml", section: 国际, stance: "古典自由主义，亲市场"}
   # 中国
   - {name: 新华社, url: "http://www.xinhuanet.com/politics/news_politics.xml", section: 中国, stance: "国家通讯社，官方立场"}
-  - {name: 端传媒, url: "https://theinitium.com/newsfeed/", section: 中国, stance: "香港起家的中文独立媒体，自由派"}
-  - {name: 中国数字时代, url: "https://chinadigitaltimes.net/chinese/feed/", section: 中国, stance: "收集被删内容，明确批评审查"}
+  - {name: 端传媒, url: "https://news.google.com/rss/search?q=site:theinitium.com+when:3d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国, stance: "香港起家的中文独立媒体，自由派"}
+  - {name: 中国数字时代, url: "https://news.google.com/rss/search?q=site:chinadigitaltimes.net+when:3d&hl=zh-CN&gl=US&ceid=US:zh-Hans", section: 中国, stance: "收集被删内容，明确批评审查"}
   - {name: China Media Project, url: "https://chinamediaproject.org/feed/", section: 中国, stance: "研究中共话语，批判取向"}
   - {name: SCMP China, url: "https://www.scmp.com/rss/4/feed", section: 中国, stance: "阿里巴巴旗下香港英文报"}
   # AI 与极客
   - {name: Simon Willison, url: "https://simonwillison.net/atom/everything/", section: AI, stance: "独立开发者博客"}
   - {name: Hacker News 热门, url: "https://hnrss.org/frontpage?points=150", section: AI, stance: "程序员社区热门"}
   - {name: Show HN, url: "https://hnrss.org/show?points=80", section: AI, stance: "开发者展示自己的作品"}
-  - {name: Anthropic, url: "https://www.anthropic.com/rss.xml", section: AI, stance: "公司官方"}
+  - {name: Anthropic, url: "https://news.google.com/rss/search?q=site:anthropic.com/news+when:7d&hl=en&gl=US&ceid=US:en", section: AI, stance: "公司官方"}
   - {name: OpenAI, url: "https://openai.com/news/rss.xml", section: AI, stance: "公司官方"}
   - {name: Google DeepMind, url: "https://deepmind.google/blog/rss.xml", section: AI, stance: "公司官方"}
   # 工作和行业
-  - {name: IG Metall, url: "https://www.igmetall.de/rss", section: 工作, stance: "工会官方"}
+  - {name: IG Metall, url: "https://news.google.com/rss/search?q=%22IG+Metall%22+when:2d&hl=de&gl=DE&ceid=DE:de", section: 工作, stance: "工会官方"}
 
-# ---------- YouTube 频道（用 @账号名，运行时自动查频道 ID） ----------
+# ---------- YouTube 频道 ----------
+# 写 handle（@账号名）即可；找不到时会按 search 或名字自动搜索。
+# 如果自动找到的频道不对，可以直接写 channel_id: UCxxxx
 youtube:
-  - {handle: "@JungNaiv", section: 德国创作者, note: "Tilo Jung 深度政治采访"}
+  # 德国政治与社会
+  - {handle: "@JungNaiv", search: "Jung & Naiv Tilo Jung", section: 德国创作者, note: "深度政治采访"}
   - {handle: "@MrWissen2go", section: 德国创作者, note: "政治时事解读"}
-  - {handle: "@maiLab", section: 德国创作者, note: "科学与社会"}
+  - {handle: "@maiLab", search: "maiLab Mai Thi Nguyen-Kim", section: 德国创作者, note: "科学与社会"}
   - {handle: "@YKollektiv", section: 德国创作者, note: "funk 社会纪录片"}
   - {handle: "@STRG_F", section: 德国创作者, note: "funk 调查报道"}
-  - {handle: "@TwoMinutePapers", section: AI, note: "AI 论文速读"}
-shorts_from: [德国创作者]       # 这些分组的频道额外抓 Shorts
+  - {handle: "@reporter", search: "Reporter funk", section: 德国创作者, note: "funk 现场报道"}
+  - {handle: "@DieDaOben", search: "Die Da Oben funk", section: 德国创作者, note: "funk 政治解读"}
+  - {handle: "@Simplicissimus", section: 德国创作者, note: "社会议题动画解释"}
+  - {handle: "@zdfmagazinroyale", section: 德国创作者, note: "Böhmermann 讽刺调查节目"}
+  - {handle: "@rezo", search: "Rezo ja lol ey", section: 德国创作者, note: "政治评论 YouTuber"}
+  - {handle: "@WohlstandfuerAlle", search: "Wohlstand für Alle Ole Nymoen", section: 德国创作者, note: "左翼经济学评论"}
+  - {handle: "@DoktorWhatson", section: 德国创作者, note: "地理历史科普"}
+  - {handle: "@KurzgesagtDE", search: "Dinge Erklärt Kurzgesagt", section: 德国创作者, note: "科普动画德语版"}
+  # 德国青年流行文化（感知年轻人在聊什么）
+  - {handle: "@Papaplatte", section: 德国青年文化, note: "大主播"}
+  - {handle: "@HandOfBlood", section: 德国青年文化, note: "大主播"}
+  - {handle: "@Trymacs", section: 德国青年文化, note: "大主播"}
+  # AI 与技术动手
+  - {handle: "@TwoMinutePapers", section: AI与技术, note: "AI 论文速读"}
+  - {handle: "@aiexplained-official", search: "AI Explained", section: AI与技术, note: "AI 新闻深度解读"}
+  - {handle: "@Fireship", section: AI与技术, note: "开发者快讯"}
+  - {handle: "@TheMorpheusTutorials", search: "The Morpheus Tutorials", section: AI与技术, note: "德语编程与 AI"}
+  - {handle: "@GreatScottLab", search: "GreatScott electronics", section: AI与技术, note: "电子动手"}
+  - {handle: "@AndreasSpiess", section: AI与技术, note: "物联网与电子"}
+  - {handle: "@JeffGeerling", section: AI与技术, note: "树莓派与本地 AI"}
+shorts_from: [德国创作者, 德国青年文化]   # 这些分组的频道额外抓 Shorts
 
 # ---------- B 站（第二版启用，需要 UID） ----------
 bilibili:
