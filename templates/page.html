@@ -8,6 +8,9 @@
 <meta name="apple-mobile-web-app-title" content="信息台">
 <meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>信息台 · {{ date }}</title>
 <style>
 :root{
@@ -199,6 +202,7 @@ document.querySelector('main').addEventListener('touchend',e=>{const dx=e.change
  const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
 document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
  document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
