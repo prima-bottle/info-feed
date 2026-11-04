@@ -7,7 +7,7 @@ import re
 
 import anthropic
 
-MODEL = os.environ.get("CLAUDE_MODEL", "claude-sonnet-5-5")
+MODEL = os.environ.get("CLAUDE_MODEL") or "claude-sonnet-5-5"
 
 SYSTEM = """你是一份私人中文信息台的编辑。读者情况：
 {profile}

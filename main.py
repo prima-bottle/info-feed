@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -48,6 +49,11 @@ def main() -> int:
         from feed.fetch import fetch_all
 
         items, status = fetch_all(cfg, DATA)
+        for st in status:
+            print(("OK  " if st["ok"] else "失败 ") + st["source"] + (f' {st.get("count")}条' if st["ok"] else f' {st["error"]}'))
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            print("错误：没有读到 ANTHROPIC_API_KEY，请检查仓库 Settings → Secrets and variables → Actions 里的名字是否完全一致", file=sys.stderr)
+            return 1
         seen = load_json(DATA / "seen.json", {})
         cutoff = time.time() - 7 * 86400
         seen = {k: v for k, v in seen.items() if v > cutoff}
