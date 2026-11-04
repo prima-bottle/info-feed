@@ -131,7 +131,7 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
                 try:
                     shorts = parse_feed(
                         f"https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH{cid[2:]}",
-                        src, "short", 6, 24 * 3)
+                        src, "short", 6, s.get("video_age_days", 10) * 24)
                     ids = {x["id"] for x in shorts}
                     got = [x for x in got if x["id"] not in ids] + shorts
                 except Exception:  # noqa: BLE001
