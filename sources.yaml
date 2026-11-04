@@ -79,6 +79,17 @@ feeds:
   - {name: 中国数字时代, url: "https://news.google.com/rss/search?q=site:chinadigitaltimes.net+when:3d&hl=zh-CN&gl=US&ceid=US:zh-Hans", section: 中国, stance: "收集被删内容，明确批评审查"}
   - {name: China Media Project, url: "https://chinamediaproject.org/feed/", section: 中国, stance: "研究中共话语，批判取向"}
   - {name: SCMP China, url: "https://www.scmp.com/rss/4/feed", section: 中国, stance: "阿里巴巴旗下香港英文报"}
+  # 中国·政策：出台了什么、导向是什么
+  - {name: 中国政府网, url: "https://news.google.com/rss/search?q=site%3Agov.cn+%28%E5%8D%B0%E5%8F%91+OR+%E6%84%8F%E8%A7%81+OR+%E9%80%9A%E7%9F%A5+OR+%E5%8A%9E%E6%B3%95+OR+%E6%9D%A1%E4%BE%8B+OR+%E5%B8%B8%E5%8A%A1%E4%BC%9A%E8%AE%AE%29+when%3A2d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·政策, max: 6, stance: "国务院官方发布，政策原文与官方解读"}
+  - {name: 人民网, url: "https://news.google.com/rss/search?q=site%3Apeople.com.cn+%28%E6%94%BF%E7%AD%96+OR+%E9%83%A8%E7%BD%B2+OR+%E5%8D%B0%E5%8F%91+OR+%E8%A7%A3%E8%AF%BB%29+when%3A2d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·政策, max: 4, stance: "党报，官方叙事与政策定调"}
+  - {name: 财新, url: "https://news.google.com/rss/search?q=site%3Acaixin.com+when%3A3d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·政策, max: 5, stance: "市场化财经媒体，偏市场改革派，在审查边界内做调查"}
+  - {name: NPC Observer, url: "https://npcobserver.com/feed/", section: 中国·政策, max: 3, stance: "追踪全国人大立法的独立英文博客，偏法律技术分析"}
+  - {name: China Law Translate, url: "https://www.chinalawtranslate.com/feed/", section: 中国·政策, max: 3, stance: "中国法规英译与评注，学术中立取向"}
+  # 中国·社会：民生、劳动、住房、教育、社会事件
+  - {name: 澎湃, url: "https://news.google.com/rss/search?q=site%3Athepaper.cn+when%3A2d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·社会, max: 6, stance: "上海官方背景的市场化媒体，社会新闻多，在审查范围内"}
+  - {name: 南方周末, url: "https://news.google.com/rss/search?q=site%3Ainfzm.com+when%3A4d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·社会, max: 3, stance: "广州市场化周报，曾以调查报道著称"}
+  - {name: Sixth Tone, url: "https://news.google.com/rss/search?q=site%3Asixthtone.com+when%3A3d&hl=en-US&gl=US&ceid=US:en", section: 中国·社会, max: 4, stance: "澎湃旗下英文媒体，聚焦普通人社会生活"}
+  - {name: 中国劳动与民生, url: "https://news.google.com/rss/search?q=%28%E8%AE%A8%E8%96%AA+OR+%E6%AC%A0%E8%96%AA+OR+%E7%BD%A2%E5%B7%A5+OR+%E5%81%9C%E5%B7%A5+OR+%E8%A3%81%E5%91%98+OR+%E5%A4%96%E5%8D%96%E9%AA%91%E6%89%8B+OR+%E5%86%9C%E6%B0%91%E5%B7%A5+OR+%E7%83%82%E5%B0%BE%E6%A5%BC+OR+%E6%96%AD%E4%BE%9B+OR+%E9%9D%92%E5%B9%B4%E5%A4%B1%E4%B8%9A%29+%E4%B8%AD%E5%9B%BD+when%3A2d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·社会, max: 5, stance: "Google 新闻聚合，来源各异"}
   # AI 与极客
   - {name: Simon Willison, url: "https://simonwillison.net/atom/everything/", section: AI, stance: "独立开发者博客"}
   - {name: Hacker News 热门, url: "https://hnrss.org/frontpage?points=150", section: AI, stance: "程序员社区热门"}

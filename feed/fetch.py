@@ -63,7 +63,7 @@ def parse_feed(url: str, source: dict, kind: str, max_items: int, max_age_h: flo
             pub = (e.get("source") or {}).get("title", "")
             if pub and title.endswith(" - " + pub):
                 title = title[: -len(pub) - 3]
-            if pub and source.get("section", "").startswith("地方"):
+            if pub and (source.get("section", "").startswith("地方") or source["name"] == "中国劳动与民生"):
                 src_name = pub
         out.append({
             "id": hashlib.sha1((link or e.get("title", "")).encode()).hexdigest()[:10],
