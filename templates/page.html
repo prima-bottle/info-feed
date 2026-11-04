@@ -80,6 +80,11 @@ h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;let
 .end .dot{font-size:22px;display:block;margin-bottom:4px}
 footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
 footer details{border:0}
+.acts{display:flex;gap:8px;margin-top:10px}
+.act{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
+.act.done{border-color:var(--accent);color:var(--accent)}
+.brief .acts,.vid .acts{margin-top:6px}
+.thread .label .mine{margin-left:4px}
 .runs{font-size:12.5px;color:var(--muted);margin-top:4px}
 .new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
 [data-key].read{opacity:.55}
@@ -108,9 +113,16 @@ footer details{border:0}
 <div class="srcs">{% for i in ids if i in items %}<a class="src" href="{{ items[i].link }}" target="_blank" rel="noopener">{{ items[i].source }} ↗</a>{% endfor %}</div>
 {%- endmacro %}
 
+{% macro acts(key, title, text, ids, track=True) -%}
+{% set first = items[ids[0]] if ids and ids[0] in items else None %}
+<div class="acts" data-key="{{ key }}" data-title="{{ title }}" data-text="{{ text }}" data-src="{{ first.source if first else '' }}" data-link="{{ first.link if first else '' }}">
+  <button class="act" data-act="like">♡ 赞</button>{% if track %}<button class="act" data-act="track">＋ 追踪</button>{% endif %}
+</div>
+{%- endmacro %}
+
 {% macro thread_card(t) -%}
 <article class="card thread" data-key="{{ t.key }}" data-ts="{{ t.ts }}">
-  <span class="label">主线 · {{ t.title }}</span>
+  <span class="label">主线 · {{ t.title }}{% if t.user %}<span class="mine">· 我追踪的</span>{% endif %}</span>
   <ul class="tl">
     {% for u in t['update'] %}<li class="today"><b>今天</b>{{ u }}</li>{% endfor %}
     {% for p in t.past|reverse %}<li><b>{{ p.date[5:] }}</b>{{ p['update']|join("；") }}</li>{% endfor %}
@@ -123,6 +135,7 @@ footer details{border:0}
     {% if t.signals %}<p class="signals">观察信号：{{ t.signals|join(" · ") }}</p>{% endif %}
   </details>
   {{ sources(t.item_ids or []) }}
+  {{ acts('a'~t.key, t.title, t['update']|join('；'), t.item_ids or [], False) }}
 </article>
 {%- endmacro %}
 
@@ -130,7 +143,8 @@ footer details{border:0}
 <a class="vid" href="{{ v.link }}" target="_blank" rel="noopener" data-key="v{{ v.id }}" data-ts="{{ v.ts }}">
   <div class="thumb" {% if v.image %}style="background-image:url('{{ v.image }}')"{% endif %}>{% if not v.image %}▶{% endif %}</div>
   <div class="body"><div class="t">{{ v.title }}</div>
-    <div class="h">{{ v.source }}{% if hooks.get(v.id) %} · {{ hooks[v.id] }}{% endif %}</div></div>
+    <div class="h">{{ v.source }}{% if hooks.get(v.id) %} · {{ hooks[v.id] }}{% endif %}</div>
+    {{ acts('av'~v.id, v.title, hooks.get(v.id, ''), [v.id]) }}</div>
 </a>
 {%- endmacro %}
 
@@ -143,6 +157,7 @@ footer details{border:0}
     {% if p.for_you %}<div class="foryou">{{ p.for_you }}</div>{% endif %}
     {% if p.background %}<details><summary>来龙去脉</summary><p>{{ p.background }}</p></details>{% endif %}
     {{ sources(p.item_ids or []) }}
+    {{ acts('a'~p.key, p.title, p.summary, p.item_ids or []) }}
   </article>
   {% endfor %}
   <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
@@ -162,6 +177,7 @@ footer details{border:0}
   <a class="brief" data-s="{{ b.section }}" data-key="{{ b.key }}" data-ts="{{ b.ts }}" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener">
     <div class="meta">{{ b.section }}{% if b.item_id in items %} · {{ items[b.item_id].source }}{% endif %}</div>
     {{ b.text }}
+    {{ acts('a'~b.key, b.text[:60], b.text, [b.item_id]) }}
   </a>
   {% endfor %}
   <div class="end"><span class="dot">·</span>简讯就这些</div>
@@ -238,6 +254,20 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{const k=e.target.dataset.ke
   if(e.isIntersecting){timers.set(k,setTimeout(()=>{read[k]=Date.now()/1000;LS.set('read',read);io.unobserve(e.target)},1500))}
   else{clearTimeout(timers.get(k))}}),{threshold:.6});
 cards.forEach(c=>{if(!read[c.dataset.key]){io.observe(c);c.addEventListener('click',()=>{read[c.dataset.key]=Date.now()/1000;LS.set('read',read)})}});
+
+/* 赞 / 追踪：打开预填好的 GitHub Issue，你点"Submit"就生效 */
+const REPO='prima-bottle/info-feed';let acted=LS.get('acted',{});
+document.querySelectorAll('.acts').forEach(box=>{
+  box.querySelectorAll('.act').forEach(btn=>{
+    const k=box.dataset.key+':'+btn.dataset.act;
+    if(acted[k]){btn.classList.add('done');btn.textContent=btn.dataset.act==='like'?'♥ 已赞':'✓ 追踪中'}
+    btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();
+      const like=btn.dataset.act==='like';
+      const title=(like?'赞：':'追踪：')+box.dataset.title.slice(0,80);
+      const body=[box.dataset.text,box.dataset.src&&('来源：'+box.dataset.src),box.dataset.link,'','（来自信息台 '+document.body.dataset.date+'。想取消就把这个 Issue 关掉。）'].filter(x=>x!==undefined&&x!==null).join('\n');
+      window.open('https://github.com/'+REPO+'/issues/new?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body),'_blank');
+      acted[k]=Date.now();LS.set('acted',acted);btn.classList.add('done');btn.textContent=like?'♥ 已赞':'✓ 追踪中';
+    })})});
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>

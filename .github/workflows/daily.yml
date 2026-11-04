@@ -22,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  issues: read
 
 concurrency:
   group: daily
@@ -44,6 +45,7 @@ jobs:
           READER_PROFILE: ${{ secrets.READER_PROFILE }}
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
           BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
+          GITHUB_TOKEN: ${{ github.token }}
           RUN_MODE: ${{ inputs.mode }}
           FORCE_RUN: ${{ inputs.force }}
         run: python main.py

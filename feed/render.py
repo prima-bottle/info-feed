@@ -41,7 +41,8 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
                 continue
             cur = m["threads"].get(t["id"])
             if cur is None:
-                m["threads"][t["id"]] = {**t, "title": titles[t["id"]], "ts": ts,
+                title = t.get("title") if t["id"].startswith("u") and t.get("title") else titles[t["id"]]
+                m["threads"][t["id"]] = {**t, "title": title, "ts": ts, "user": t["id"].startswith("u"),
                                          "update": list(t.get("update", [])),
                                          "item_ids": list(t.get("item_ids", []))}
             else:  # 较早的运行：补充今天更早的进展

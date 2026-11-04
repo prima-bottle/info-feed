@@ -25,7 +25,7 @@ SCHEMA = """输出格式（JSON）：
 {
   "headline": "一句话概括今天最重要的事",
   "threads": [   // 只为今天有新进展的主线输出
-    {"id": "主线id", "update": ["今天的新进展，每条一句"], "background": "和之前时间线的衔接",
+    {"id": "主线id", "title": "只有 u 开头的主线需要：简短主线名", "update": ["今天的新进展，每条一句"], "background": "和之前时间线的衔接",
      "perspectives": [{"source": "媒体名", "angle": "它强调了什么、怎么框定"}],
      "outlook": "研判：接下来最可能怎么走", "signals": ["观察信号"], "for_you": "对读者意味着什么",
      "item_ids": ["..."]}
@@ -69,7 +69,9 @@ def _threads(cfg: dict, history: dict) -> str:
     for t in cfg.get("threads", []):
         past = history.get(t["id"], [])[-6:]
         timeline = "；".join(f'{p["date"]} {" / ".join(p["update"])}' for p in past) or "（还没有记录）"
-        out.append(f'- id={t["id"]}｜{t["title"]}｜关键词：{", ".join(t["keywords"])}｜已有时间线：{timeline}')
+        extra = f'｜读者点"追踪"时附的原始信息：{t["context"]}' if t.get("context") else ""
+        kw = f'｜关键词：{", ".join(t["keywords"])}' if t.get("keywords") else ""
+        out.append(f'- id={t["id"]}｜{t["title"]}{kw}｜已有时间线：{timeline}{extra}')
     return "\n".join(out)
 
 
@@ -90,7 +92,8 @@ UPDATE_SCHEMA = """这是午间增量更新：上午的日报已经发出，下�
 }"""
 
 
-def edit(items: list[dict], cfg: dict, history: dict, date: str, mode: str = "full") -> dict:
+def edit(items: list[dict], cfg: dict, history: dict, date: str, mode: str = "full",
+         likes: list[str] | None = None) -> dict:
     profile = os.environ.get("READER_PROFILE", "（未设置）")
     client = anthropic.Anthropic()
     user = (f"日期：{date}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n## 长期主线\n{_threads(cfg, history)}\n\n"

@@ -26,6 +26,9 @@ threads:
   - id: vw-igmetall
     title: 大众与 IG Metall 劳资谈判
     keywords: [Volkswagen, VW, IG Metall, Emden, Tarif, Zwickau]
+  - id: metall-tarif
+    title: 金属电器行业劳资谈判与警告罢工
+    keywords: [Metall- und Elektroindustrie, Gesamtmetall, Warnstreik, Tarifrunde, IG Metall, Metall NRW, Düsseldorf]
 
 # ---------- 媒体 RSS ----------
 feeds:

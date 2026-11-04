@@ -63,6 +63,16 @@ def main() -> int:
     else:
         from feed.editor import edit
         from feed.fetch import fetch_all
+        from feed.signals import load_signals
+
+        try:
+            tracked, likes = load_signals()
+        except Exception as ex:  # noqa: BLE001
+            print(f"读取追踪/赞失败：{ex}")
+            tracked, likes = [], []
+        print(f"你追踪的主线 {len(tracked)} 条，赞过 {len(likes)} 条")
+        cfg["threads"] = cfg.get("threads", []) + tracked
+        (DATA / "user_threads.json").write_text(json.dumps(tracked, ensure_ascii=False, indent=1))
 
         items, status = fetch_all(cfg, DATA)
         for st in status:
@@ -78,7 +88,7 @@ def main() -> int:
         if not items:
             print("没有新条目")
             return 0
-        digest = edit(items, cfg, history, date, mode)
+        digest = edit(items, cfg, history, date, mode, likes)
         for it in items:
             seen[it["id"]] = time.time()
         (DATA / "seen.json").write_text(json.dumps(seen))
@@ -101,6 +111,11 @@ def main() -> int:
             history[t["id"]] = h[-30:]
     (DATA / "threads.json").write_text(json.dumps(history, ensure_ascii=False, indent=1))
 
+    if args.sample:
+        pass
+    else:
+        cfg["threads"] = [t for t in cfg["threads"] if not t.get("user")]
+    cfg["threads"] += load_json(DATA / "user_threads.json", [])
     from feed.render import render
 
     archive = sorted((p.stem for p in (DOCS / "archive").glob("*.html") if p.stem != date), reverse=True)[:14]
