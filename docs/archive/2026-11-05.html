@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="信息台">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>信息台 · 2026-11-05</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --thread:#2f5d8a; --thread-soft:#e2ecf5;
+  --chip:#efe9e0; --radius:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}}
+:root[data-theme=dark]{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{padding:20px 16px 4px;max-width:680px;margin:0 auto}
+.date{font-size:13px;color:var(--muted);letter-spacing:.04em}
+.headline{font-size:21px;font-weight:700;line-height:1.4;margin-top:4px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:680px;margin:0 auto;padding:10px 12px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:6px 14px;border-radius:999px;font-size:15px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--ink);color:var(--bg);font-weight:600}
+main{max-width:680px;margin:0 auto;padding:12px 12px 40px}
+section.panel{display:none}section.panel.on{display:block}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.label{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+.card h2{font-size:18px;line-height:1.45;margin-bottom:6px}
+.card p{font-size:15px;color:var(--ink)}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+summary{font-size:14px;color:var(--muted);cursor:pointer;list-style:none}
+summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+details p{margin-top:6px;font-size:14.5px}
+.foryou{margin-top:10px;font-size:14.5px;padding:8px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.srcs{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.src{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.thread{border-left:4px solid var(--thread)}
+.thread .label{color:var(--thread);background:var(--thread-soft)}
+.tl{margin-top:10px;padding-left:14px;border-left:2px solid var(--line)}
+.tl li{list-style:none;position:relative;font-size:14px;color:var(--muted);margin-bottom:6px}
+.tl li::before{content:"";position:absolute;left:-19px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tl li.today{color:var(--ink)}.tl li.today::before{background:var(--thread)}
+.tl b{font-weight:600;color:var(--thread);margin-right:4px}
+.persp li{list-style:none;font-size:14px;margin-top:6px}.persp b{margin-right:4px}
+.signals{margin-top:6px;font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:13.5px;padding:5px 12px;border-radius:999px;background:var(--chip);border:0;color:var(--muted);font-family:inherit;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff}
+.brief{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:15px}
+.brief .meta{font-size:12px;color:var(--muted);margin-bottom:2px}
+.vid{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.thumb{aspect-ratio:16/9;background:var(--chip) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted)}
+.vid .body{padding:12px 14px}
+.vid .t{font-weight:600;font-size:15.5px;line-height:1.45}
+.vid .h{font-size:14px;color:var(--muted);margin-top:4px}
+.shorts{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:4px}
+.shorts::-webkit-scrollbar{display:none}
+.short{flex:none;width:130px}
+.short .thumb{aspect-ratio:9/16;border-radius:12px}
+.short .t{font-size:13px;margin-top:6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+.word{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.word b{font-size:17px}.word span{color:var(--muted);font-size:14px}
+.ex{font-size:14px;color:var(--muted);font-style:italic;margin-top:4px}
+.end{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 8px}
+.end .dot{font-size:22px;display:block;margin-bottom:4px}
+footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
+footer details{border:0}
+.acts{display:flex;gap:8px;margin-top:10px}
+.act{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
+.act.done{border-color:var(--accent);color:var(--accent)}
+.brief .acts,.vid .acts{margin-top:6px}
+.thread .label .mine{margin-left:4px}
+.topline{display:flex;justify-content:space-between;align-items:center}
+.theme{font:inherit;font-size:13px;color:var(--muted);background:var(--chip);border:0;border-radius:999px;padding:4px 11px;cursor:pointer}
+.runs{font-size:12.5px;color:var(--muted);margin-top:4px}
+.new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
+[data-key].read{opacity:.55}
+.folded{margin:14px 0 4px;border:0;padding:0}
+.folded>summary{font-size:13.5px;color:var(--muted);padding:8px 4px}
+.vgroup{margin:0;border:0;padding:0}
+.vgroup>summary{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+</style>
+<script>try{const t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body data-latest="1793853533" data-date="2026-11-05">
+<header>
+  <div class="topline"><div class="date">11月5日 周四</div><button class="theme" id="theme">自动</button></div>
+  <div class="headline">美国中期选举民主党拿下国会，副总统万斯公开把败选归咎于伊朗战争；德国金属电气行业警告性罢工继续扩大；巴伐利亚副总理艾旺格（Hubert Aiwanger）意外去世。</div>
+  <div class="runs">早间 05:36</div>
+</header>
+<nav><div class="tabs" id="tabs">
+  <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="threads">主线</button>
+  <button class="tab" data-p="briefs">简讯</button>
+  <button class="tab" data-p="video">视频</button>
+  <button class="tab" data-p="de">德语·创作</button>
+</div></nav>
+<main>
+
+
+
+
+
+
+
+
+
+<section class="panel on" id="rec">
+  
+  <article class="card" data-key="p40d326a9f0" data-ts="1793853533">
+    <span class="label">精选</span>
+    <h2>民主党为什么赢这么大：特朗普 2024 年的选民联盟散了</h2>
+    <p>Le Monde 分析，共和党在 2024 年拉拢到的年轻男性和拉美裔选民大幅流失。El País 的图表显示，一半选区向民主党偏移了超过 14 个百分点。SCMP 报道亚裔选民和年轻选民的投票率也推动了蓝色浪潮，而美国选民对数据中心等 AI 基础设施项目的强烈反感，说明“为了对抗中国而大建 AI”的说法没有说服力。France 24 还报道，马斯克投入超过 4.4 亿美元支持共和党，结果落空，特斯拉和 SpaceX 股价下跌。</p>
+    <div class="foryou">做政治类视频可以挑“选民联盟如何散掉”这个角度，比单纯讲结果有深度。德国学生也会关心这场选举对乌克兰和能源的影响。</div>
+    <details><summary>来龙去脉</summary><p>这次中期选举被广泛视为对特朗普第二任期的第一次全国性公投，叠加伊朗战争带来的物价压力。TASS 引述独立总统候选人称，特朗普低估了民众对战争和生活成本的愤怒；左翼媒体 Jacobin 和 WSWS 则各自强调左翼的胜利与民主党的局限。</p></details>
+    <div class="srcs"><a class="src" href="https://www.lemonde.fr/international/article/2026/11/05/midterms-2026-comment-la-coalition-d-electorats-qui-avait-permis-la-victoire-de-donald-trump-en-2024-s-est-delitee_6806708_3210.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://elpais.com/us/2026-11-04/en-mapas-como-la-conquista-democrata-tino-el-mapa-de-azul-en-las-midterms.html" target="_blank" rel="noopener">El País América ↗</a><a class="src" href="https://www.scmp.com/news/us/us-elections/article/3373319/asian-american-voters-younger-turnout-fuel-blue-wave-democrats-midterms" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://www.scmp.com/news/us/us-elections/article/3373322/costs-above-competition-why-us-voters-arent-buying-trumps-china-ai-pitch" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://www.france24.com/en/musk-backed-candidates-lose-midterms-despite-financial-backing" target="_blank" rel="noopener">France 24 ↗</a></div>
+    
+<div class="acts" data-key="ap40d326a9f0" data-title="民主党为什么赢这么大：特朗普 2024 年的选民联盟散了" data-text="Le Monde 分析，共和党在 2024 年拉拢到的年轻男性和拉美裔选民大幅流失。El País 的图表显示，一半选区向民主党偏移了超过 14 个百分点。SCMP 报道亚裔选民和年轻选民的投票率也推动了蓝色浪潮，而美国选民对数据中心等 AI 基础设施项目的强烈反感，说明“为了对抗中国而大建 AI”的说法没有说服力。France 24 还报道，马斯克投入超过 4.4 亿美元支持共和党，结果落空，特斯拉和 SpaceX 股价下跌。" data-src="Le Monde" data-link="https://www.lemonde.fr/international/article/2026/11/05/midterms-2026-comment-la-coalition-d-electorats-qui-avait-permis-la-victoire-de-donald-trump-en-2024-s-est-delitee_6806708_3210.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="pc1f76628de" data-ts="1793853533">
+    <span class="label">精选</span>
+    <h2>黄之锋被判十年：港版国安法下第二次入罪</h2>
+    <p>香港法院以“勾结外国势力”罪判黄之锋再监禁十年。他今年 30 岁，9 月认罪，指控内容是寻求外国对港中制裁（France 24）。Guardian 称他是香港唯一被依国安法起诉两次的活动人士，并说他自 2020 年起被羁押。</p>
+    <div class="foryou">你做政治和历史视频，这是个现成的素材：德语媒体报道的重点是国安法，而中文独立媒体更关注一代学民的个人轨迹，可以拿来做对比。</div>
+    <details><summary>来龙去脉</summary><p>各家措辞不同。Spiegel 写“据称（angeblich）与外国势力合作”，保留了对指控的距离。Al Jazeera 称他为全球香港民主运动的面孔。BBC 强调他是数百名依国安法被拘押的香港人之一。端传媒有现场报道，还发了一篇“十年后再聚：狱中黄之锋和一代学民的成长”的长文。</p></details>
+    <div class="srcs"><a class="src" href="https://www.spiegel.de/ausland/joshua-wong-hongkonger-aktivist-zu-zehn-jahren-haft-verurteilt-a-94be2a6b-6f41-465f-b110-1f01ed11eda1#ref=rss" target="_blank" rel="noopener">Spiegel ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/cwp9g3rlp8jlo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://www.theguardian.com/world/2026/nov/05/hong-kong-joshua-wong-sentenced-national-security-case" target="_blank" rel="noopener">Guardian World ↗</a><a class="src" href="https://www.aljazeera.com/video/newsfeed/2026/11/5/hong-kong-activist-joshua-wong-sentenced-to-ten-years-in-jail?traffic_source=rss" target="_blank" rel="noopener">Al Jazeera ↗</a><a class="src" href="https://www.france24.com/en/asia-pacific/20261105-joshua-wong-hong-kong-10-years-jail-foreign-collusion" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMihwFBVV95cUxPaU54LXF2VklweURoZ3M5bU03OUxuYU1MZW1kMmpFZllBV09PWEtVY29BNWxkaEZMMTBiUlRTMWdZbzBzcUdTNHZSc0FjRXZ5UTZQRFhGLVplb0RQOG5mUUYyc0t6cWh6N05IVERfOFl4NVhWbEZhU3V2a21JVFhxUnBVeEpCWWc?oc=5" target="_blank" rel="noopener">端传媒 ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiiwFBVV95cUxNcVoyeHdMSlViaXZwZjhsWXhLOGF3dzBQNU1XaC0zN0ZxLXJrMDJlVVhDR1RDU1NHTzBTVXAxMDNmZl9oQTJIcVE3YjFmTXBZc19TdWRmeGpDWFJkYUI2clJNQm1KTXdKeFBtSVlRN2RibW9UU204N2xadGNzWjdIWFBDYUJYbUpFT1Jz?oc=5" target="_blank" rel="noopener">端传媒 ↗</a></div>
+    
+<div class="acts" data-key="apc1f76628de" data-title="黄之锋被判十年：港版国安法下第二次入罪" data-text="香港法院以“勾结外国势力”罪判黄之锋再监禁十年。他今年 30 岁，9 月认罪，指控内容是寻求外国对港中制裁（France 24）。Guardian 称他是香港唯一被依国安法起诉两次的活动人士，并说他自 2020 年起被羁押。" data-src="Spiegel" data-link="https://www.spiegel.de/ausland/joshua-wong-hongkonger-aktivist-zu-zehn-jahren-haft-verurteilt-a-94be2a6b-6f41-465f-b110-1f01ed11eda1#ref=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="p4fea1a9b9d" data-ts="1793853533">
+    <span class="label">精选</span>
+    <h2>巴伐利亚副总理艾旺格在柏林酒店去世，终年55岁</h2>
+    <p>据 Tagesschau 从政府圈子获悉，自由选民党（Freie Wähler）主席、巴伐利亚经济部长艾旺格在柏林一家酒店去世。FAZ 称他在柏林中区（Mitte）的酒店房间被发现，死因尚不清楚。Le Monde 补充，警方和检察院已展开调查。</p>
+    
+    <details><summary>来龙去脉</summary><p>Spiegel 的讣告称他是“啤酒帐篷政治的大师”，也提到传单事件（Flugblattaffäre）使他饱受争议，是走在民粹主义窄路上的“直觉型政治家”。《南德意志报》（Süddeutsche）强调他把一个地方力量变成执政党，是“常被取笑的人民之子”。Le Monde 则把 Freie Wähler 描述为“极端保守”党，与德国媒体的称呼不同。</p></details>
+    <div class="srcs"><a class="src" href="https://www.tagesschau.de/inland/innenpolitik/hubert-aiwanger-tot-100.html" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.faz.net/aktuell/politik/inland/hubert-aiwanger-tot-in-berliner-hotel-entdeckt-201653069.html" target="_blank" rel="noopener">FAZ ↗</a><a class="src" href="https://www.faz.net/aktuell/politik/inland/tod-von-hubert-aiwanger-politiker-bundesweit-tief-bestuerzt-accg-201653300.html" target="_blank" rel="noopener">FAZ ↗</a><a class="src" href="https://www.sueddeutsche.de/bayern/hubert-aiwanger-tot-bayern-freie-waehler-hotel-berlin-li.3574547" target="_blank" rel="noopener">Süddeutsche ↗</a><a class="src" href="https://www.sueddeutsche.de/bayern/hubert-aiwanger-freie-waehler-tot-bayern-wirtschaftsminister-nachruf-li.3574551" target="_blank" rel="noopener">Süddeutsche ↗</a><a class="src" href="https://www.spiegel.de/politik/deutschland/nachruf-zum-tod-von-hubert-aiwanger-meister-der-bierzeltpolitik-a-04bf566c-0dc3-48a2-99b8-3e99cba99f9e#ref=rss" target="_blank" rel="noopener">Spiegel ↗</a><a class="src" href="https://www.lemonde.fr/international/article/2026/11/05/en-allemagne-le-numero-deux-du-gouvernement-regional-de-baviere-retrouve-mort-a-son-hotel-a-berlin_6806602_3210.html" target="_blank" rel="noopener">Le Monde ↗</a></div>
+    
+<div class="acts" data-key="ap4fea1a9b9d" data-title="巴伐利亚副总理艾旺格在柏林酒店去世，终年55岁" data-text="据 Tagesschau 从政府圈子获悉，自由选民党（Freie Wähler）主席、巴伐利亚经济部长艾旺格在柏林一家酒店去世。FAZ 称他在柏林中区（Mitte）的酒店房间被发现，死因尚不清楚。Le Monde 补充，警方和检察院已展开调查。" data-src="Tagesschau" data-link="https://www.tagesschau.de/inland/innenpolitik/hubert-aiwanger-tot-100.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="p4e87ce3abc" data-ts="1793853533">
+    <span class="label">精选</span>
+    <h2>OpenAI 用自动化流水线找出 948 个 Linux 内核提权漏洞</h2>
+    <p>OpenAI 称其自主流水线发现、验证并生成了 948 个 Linux 内核本地提权漏洞的补丁，Hacker News 上有 200 多个点赞。同一天 OpenAI 发布 Images 2.6，增加了 GIF 生成和更精确的编辑。另一个值得注意的是 Ripple-65B 预览版，自称美国开源权重模型在智能体编程上的最强（SOTA），Hacker News 有 249 分。</p>
+    <div class="foryou">你想在 5060 Ti 上练手的话，更实际的做法是关注 7B 到 14B 的量化模型和 Go 新 JSON API 这类实用工具，而不是 65B 模型。机电一体化的实训里，工控设备的安全补丁也是同样的思路。</div>
+    <details><summary>来龙去脉</summary><p>Anthropic 同天也发布了“可证明推理”的研究进展，主题与大模型推理验证相关。Ripple-65B 是 650 亿参数，即使 4bit 量化权重也要三十多 GB，8GB 显存的 RTX 5060 Ti 跑不动，要靠更小的模型。</p></details>
+    <div class="srcs"><a class="src" href="https://openai.com/index/a-thousand-fewer-paths-to-root" target="_blank" rel="noopener">OpenAI ↗</a><a class="src" href="https://openai.com/index/a-thousand-fewer-paths-to-root/" target="_blank" rel="noopener">Hacker News 热门 ↗</a><a class="src" href="https://openai.com/index/introducing-images-2-6" target="_blank" rel="noopener">OpenAI ↗</a><a class="src" href="https://www.ricursive.com/ripple" target="_blank" rel="noopener">Hacker News 热门 ↗</a><a class="src" href="https://www.anthropic.com/research/provable-inference" target="_blank" rel="noopener">Hacker News 热门 ↗</a></div>
+    
+<div class="acts" data-key="ap4e87ce3abc" data-title="OpenAI 用自动化流水线找出 948 个 Linux 内核提权漏洞" data-text="OpenAI 称其自主流水线发现、验证并生成了 948 个 Linux 内核本地提权漏洞的补丁，Hacker News 上有 200 多个点赞。同一天 OpenAI 发布 Images 2.6，增加了 GIF 生成和更精确的编辑。另一个值得注意的是 Ripple-65B 预览版，自称美国开源权重模型在智能体编程上的最强（SOTA），Hacker News 有 249 分。" data-src="OpenAI" data-link="https://openai.com/index/a-thousand-fewer-paths-to-root">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="p88fbfcef39" data-ts="1793853533">
+    <span class="label">精选</span>
+    <h2>法国：抗议之后工会号召罢工，学生也加入</h2>
+    <p>Tagesschau 报道，法国主要工会号召今天举行罢工和全国抗议，中学生和大学生的抗议也加入进来，标题问“这能奏效吗”。条目没有写明这次抗议的具体导火索，需要另外查。</p>
+    <div class="foryou">对德国学生来说，法国的学生与工会联动是个有比较价值的话题，可以做德语 Instagram 的内容。</div>
+    <details><summary>来龙去脉</summary><p>WSWS 的 IYSSE 德国会议称，来自德国、法国、美国的发言人分析了这场欧洲运动的性质，强调工人阶级政治独立。这是托派的框定，把运动看成席卷欧洲政府的青年抗议浪潮。Tagesschau 的标题则保持疑问语气，不做预判。</p></details>
+    <div class="srcs"><a class="src" href="https://www.tagesschau.de/ausland/europa/proteste-streiks-frankreich-100.html" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.wsws.org/en/articles/2026/11/04/qxxx-n04.html" target="_blank" rel="noopener">WSWS ↗</a></div>
+    
+<div class="acts" data-key="ap88fbfcef39" data-title="法国：抗议之后工会号召罢工，学生也加入" data-text="Tagesschau 报道，法国主要工会号召今天举行罢工和全国抗议，中学生和大学生的抗议也加入进来，标题问“这能奏效吗”。条目没有写明这次抗议的具体导火索，需要另外查。" data-src="Tagesschau" data-link="https://www.tagesschau.de/ausland/europa/proteste-streiks-frankreich-100.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </article>
+  
+  <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
+</section>
+
+<section class="panel" id="threads">
+  <article class="card thread" data-key="t2d6527e74a" data-ts="1793853533">
+  <span class="label">主线 · 美国政治与美伊战争<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>万斯（Vance）说共和党败选的原因是伊朗战争（Tagesschau）。BBC 称这是近年来现任副总统与总统最尖锐的一次决裂。Le Monde 指出他在为 2028 年总统提名铺路。</li><li class="today"><b>今天</b>Spiegel 报道，特朗普说他以后仍会同样行事，党内则传出更尖锐的批评。</li><li class="today"><b>今天</b>SCMP 称，新国会 1 月开幕后民主党将同时掌握两院，可以阻挡特朗普的立法、质询战争开支。BBC 提醒：民主党能通过法案，但特朗普仍有否决权。阿拉斯加和密西西比两个参议院席位仍在计票（Al Jazeera）。</li><li class="today"><b>今天</b>TASS 转引一家美国报纸（原文未点名）称，白宫内部对选后伊朗政策没有共识，有官员在劝特朗普再次发动打击。</li><li class="today"><b>今天</b>韩国计划把海军反海盗部队的行动范围扩大到距霍尔木兹海峡约 650 公里处，需经国会批准（Guardian）。France 24 说韩国将派巡逻机和排爆小组，但排除军事介入。Guardian 称这是在特朗普批评其对伊战争支持不足之后。</li><li class="today"><b>今天</b>乌克兰对美国转向持谨慎乐观，但怀疑变化会来得很快（Tagesschau）。泽连斯基（Zelensky）与美方特使威特科夫（Witkoff）、库什纳（Kushner）通了电话（Le Monde）。</li><li class="today"><b>今天</b>华尔街收涨，市场预期华盛顿将陷入僵局（Le Monde）。</li>
+    <li><b>11-04</b>El País 报道，共和党人在寻找败选的责任人，却没人敢点特朗普的名。特朗普把败选责任推给伊朗，同时在炫耀白宫宴会厅的施工进度。；El País 还写到，特朗普在考虑否决对手的法案，民主党新多数派则打算调查政府成员。；Zeit 的标题称万斯在选举惨败后与特朗普拉开距离。Spiegel 说特朗普对副总统万斯的表态“含糊其辞”。；伊朗最高领袖哈梅内伊（Khamenei）表示，美国大选结果不会改变其对伊政策（teleSUR 标题）。Al Jazeera 在问美国会不会恢复对伊朗的袭击，称德黑兰已备好“最大威慑”方案。；TASS 引用一位前美国驻沙特大使的话：特朗普不必顾虑选举后果，可以改善对俄关系，但也有他做出“不理智、破坏性”举动来重树权威的危险。</li>
+  </ul>
+  <div class="foryou">霍尔木兹和油气价格最终会传导到德国的能源账单。做政治视频的话，“战争成本如何变成选票”是现成的叙事线。</div>
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>昨天的时间线是：共和党人在找败选责任人，没人敢点特朗普的名，特朗普把责任推给伊朗；哈梅内伊（Khamenei）说选举结果不会改变伊朗政策。今天的新变化是，万斯第一次公开把战争本身说成败因，党内分歧从暗处走到台面上。特朗普则表示不会改变做法。</p>
+    <ul class="persp"><li><b>Tagesschau</b>标题直接引用万斯的话“败因是战争”，把它当作共和党内部追责的起点，语气平实。</li><li><b>BBC World</b>强调万斯“走钢丝”，称这是与现任总统最尖锐的决裂之一，重点放在党内权力关系。</li><li><b>Le Monde</b>把万斯的表态和 2028 年提名联系起来，同时用 Wall Street 的反应说明市场欢迎“僵局”。</li><li><b>TASS</b>援引俄方外交官说这场冲突是美国政府“自由选择”的结果并影响美国内政，还说白宫内部有人主张再打。强调美国内部分裂，淡化俄罗斯自身利害。</li><li><b>Jacobin</b>称左翼在中期选举中证明了自己能赢，把结果当作社会主义者的选举胜利。</li><li><b>WSWS</b>称这是对特朗普政府的“巨大否定”，但民主党自己并不受欢迎，不认为民主党是出路。</li></ul>
+    <p><b>研判：</b>研判：1 月新国会开幕前，焦点是特朗普对伊朗是继续施压还是再度动手，以及他是否用否决权对抗民主党法案。民主党接下来更可能用听证、调查和战争拨款做文章，而不是推翻政策。万斯与特朗普的距离会成为共和党 2028 年竞争的主线。</p>
+    <p class="signals">观察信号：白宫是否重启对伊朗的打击，或伊朗方面有新的威慑动作 · 国会两院是否提出战争权力或战争拨款的限制案 · 阿拉斯加、密西西比计票结果 · 特朗普对万斯的公开表态是否变硬 · 霍尔木兹海峡航运与韩国国会的批准</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.tagesschau.de/ausland/amerika/midterms-vance-irankrieg-100.html" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.spiegel.de/ausland/midterms-so-erklaeren-donald-trump-und-jd-vance-die-republikaner-schlappe-a-3e8133a3-3402-412d-b1cd-67762eca3bb0#ref=rss" target="_blank" rel="noopener">Spiegel ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/crz98zqkz7z0o?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/cq1kdgnn2xdeo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://www.lemonde.fr/international/article/2026/11/05/midterms-2026-j-d-vance-contrarie-dans-ses-ambitions-par-la-deroute-de-son-camp-lance-le-debat-interne-chez-les-republicains_6806668_3210.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://tass.com/world/2213037" target="_blank" rel="noopener">TASS ↗</a><a class="src" href="https://www.theguardian.com/world/2026/nov/05/south-korea-to-expand-anti-piracy-unit-strait-of-hormuz" target="_blank" rel="noopener">Guardian World ↗</a><a class="src" href="https://www.france24.com/en/asia-pacific/20261105-south-korea-military-mission-strait-of-hormuz" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://www.tagesschau.de/ausland/europa/ukraine-usa-zwischenwahl-100.html" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.scmp.com/news/us/us-elections/article/3373318/five-takeaways-us-midterms-democrats-sweep-congress-and-trump-faces-iran-reckoning" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://jacobin.com/2026/11/midterms-socialists-democrats-el-sayed" target="_blank" rel="noopener">Jacobin ↗</a><a class="src" href="https://www.wsws.org/en/articles/2026/11/05/zweb-n05.html" target="_blank" rel="noopener">WSWS ↗</a><a class="src" href="https://www.lemonde.fr/economie/article/2026/11/05/midterms-2026-wall-street-salue-la-vague-democrate-au-congres-et-ses-promesses-de-certitudes-et-de-statu-quo_6806670_3234.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://tass.com/politics/2213035" target="_blank" rel="noopener">TASS ↗</a><a class="src" href="https://www.aljazeera.com/news/2026/11/5/whats-delaying-us-midterm-election-calls-in-mississippi-and-alaska?traffic_source=rss" target="_blank" rel="noopener">Al Jazeera ↗</a></div>
+  
+<div class="acts" data-key="at2d6527e74a" data-title="美国政治与美伊战争" data-text="万斯（Vance）说共和党败选的原因是伊朗战争（Tagesschau）。BBC 称这是近年来现任副总统与总统最尖锐的一次决裂。Le Monde 指出他在为 2028 年总统提名铺路。；Spiegel 报道，特朗普说他以后仍会同样行事，党内则传出更尖锐的批评。；SCMP 称，新国会 1 月开幕后民主党将同时掌握两院，可以阻挡特朗普的立法、质询战争开支。BBC 提醒：民主党能通过法案，但特朗普仍有否决权。阿拉斯加和密西西比两个参议院席位仍在计票（Al Jazeera）。；TASS 转引一家美国报纸（原文未点名）称，白宫内部对选后伊朗政策没有共识，有官员在劝特朗普再次发动打击。；韩国计划把海军反海盗部队的行动范围扩大到距霍尔木兹海峡约 650 公里处，需经国会批准（Guardian）。France 24 说韩国将派巡逻机和排爆小组，但排除军事介入。Guardian 称这是在特朗普批评其对伊战争支持不足之后。；乌克兰对美国转向持谨慎乐观，但怀疑变化会来得很快（Tagesschau）。泽连斯基（Zelensky）与美方特使威特科夫（Witkoff）、库什纳（Kushner）通了电话（Le Monde）。；华尔街收涨，市场预期华盛顿将陷入僵局（Le Monde）。" data-src="Tagesschau" data-link="https://www.tagesschau.de/ausland/amerika/midterms-vance-irankrieg-100.html">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="t93016b64ef" data-ts="1793853533">
+  <span class="label">主线 · 柏林左翼党组阁</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>Deutschlandfunk：柏林左翼党投票同意与绿党、社民党开始组阁谈判。</li><li class="today"><b>今天</b>《柏林报》（Berliner Zeitung）的评论标题称左翼党“完全疯了”，对柏林“很不好”，起因是“CO2 赔偿”。目前只有标题，看不到具体内容。</li><li class="today"><b>今天</b>《奥格斯堡汇报》（Augsburger Allgemeine）的标题是“谁来买单？”，写租户怎么看对柏林大房东的征收。同样只有标题。</li>
+    <li><b>11-04</b>nd 报道，柏林左翼党年轻化、执政经验少，议员文克·克里斯托夫（Wenke Christoph）被看好出任参议员（Senatorin，即柏林州政府部长）。；nd 报道，柏林社会事务部门计划在 2027 年 2 月推出数字化的社会票“Fairgnügen-Pass”，用作资格证明。；taz 报道，左翼党联邦议员加伦堡（Katalin Gennburg）要求同党议员瓦内萨·恩德（Vanessa Emde）交出议席，理由是需要对“美化恐怖主义”划清界限。</li>
+  </ul>
+  
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>昨天 nd 报道，柏林左翼党年轻化、执政经验少，议员文克·克里斯托夫（Wenke Christoph）被看好出任参议员。taz 则报道左翼党内就一名议员“美化恐怖主义”的争议要求其交出议席。今天的新进展是组阁谈判的正式启动。</p>
+    <ul class="persp"><li><b>Deutschlandfunk</b>只陈述事实：左翼党投票同意与绿、社民开谈判，没有评价。</li><li><b>Berliner Zeitung</b>评论标题带有明显的否定立场，把左翼党的气候赔偿主张说成对柏林不利。</li><li><b>Augsburger Allgemeine</b>用“谁来付钱”的租户之问来框定征收议题，侧重财政负担。</li></ul>
+    <p><b>研判：</b>研判：谈判中最容易卡住的是征收大房东（Vergesellschaftung）的方式与财政成本，这也是外界舆论目前集中追问的点。左翼党年轻的团队能否在部长人选和党内争议上保持稳定，要看后续几周。</p>
+    <p class="signals">观察信号：谈判分组与时间表是否公布 · 征收议题在协议中的措辞 · 参议员人选名单 · 党内关于“美化恐怖主义”争议的后续</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMiowFBVV95cUxNUy1ldFNMUTRyUVJVUnlNckR4NmwxRVo5blFlejY4YU1sRTVqRXlCRk5PUmdZS1RQZjQ3OHZqU2dOX0ZMMHpzVnNrYmNycWhTM1A4QmJjeVMxVE5uSnQ4S0NlUE5xR3d0ZG9NbDBiUTZuaWZNRVlST05kQ29GRW9TVkRVcUtSZlNpcmU5dlBqUUhtRkFPdXdIWDFEYmR5VW0wdjkw?oc=5" target="_blank" rel="noopener">Deutschlandfunk ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiygFBVV95cUxNNnZaRXFpbGRLbVdCX3FwNDRPUUFvRW05bW9zM05hTzUtODlrYktxZGdEV2JSSWN6S250b1VRTFRxYWgwcWlXWUNpTVhNMml4UzZ1Um1lYkZoQ3dtdV9BOFdWTUJYaUc3TGpsMEl6YVhfYWFhQnZLLVZXRkxZX2hhV0dZdDlWMTV6N0NmOF84QnJ1aEhBUGRvX2hmZmhvY0pRZWtNeGVPX05uc2NhNWJYNFhaRGxkOHJiX252UEZIQy1iWmpKekRNWTdR?oc=5" target="_blank" rel="noopener">Berliner Zeitung ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi1AFBVV95cUxQOEQ5c1ZUdktHZ1FILUdMWUhneG1VSXZ5NVV1REdmUTE3VlMzS2FoVmlIblJYTzl1cWdyMXhYNWI2RDZub0tLRWtyX1dRZFBmZGJldVVMbG50VDlmUDlmQU1HT3FxYkhHbXp1VzNTdXp5Y2ZxR01rd3RhbnlzTWZON3lqT0xyRDMwN25wNlNwRmdCeU1WdXZBUGEtU3VWN0d6R2laVFhJZjllcUM2MGRFVU5jSk9uY0RUSHlhUU1Rb2VMdS1MekhWcm50TEQ5MV9SRU13Yw?oc=5" target="_blank" rel="noopener">Augsburger Allgemeine ↗</a></div>
+  
+<div class="acts" data-key="at93016b64ef" data-title="柏林左翼党组阁" data-text="Deutschlandfunk：柏林左翼党投票同意与绿党、社民党开始组阁谈判。；《柏林报》（Berliner Zeitung）的评论标题称左翼党“完全疯了”，对柏林“很不好”，起因是“CO2 赔偿”。目前只有标题，看不到具体内容。；《奥格斯堡汇报》（Augsburger Allgemeine）的标题是“谁来买单？”，写租户怎么看对柏林大房东的征收。同样只有标题。" data-src="Deutschlandfunk" data-link="https://news.google.com/rss/articles/CBMiowFBVV95cUxNUy1ldFNMUTRyUVJVUnlNckR4NmwxRVo5blFlejY4YU1sRTVqRXlCRk5PUmdZS1RQZjQ3OHZqU2dOX0ZMMHpzVnNrYmNycWhTM1A4QmJjeVMxVE5uSnQ4S0NlUE5xR3d0ZG9NbDBiUTZuaWZNRVlST05kQ29GRW9TVkRVcUtSZlNpcmU5dlBqUUhtRkFPdXdIWDFEYmR5VW0wdjkw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="t60ca7e8f4b" data-ts="1793853533">
+  <span class="label">主线 · 金属电器行业劳资谈判与警告罢工</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>比勒费尔德（Bielefeld）的 IG Metall 罢工声势很大，《新威斯特法伦报》（Neue Westfälische）标题引用了“这是一记耳光”。</li><li class="today"><b>今天</b>多特蒙德 Vitesco 罢工现场，AfD 领导人把手机扔向现场，随后被刑事报案（Ruhr Nachrichten）。</li><li class="today"><b>今天</b>埃姆斯兰（Emsland）的 Krone、Storm、Benteler 将有行动；兰茨胡特（Landshut）的 BMW 预计有 650 名员工参加警告性罢工（IG Metall 汇总的剪报）。</li><li class="today"><b>今天</b>第三轮谈判之前，IG Metall 主席要求雇主提高报价（Tagesspiegel 标题）。</li>
+    
+  </ul>
+  <div class="foryou">你2027年起在埃姆登做学徒，行业谈判的结果往往会成为金属电气行业的工资和学徒待遇的参照。不过大众有自己的公司集体合同，具体怎么适用要以大众和 IG Metall 的协议为准。</div>
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>昨天的时间线是警告性罢工在曼海姆、锡根、哥廷根、莱比锡等地铺开，雷根斯堡的 IG Metall 青年发起了学徒警告性罢工。今天从北威州扩展到埃姆斯兰和巴伐利亚，罢工已经覆盖全国多个地区，谈判进入第三轮前的施压阶段。</p>
+    <ul class="persp"><li><b>IG Metall</b>官方页面汇总各地报纸剪报，突出各厂参与人数和动员规模。</li><li><b>Neue Westfälische</b>标题用职工的话“耳光”，是工人愤怒的语气。</li><li><b>Ruhr Nachrichten</b>报道的重点是 AfD 领导人在罢工现场的冲突，而不是谈判内容。</li><li><b>Tagesspiegel</b>把焦点放在 IG Metall 主席对雇主提出的要求上，只能看到标题。</li></ul>
+    <p><b>研判：</b>研判：第三轮谈判前雇主若没有明显提高报价，警告性罢工会继续扩大，参与工厂更多、时间更长。具体数字与诉求这几条剪报标题里都没有，需要看后续报道。</p>
+    <p class="signals">观察信号：第三轮谈判的日期和雇主新报价 · 罢工的规模是否升级（时间更长、覆盖更大企业） · 学徒、青年参与的比例</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMiugFBVV95cUxOQ1ZGVzdRME9CSlFnLTNZMFc5dVEwcXN5WTYxcUdRWXJBWXZ6bnhNWFdLWnBjSDNXeTU4Nkl2Z2ZUODRfbkowYy1MOFZBLVNwVHllUlpBVm5TaFdhdThGaEt0UHcxX2ZHbC1wME1QSHA5S2tnX29rdmdGb3k2YzBRUklqTXZZdVVoNXdaMl8ydUxobko5VEVCZC0wMWUzeGFBVFVCdlVsdm9ORVZpaHZmMVVQMTAtMEp4OXc?oc=5" target="_blank" rel="noopener">Neue Westfälische ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi2gFBVV95cUxPZkQ1UjY0Nmw4eUZReHFMLURXb0JoMTdYVWRqZVBXbDRNa0E1bU1kZUFzOWZaanFQY3J4UjJvNWtoODkzMkU5Sl9fbGJPNkFuajVISWJ3VWREa05mNWxuVEpjOTQ4YkZtYURTWmFjMTdYb1FZYVZlaWxIbkdCenVkazVGTG5JMmY3M1l6QlRad0NWTWRWNENRaFQ2YW50TFJhTFg0SE9ZeTduc1JhZHg3eC1zN05DQmVoMThXRzhNQ0diWTROelpja3BWaWJqc1YyOEg5dXFSOGRsZw?oc=5" target="_blank" rel="noopener">Ruhr Nachrichten ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMipAFBVV95cUxNYVBQUXFNRWJzaXktbV9rZ2pZd1ZLZ1RZODd6T0s1aE9NWEZQbW1oOHhDWGh1c0M5dlprWmlFOVNQYTlPUEwtUXpsdUl1VTE4WC04RzRtRHpYV1hzdjFvNVcxYUJHMU1JYUpucWRwc0wweXAtc2k2Nzl3b3JNank2TFVmcEEzVlQ5MFloR3BvQnJ5LTJ5Y196bmI1R1FVN3dPOFktTQ?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiyAFBVV95cUxQTGNhRTU0TmJoaHJYVXJZMkE2dDBhZ3lfeXl4TF95clFuRGV1enBIMTREOVczcUZMdVJab1FNOTExdUp0RGgtSUJCX05VTm5mcmZWdHl0UFRhRjNEVEg4UUpfb3I2Vi1teXNmZ0tyWXhRRTJRV2ZUWTEzRUVXQ1psc3E3WmRZRWx3YXI2cmw2YTBzOU5VbVR1NnRuR3lObXFmeGpaWXoxWk1yVmlYbTM4ZUF6NDNpaUI0czRCeWZ2bXdjYjdBVlY4Qg?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi0gFBVV95cUxPQU56TGtJTnE5MXVjeGZqWlhpbmFEMjVKODFZRnBUVlhNNmlOOWdQLXVRX2dIOElWOXRqM1dtSi03RWJZTU1qTzFxZ1dqYTYyb0plcGhPMjlCTzMxVDV0MC11X3djTjY5MXdpcGRTRVgzOVZxS2dTa3lDcDAwZUt5TXFrTnpLZlpENmRwRU85RzJ1QjJqalNDaS1QT1dKVG1DVDRSdWJ0U3d3RzFFaE1RME5vMEdBVllmVEF6am5IS2VxS0pKY2ZvTE8tTmtNU05GWnc?oc=5" target="_blank" rel="noopener">IG Metall ↗</a></div>
+  
+<div class="acts" data-key="at60ca7e8f4b" data-title="金属电器行业劳资谈判与警告罢工" data-text="比勒费尔德（Bielefeld）的 IG Metall 罢工声势很大，《新威斯特法伦报》（Neue Westfälische）标题引用了“这是一记耳光”。；多特蒙德 Vitesco 罢工现场，AfD 领导人把手机扔向现场，随后被刑事报案（Ruhr Nachrichten）。；埃姆斯兰（Emsland）的 Krone、Storm、Benteler 将有行动；兰茨胡特（Landshut）的 BMW 预计有 650 名员工参加警告性罢工（IG Metall 汇总的剪报）。；第三轮谈判之前，IG Metall 主席要求雇主提高报价（Tagesspiegel 标题）。" data-src="Neue Westfälische" data-link="https://news.google.com/rss/articles/CBMiugFBVV95cUxOQ1ZGVzdRME9CSlFnLTNZMFc5dVEwcXN5WTYxcUdRWXJBWXZ6bnhNWFdLWnBjSDNXeTU4Nkl2Z2ZUODRfbkowYy1MOFZBLVNwVHllUlpBVm5TaFdhdThGaEt0UHcxX2ZHbC1wME1QSHA5S2tnX29rdmdGb3k2YzBRUklqTXZZdVVoNXdaMl8ydUxobko5VEVCZC0wMWUzeGFBVFVCdlVsdm9ORVZpaHZmMVVQMTAtMEp4OXc?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="tda303b5f76" data-ts="1793853533">
+  <span class="label">主线 · 大众与 IG Metall 劳资谈判</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>《下萨克森州报》（noz.de）报道：IG Metall 在奥斯纳布吕克（Osnabrück）的大众（VW）和 KME 举行了警告性罢工和示威。</li>
+    <li><b>11-04</b>Deutschlandfunk 的标题是“IG Metall 号召首轮警告性罢工浪潮”，Stern 的标题是“金属电气行业再有数千人参加警告性罢工”。；从 IG Metall 汇总的剪报看，罢工和集会遍及多地：曼海姆费弗塔尔（Käfertal）、锡根（Siegen）、哥廷根（Göttingen，数百人集会）、莱比锡。；雷根斯堡（Regensburg）有上弗兰肯（Oberfranken）的 IG Metall 青年发起学徒警告性罢工（tvo.de）。；NDR 的报道标题引用了一位职工的话：“月底很紧”，诉求是更高的工资。</li>
+  </ul>
+  <div class="foryou">离你将来的工作地点最近的一条动态，值得盯着看埃姆登是否有跟进。</div>
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    <p>昨天的时间线显示警告性罢工已遍及多地。今天下萨克森的大众厂区也加入了。这些剪报里没有出现埃姆登工厂的消息。</p>
+    
+    <p><b>研判：</b>研判：大众各厂区参与会越来越多，这里的信息还不足以判断埃姆登是否会被卷入。</p>
+    <p class="signals">观察信号：埃姆登工厂是否出现罢工或集会 · 大众与 IG Metall 的谈判表态</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMisgFBVV95cUxOaXRlc1VVZk5vLVlfNFhMbFVmMDc0bTAwY3VST094Sm9UZ1VVb1RYT2hHM1lXS29Md1gwVjRhSXg2WFBmZ1o2MHZDZ0toYlh3RE5kaXNxTl9NM0Q5Uno3aGNVMHQ3bXFuUWFwVmRTaFBhZHRkSERTd1c0ZUk5MXVmYld5RXhaeDNTRTk3Sk15bXljb3k1MG45bmhDR2FxSnZOWXNsNlczN3hXODdXVUpCWm9n?oc=5" target="_blank" rel="noopener">noz.de ↗</a></div>
+  
+<div class="acts" data-key="atda303b5f76" data-title="大众与 IG Metall 劳资谈判" data-text="《下萨克森州报》（noz.de）报道：IG Metall 在奥斯纳布吕克（Osnabrück）的大众（VW）和 KME 举行了警告性罢工和示威。" data-src="noz.de" data-link="https://news.google.com/rss/articles/CBMisgFBVV95cUxOaXRlc1VVZk5vLVlfNFhMbFVmMDc0bTAwY3VST094Sm9UZ1VVb1RYT2hHM1lXS29Md1gwVjRhSXg2WFBmZ1o2MHZDZ0toYlh3RE5kaXNxTl9NM0Q5Uno3aGNVMHQ3bXFuUWFwVmRTaFBhZHRkSERTd1c0ZUk5MXVmYld5RXhaeDNTRTk3Sk15bXljb3k1MG45bmhDR2FxSnZOWXNsNlczN3hXODdXVUpCWm9n?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article>
+  <div class="end"><span class="dot">·</span>主线看完了</div>
+</section>
+
+<section class="panel" id="briefs">
+  <div class="chips" id="chips">
+    <button class="chip on" data-s="">全部</button>
+    <button class="chip" data-s="德国">德国</button><button class="chip" data-s="明斯特">明斯特</button><button class="chip" data-s="地方·北威州">地方·北威州</button><button class="chip" data-s="地方·下萨克森">地方·下萨克森</button><button class="chip" data-s="地方·柏林">地方·柏林</button><button class="chip" data-s="国际">国际</button><button class="chip" data-s="左翼视角">左翼视角</button><button class="chip" data-s="中国">中国</button><button class="chip" data-s="中国·政策">中国·政策</button><button class="chip" data-s="AI">AI</button>
+  </div>
+  
+  <a class="brief" data-s="德国" data-key="b825aa6a1a1" data-ts="1793853533" href="https://www.tagesschau.de/inland/innenpolitik/bundespraesident-wahl-kandidatinnen-100.html" target="_blank" rel="noopener">
+    <div class="meta">德国 · Tagesschau</div>
+    默茨（Merz）已确定联邦总统候选人要由女性担任，几个名字在流传，但谁能获得足够支持仍不明朗，决定预计很快做出。
+    
+<div class="acts" data-key="ab825aa6a1a1" data-title="默茨（Merz）已确定联邦总统候选人要由女性担任，几个名字在流传，但谁能获得足够支持仍不明朗，决定预计很快做出。" data-text="默茨（Merz）已确定联邦总统候选人要由女性担任，几个名字在流传，但谁能获得足够支持仍不明朗，决定预计很快做出。" data-src="Tagesschau" data-link="https://www.tagesschau.de/inland/innenpolitik/bundespraesident-wahl-kandidatinnen-100.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b1b5832f2f5" data-ts="1793853533" href="https://www.tagesschau.de/ausland/europa/serbien-medienaufsicht-strafe-100.html" target="_blank" rel="noopener">
+    <div class="meta">德国 · Tagesschau</div>
+    塞尔维亚媒体监管机构对 Informer 和 Prva 的亲武契奇（Vucic）宣传节目作出强制停播处罚，这是学生名单赢得选举后最早出现的变化之一。
+    
+<div class="acts" data-key="ab1b5832f2f5" data-title="塞尔维亚媒体监管机构对 Informer 和 Prva 的亲武契奇（Vucic）宣传节目作出强制停播处罚，这是学生名单赢" data-text="塞尔维亚媒体监管机构对 Informer 和 Prva 的亲武契奇（Vucic）宣传节目作出强制停播处罚，这是学生名单赢得选举后最早出现的变化之一。" data-src="Tagesschau" data-link="https://www.tagesschau.de/ausland/europa/serbien-medienaufsicht-strafe-100.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b9bf07fd76e" data-ts="1793853533" href="https://www.zeit.de/politik/2026-11/abschiebungen-deutschland-tuerkei-georgien-algerien-statistik" target="_blank" rel="noopener">
+    <div class="meta">德国 · Zeit Online</div>
+    1 月到 9 月，德国遣返最多的目的地依然是土耳其，总体遣返人数略有下降。
+    
+<div class="acts" data-key="ab9bf07fd76e" data-title="1 月到 9 月，德国遣返最多的目的地依然是土耳其，总体遣返人数略有下降。" data-text="1 月到 9 月，德国遣返最多的目的地依然是土耳其，总体遣返人数略有下降。" data-src="Zeit Online" data-link="https://www.zeit.de/politik/2026-11/abschiebungen-deutschland-tuerkei-georgien-algerien-statistik">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b3fc7517483" data-ts="1793853533" href="https://www.zeit.de/politik/ausland/2026-11/sbu-nabu-ukraine-callcenter-korruption" target="_blank" rel="noopener">
+    <div class="meta">德国 · Zeit Online</div>
+    乌克兰国内安全局（SBU）两名高级官员因涉嫌为非法呼叫中心提供保护而被解职，反腐机构已立案。
+    
+<div class="acts" data-key="ab3fc7517483" data-title="乌克兰国内安全局（SBU）两名高级官员因涉嫌为非法呼叫中心提供保护而被解职，反腐机构已立案。" data-text="乌克兰国内安全局（SBU）两名高级官员因涉嫌为非法呼叫中心提供保护而被解职，反腐机构已立案。" data-src="Zeit Online" data-link="https://www.zeit.de/politik/ausland/2026-11/sbu-nabu-ukraine-callcenter-korruption">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="bd5406d1b3b" data-ts="1793853533" href="https://www.spiegel.de/kultur/wolodymyr-selenskyj-bei-jan-boehmermann-im-zdf-interview-zwei-sendungsbewusste-a-8188c365-f218-4f54-a19f-7e767f664c21#ref=rss" target="_blank" rel="noopener">
+    <div class="meta">德国 · Spiegel</div>
+    ZDF 的 Böhmermann 采访了泽连斯基，Spiegel 的评语是两个“有表达欲的人”，攻击对象主要是一位超级富豪。
+    
+<div class="acts" data-key="abd5406d1b3b" data-title="ZDF 的 Böhmermann 采访了泽连斯基，Spiegel 的评语是两个“有表达欲的人”，攻击对象主要是一位超级富" data-text="ZDF 的 Böhmermann 采访了泽连斯基，Spiegel 的评语是两个“有表达欲的人”，攻击对象主要是一位超级富豪。" data-src="Spiegel" data-link="https://www.spiegel.de/kultur/wolodymyr-selenskyj-bei-jan-boehmermann-im-zdf-interview-zwei-sendungsbewusste-a-8188c365-f218-4f54-a19f-7e767f664c21#ref=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="bec8b04b278" data-ts="1793853533" href="https://www.spiegel.de/ausland/griechenland-spott-ueber-yanis-varoufakis-nach-schliessung-von-parteikonto-a-3f3c1ff3-4eef-45aa-bffc-64598bb24266#ref=rss" target="_blank" rel="noopener">
+    <div class="meta">德国 · Spiegel</div>
+    希腊前财长瓦鲁法基斯（Varoufakis）的政党账户被银行关闭，Spiegel 写到舆论反应相当尖锐。
+    
+<div class="acts" data-key="abec8b04b278" data-title="希腊前财长瓦鲁法基斯（Varoufakis）的政党账户被银行关闭，Spiegel 写到舆论反应相当尖锐。" data-text="希腊前财长瓦鲁法基斯（Varoufakis）的政党账户被银行关闭，Spiegel 写到舆论反应相当尖锐。" data-src="Spiegel" data-link="https://www.spiegel.de/ausland/griechenland-spott-ueber-yanis-varoufakis-nach-schliessung-von-parteikonto-a-3f3c1ff3-4eef-45aa-bffc-64598bb24266#ref=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="bf0f16f7322" data-ts="1793853533" href="https://www.zeit.de/news/2026-11/05/allianz-deutschland-und-die-welt-verpassen-klimaziele" target="_blank" rel="noopener">
+    <div class="meta">德国 · Zeit Online</div>
+    安联（Allianz）报告称德国和全球都将错过气候目标。
+    
+<div class="acts" data-key="abf0f16f7322" data-title="安联（Allianz）报告称德国和全球都将错过气候目标。" data-text="安联（Allianz）报告称德国和全球都将错过气候目标。" data-src="Zeit Online" data-link="https://www.zeit.de/news/2026-11/05/allianz-deutschland-und-die-welt-verpassen-klimaziele">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="bf6754640bd" data-ts="1793853533" href="https://www.zeit.de/news/2026-11/05/haeftlingsflucht-fussfessel-schluessel-billig-im-netz-zu-haben" target="_blank" rel="noopener">
+    <div class="meta">德国 · Zeit Online</div>
+    内政部长报告：脚镣（Fußfessel）的钥匙在网上很便宜就能买到，成为越狱隐患。
+    
+<div class="acts" data-key="abf6754640bd" data-title="内政部长报告：脚镣（Fußfessel）的钥匙在网上很便宜就能买到，成为越狱隐患。" data-text="内政部长报告：脚镣（Fußfessel）的钥匙在网上很便宜就能买到，成为越狱隐患。" data-src="Zeit Online" data-link="https://www.zeit.de/news/2026-11/05/haeftlingsflucht-fussfessel-schluessel-billig-im-netz-zu-haben">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b47d9a5f302" data-ts="1793853533" href="https://www.faz.net/aktuell/politik/ausland/eu-erweiterung-montenegro-koennte-schon-2028-mitglied-werden-201649057.html" target="_blank" rel="noopener">
+    <div class="meta">德国 · FAZ</div>
+    FAZ：欧盟希望 2028 年迎来第 28 个成员国蒙特内哥罗，条约可能很快完成；阿尔巴尼亚、摩尔多瓦、乌克兰也将获得路线图。
+    
+<div class="acts" data-key="ab47d9a5f302" data-title="FAZ：欧盟希望 2028 年迎来第 28 个成员国蒙特内哥罗，条约可能很快完成；阿尔巴尼亚、摩尔多瓦、乌克兰也将获得路" data-text="FAZ：欧盟希望 2028 年迎来第 28 个成员国蒙特内哥罗，条约可能很快完成；阿尔巴尼亚、摩尔多瓦、乌克兰也将获得路线图。" data-src="FAZ" data-link="https://www.faz.net/aktuell/politik/ausland/eu-erweiterung-montenegro-koennte-schon-2028-mitglied-werden-201649057.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="明斯特" data-key="b6a2b5dcebc" data-ts="1793853533" href="https://ms-aktuell.de/muenster/stadtwerke-muenster-gas-und-strom/" target="_blank" rel="noopener">
+    <div class="meta">明斯特 · ms-aktuell</div>
+    明斯特市政公司（Stadtwerke Münster）2027 年上调电价和气价，标准家庭每年多支出约 291 欧元，合租和租房的人要留意明年的账单。
+    
+<div class="acts" data-key="ab6a2b5dcebc" data-title="明斯特市政公司（Stadtwerke Münster）2027 年上调电价和气价，标准家庭每年多支出约 291 欧元，合" data-text="明斯特市政公司（Stadtwerke Münster）2027 年上调电价和气价，标准家庭每年多支出约 291 欧元，合租和租房的人要留意明年的账单。" data-src="ms-aktuell" data-link="https://ms-aktuell.de/muenster/stadtwerke-muenster-gas-und-strom/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="地方·北威州" data-key="b11090a9eec" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMiugFBVV95cUxOQ1ZGVzdRME9CSlFnLTNZMFc5dVEwcXN5WTYxcUdRWXJBWXZ6bnhNWFdLWnBjSDNXeTU4Nkl2Z2ZUODRfbkowYy1MOFZBLVNwVHllUlpBVm5TaFdhdThGaEt0UHcxX2ZHbC1wME1QSHA5S2tnX29rdmdGb3k2YzBRUklqTXZZdVVoNXdaMl8ydUxobko5VEVCZC0wMWUzeGFBVFVCdlVsdm9ORVZpaHZmMVVQMTAtMEp4OXc?oc=5" target="_blank" rel="noopener">
+    <div class="meta">地方·北威州 · Neue Westfälische</div>
+    比勒费尔德的 IG Metall 罢工声势很大，标题引用职工的话“是对我们的耳光”。
+    
+<div class="acts" data-key="ab11090a9eec" data-title="比勒费尔德的 IG Metall 罢工声势很大，标题引用职工的话“是对我们的耳光”。" data-text="比勒费尔德的 IG Metall 罢工声势很大，标题引用职工的话“是对我们的耳光”。" data-src="Neue Westfälische" data-link="https://news.google.com/rss/articles/CBMiugFBVV95cUxOQ1ZGVzdRME9CSlFnLTNZMFc5dVEwcXN5WTYxcUdRWXJBWXZ6bnhNWFdLWnBjSDNXeTU4Nkl2Z2ZUODRfbkowYy1MOFZBLVNwVHllUlpBVm5TaFdhdThGaEt0UHcxX2ZHbC1wME1QSHA5S2tnX29rdmdGb3k2YzBRUklqTXZZdVVoNXdaMl8ydUxobko5VEVCZC0wMWUzeGFBVFVCdlVsdm9ORVZpaHZmMVVQMTAtMEp4OXc?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="地方·北威州" data-key="b30d6762123" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMi2gFBVV95cUxPZkQ1UjY0Nmw4eUZReHFMLURXb0JoMTdYVWRqZVBXbDRNa0E1bU1kZUFzOWZaanFQY3J4UjJvNWtoODkzMkU5Sl9fbGJPNkFuajVISWJ3VWREa05mNWxuVEpjOTQ4YkZtYURTWmFjMTdYb1FZYVZlaWxIbkdCenVkazVGTG5JMmY3M1l6QlRad0NWTWRWNENRaFQ2YW50TFJhTFg0SE9ZeTduc1JhZHg3eC1zN05DQmVoMThXRzhNQ0diWTROelpja3BWaWJqc1YyOEg5dXFSOGRsZw?oc=5" target="_blank" rel="noopener">
+    <div class="meta">地方·北威州 · Ruhr Nachrichten</div>
+    多特蒙德 Vitesco 罢工现场，AfD 领导人扔手机引发冲突，已被刑事报案。
+    
+<div class="acts" data-key="ab30d6762123" data-title="多特蒙德 Vitesco 罢工现场，AfD 领导人扔手机引发冲突，已被刑事报案。" data-text="多特蒙德 Vitesco 罢工现场，AfD 领导人扔手机引发冲突，已被刑事报案。" data-src="Ruhr Nachrichten" data-link="https://news.google.com/rss/articles/CBMi2gFBVV95cUxPZkQ1UjY0Nmw4eUZReHFMLURXb0JoMTdYVWRqZVBXbDRNa0E1bU1kZUFzOWZaanFQY3J4UjJvNWtoODkzMkU5Sl9fbGJPNkFuajVISWJ3VWREa05mNWxuVEpjOTQ4YkZtYURTWmFjMTdYb1FZYVZlaWxIbkdCenVkazVGTG5JMmY3M1l6QlRad0NWTWRWNENRaFQ2YW50TFJhTFg0SE9ZeTduc1JhZHg3eC1zN05DQmVoMThXRzhNQ0diWTROelpja3BWaWJqc1YyOEg5dXFSOGRsZw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="地方·下萨克森" data-key="b6166541a05" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMisgFBVV95cUxOaXRlc1VVZk5vLVlfNFhMbFVmMDc0bTAwY3VST094Sm9UZ1VVb1RYT2hHM1lXS29Md1gwVjRhSXg2WFBmZ1o2MHZDZ0toYlh3RE5kaXNxTl9NM0Q5Uno3aGNVMHQ3bXFuUWFwVmRTaFBhZHRkSERTd1c0ZUk5MXVmYld5RXhaeDNTRTk3Sk15bXljb3k1MG45bmhDR2FxSnZOWXNsNlczN3hXODdXVUpCWm9n?oc=5" target="_blank" rel="noopener">
+    <div class="meta">地方·下萨克森 · noz.de</div>
+    奥斯纳布吕克的大众和 KME 都有警告性罢工，IG Metall 组织示威。
+    
+<div class="acts" data-key="ab6166541a05" data-title="奥斯纳布吕克的大众和 KME 都有警告性罢工，IG Metall 组织示威。" data-text="奥斯纳布吕克的大众和 KME 都有警告性罢工，IG Metall 组织示威。" data-src="noz.de" data-link="https://news.google.com/rss/articles/CBMisgFBVV95cUxOaXRlc1VVZk5vLVlfNFhMbFVmMDc0bTAwY3VST094Sm9UZ1VVb1RYT2hHM1lXS29Md1gwVjRhSXg2WFBmZ1o2MHZDZ0toYlh3RE5kaXNxTl9NM0Q5Uno3aGNVMHQ3bXFuUWFwVmRTaFBhZHRkSERTd1c0ZUk5MXVmYld5RXhaeDNTRTk3Sk15bXljb3k1MG45bmhDR2FxSnZOWXNsNlczN3hXODdXVUpCWm9n?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="地方·下萨克森" data-key="bd1d65e0f2c" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMi0wFBVV95cUxONGpfbHloUGFTdHN1SnRIUFFlRGV2RWtpdW5YOWEydUlYdmVnU2oyWW5OVUpWaVYwZkJTbFZjSnc3N1RhUUU0RDhTZkF6U2tQN1k5XzFMTkFPajFORllrUW4zSjV5bTV1M0tWaVQtQkF5MG85UDBocEIxUF9vZUdmX0xuN1BhRWl6aHVKZ3hZN2xPYnFYdnlVdTRzSHA0ZDU2R2Z2dUJxcmZVdERPN3FLZjBfc3RhZ204SVhSa0VlcENRWW5EQ1BLVHNKOWdkbU1aaVpF0gHvAUFVX3lxTFBCck92aHZuRXQ1cnZTc1k4SzhGalB4dDRFcXB5d0xieDVRWXVlazgySUpBUE00YU1DY0RyTTEwRTM4ZzZJcTE0dy1SNVZXZDVZZWN2M3RXbUxoWkxNSkhja3h5UGljVnRKdGJBRWplV3NuWnNNb1BaSG00Ymo4UDBsZXd3dmZ5N21YU2Qyc1Z5bmhXRXRKRlZXdEVYVWFoRUlpQUlLNGJCZkxycWF6c3NvX2JyUGFLTFRVc3pLN3gxUC10bVNKRmlqQ1N3UVluc0FYSzlmb18zc280SlFPYVBySVltN2EwS3M1OUQ1UlJZ?oc=5" target="_blank" rel="noopener">
+    <div class="meta">地方·下萨克森 · HAZ</div>
+    汉诺威地区 Regiobus 的 Verdi 罢工延长两天，通勤者受影响；NDR 报道同类罢工扩大。
+    
+<div class="acts" data-key="abd1d65e0f2c" data-title="汉诺威地区 Regiobus 的 Verdi 罢工延长两天，通勤者受影响；NDR 报道同类罢工扩大。" data-text="汉诺威地区 Regiobus 的 Verdi 罢工延长两天，通勤者受影响；NDR 报道同类罢工扩大。" data-src="HAZ" data-link="https://news.google.com/rss/articles/CBMi0wFBVV95cUxONGpfbHloUGFTdHN1SnRIUFFlRGV2RWtpdW5YOWEydUlYdmVnU2oyWW5OVUpWaVYwZkJTbFZjSnc3N1RhUUU0RDhTZkF6U2tQN1k5XzFMTkFPajFORllrUW4zSjV5bTV1M0tWaVQtQkF5MG85UDBocEIxUF9vZUdmX0xuN1BhRWl6aHVKZ3hZN2xPYnFYdnlVdTRzSHA0ZDU2R2Z2dUJxcmZVdERPN3FLZjBfc3RhZ204SVhSa0VlcENRWW5EQ1BLVHNKOWdkbU1aaVpF0gHvAUFVX3lxTFBCck92aHZuRXQ1cnZTc1k4SzhGalB4dDRFcXB5d0xieDVRWXVlazgySUpBUE00YU1DY0RyTTEwRTM4ZzZJcTE0dy1SNVZXZDVZZWN2M3RXbUxoWkxNSkhja3h5UGljVnRKdGJBRWplV3NuWnNNb1BaSG00Ymo4UDBsZXd3dmZ5N21YU2Qyc1Z5bmhXRXRKRlZXdEVYVWFoRUlpQUlLNGJCZkxycWF6c3NvX2JyUGFLTFRVc3pLN3gxUC10bVNKRmlqQ1N3UVluc0FYSzlmb18zc280SlFPYVBySVltN2EwS3M1OUQ1UlJZ?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="地方·柏林" data-key="b336dbb8e28" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMiowFBVV95cUxNUy1ldFNMUTRyUVJVUnlNckR4NmwxRVo5blFlejY4YU1sRTVqRXlCRk5PUmdZS1RQZjQ3OHZqU2dOX0ZMMHpzVnNrYmNycWhTM1A4QmJjeVMxVE5uSnQ4S0NlUE5xR3d0ZG9NbDBiUTZuaWZNRVlST05kQ29GRW9TVkRVcUtSZlNpcmU5dlBqUUhtRkFPdXdIWDFEYmR5VW0wdjkw?oc=5" target="_blank" rel="noopener">
+    <div class="meta">地方·柏林 · Deutschlandfunk</div>
+    柏林左翼党投票同意与绿党和社民党开始联合执政谈判。
+    
+<div class="acts" data-key="ab336dbb8e28" data-title="柏林左翼党投票同意与绿党和社民党开始联合执政谈判。" data-text="柏林左翼党投票同意与绿党和社民党开始联合执政谈判。" data-src="Deutschlandfunk" data-link="https://news.google.com/rss/articles/CBMiowFBVV95cUxNUy1ldFNMUTRyUVJVUnlNckR4NmwxRVo5blFlejY4YU1sRTVqRXlCRk5PUmdZS1RQZjQ3OHZqU2dOX0ZMMHpzVnNrYmNycWhTM1A4QmJjeVMxVE5uSnQ4S0NlUE5xR3d0ZG9NbDBiUTZuaWZNRVlST05kQ29GRW9TVkRVcUtSZlNpcmU5dlBqUUhtRkFPdXdIWDFEYmR5VW0wdjkw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="地方·柏林" data-key="b4a19324823" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMipwFBVV95cUxNLWk4NkRaUFpGelpRcFFxZWw2NmpiSTJGeXo0em5MWGpoeG9HTE9Tb01fQ2tiV3A1eWpvNTdaYUZ0VDhQalJfX25aTDBQR2tVMEdidnM5SDBGY1U0S2tlUzg4VmE4cXE4b2E0aG9jeEZVQ3V4MTBUd2J3QUxuYjFmYnJkb0duT0lqWEJENVJlNjJaU3NSaXRhdDlLYXhlZVRETC0xVG1IZw?oc=5" target="_blank" rel="noopener">
+    <div class="meta">地方·柏林 · Netzpolitik.org</div>
+    周末伦敦、巴黎、柏林将有反对数据中心的欧洲范围抗议（Netzpolitik）。
+    
+<div class="acts" data-key="ab4a19324823" data-title="周末伦敦、巴黎、柏林将有反对数据中心的欧洲范围抗议（Netzpolitik）。" data-text="周末伦敦、巴黎、柏林将有反对数据中心的欧洲范围抗议（Netzpolitik）。" data-src="Netzpolitik.org" data-link="https://news.google.com/rss/articles/CBMipwFBVV95cUxNLWk4NkRaUFpGelpRcFFxZWw2NmpiSTJGeXo0em5MWGpoeG9HTE9Tb01fQ2tiV3A1eWpvNTdaYUZ0VDhQalJfX25aTDBQR2tVMEdidnM5SDBGY1U0S2tlUzg4VmE4cXE4b2E0aG9jeEZVQ3V4MTBUd2J3QUxuYjFmYnJkb0duT0lqWEJENVJlNjJaU3NSaXRhdDlLYXhlZVRETC0xVG1IZw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b80a872cdac" data-ts="1793853533" href="https://www.aljazeera.com/video/newsfeed/2026/11/5/paraguay-bank-collapses-with-half-of-populations-savings?traffic_source=rss" target="_blank" rel="noopener">
+    <div class="meta">国际 · Al Jazeera</div>
+    巴拉圭的 Ueno 银行在半夜被关闭，Al Jazeera 称其持有全国一半人口的存款，各地爆发抗议。
+    
+<div class="acts" data-key="ab80a872cdac" data-title="巴拉圭的 Ueno 银行在半夜被关闭，Al Jazeera 称其持有全国一半人口的存款，各地爆发抗议。" data-text="巴拉圭的 Ueno 银行在半夜被关闭，Al Jazeera 称其持有全国一半人口的存款，各地爆发抗议。" data-src="Al Jazeera" data-link="https://www.aljazeera.com/video/newsfeed/2026/11/5/paraguay-bank-collapses-with-half-of-populations-savings?traffic_source=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b514e6e7f8b" data-ts="1793853533" href="https://www.aljazeera.com/video/newsfeed/2026/11/5/vote-counting-underway-in-critical-south-africa-elections?traffic_source=rss" target="_blank" rel="noopener">
+    <div class="meta">国际 · Al Jazeera</div>
+    南非地方选举计票中，登记选民创纪录达 2920 万，France 24 称这是执政党 ANC 的关键考验。
+    
+<div class="acts" data-key="ab514e6e7f8b" data-title="南非地方选举计票中，登记选民创纪录达 2920 万，France 24 称这是执政党 ANC 的关键考验。" data-text="南非地方选举计票中，登记选民创纪录达 2920 万，France 24 称这是执政党 ANC 的关键考验。" data-src="Al Jazeera" data-link="https://www.aljazeera.com/video/newsfeed/2026/11/5/vote-counting-underway-in-critical-south-africa-elections?traffic_source=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b91f280ae11" data-ts="1793853533" href="https://www.aljazeera.com/news/2026/11/5/syria-saudi-arabia-sign-defence-cooperation-deal-agree-403m-in-loans?traffic_source=rss" target="_blank" rel="noopener">
+    <div class="meta">国际 · Al Jazeera</div>
+    叙利亚总统沙拉（al-Sharaa）一个月内第二次访问利雅得，两国签署国防合作协议和 4.03 亿美元贷款。
+    
+<div class="acts" data-key="ab91f280ae11" data-title="叙利亚总统沙拉（al-Sharaa）一个月内第二次访问利雅得，两国签署国防合作协议和 4.03 亿美元贷款。" data-text="叙利亚总统沙拉（al-Sharaa）一个月内第二次访问利雅得，两国签署国防合作协议和 4.03 亿美元贷款。" data-src="Al Jazeera" data-link="https://www.aljazeera.com/news/2026/11/5/syria-saudi-arabia-sign-defence-cooperation-deal-agree-403m-in-loans?traffic_source=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b21be4dd2b4" data-ts="1793853533" href="https://www.lemonde.fr/international/article/2026/11/05/la-coree-du-nord-teste-des-missiles-de-defense-aerienne-au-lendemain-des-elections-de-mi-mandat-americaines_6806536_3210.html" target="_blank" rel="noopener">
+    <div class="meta">国际 · Le Monde</div>
+    朝鲜在美国中期选举次日试射防空导弹，Le Monde 说平壤常在美国大选时进行这类展示。
+    
+<div class="acts" data-key="ab21be4dd2b4" data-title="朝鲜在美国中期选举次日试射防空导弹，Le Monde 说平壤常在美国大选时进行这类展示。" data-text="朝鲜在美国中期选举次日试射防空导弹，Le Monde 说平壤常在美国大选时进行这类展示。" data-src="Le Monde" data-link="https://www.lemonde.fr/international/article/2026/11/05/la-coree-du-nord-teste-des-missiles-de-defense-aerienne-au-lendemain-des-elections-de-mi-mandat-americaines_6806536_3210.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="bd78b557674" data-ts="1793853533" href="https://www.bbc.co.uk/news/articles/cw33kgj7nkemo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+    <div class="meta">国际 · BBC World</div>
+    BBC：台风和厄尔尼诺让东亚近几个月天气异常猛烈，太平洋“发烧”。
+    
+<div class="acts" data-key="abd78b557674" data-title="BBC：台风和厄尔尼诺让东亚近几个月天气异常猛烈，太平洋“发烧”。" data-text="BBC：台风和厄尔尼诺让东亚近几个月天气异常猛烈，太平洋“发烧”。" data-src="BBC World" data-link="https://www.bbc.co.uk/news/articles/cw33kgj7nkemo?at_medium=RSS&amp;at_campaign=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="bfbbc11eb7f" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOVmk1SGpfcXMzMUxlSXZYNDYxUVVDaEM0NjM5dkhFcEpRcTZLamdlSEdLUlZsTks4OE9CUEhrQ2xDbmo5cEdwRlVvODFLTjBZZmFIYXkxUDl0c3RYNGFrbk1jZjcwRWFqV1d5NWhnMnU3U09oN1F3X283OUxZZjJvT254cF9aU2dNYXUxVVdBMzZpZFZKTy1ycHBlOVI2WXlSc2c?oc=5" target="_blank" rel="noopener">
+    <div class="meta">国际 · teleSUR</div>
+    古巴总统表示新的经济改革不意味着私有化（teleSUR）。
+    
+<div class="acts" data-key="abfbbc11eb7f" data-title="古巴总统表示新的经济改革不意味着私有化（teleSUR）。" data-text="古巴总统表示新的经济改革不意味着私有化（teleSUR）。" data-src="teleSUR" data-link="https://news.google.com/rss/articles/CBMiogFBVV95cUxOVmk1SGpfcXMzMUxlSXZYNDYxUVVDaEM0NjM5dkhFcEpRcTZLamdlSEdLUlZsTks4OE9CUEhrQ2xDbmo5cEdwRlVvODFLTjBZZmFIYXkxUDl0c3RYNGFrbk1jZjcwRWFqV1d5NWhnMnU3U09oN1F3X283OUxZZjJvT254cF9aU2dNYXUxVVdBMzZpZFZKTy1ycHBlOVI2WXlSc2c?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="b32c4e6374c" data-ts="1793853533" href="https://www.wsws.org/en/articles/2026/11/05/laxq-n05.html" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · WSWS</div>
+    WSWS：肯塔基州 Astemo Berea 工厂维修工 Bradley Clouse 去世两个多月，车间工人称现场没有上锁挂牌（lockout/tagout）系统。
+    
+<div class="acts" data-key="ab32c4e6374c" data-title="WSWS：肯塔基州 Astemo Berea 工厂维修工 Bradley Clouse 去世两个多月，车间工人称现场没有" data-text="WSWS：肯塔基州 Astemo Berea 工厂维修工 Bradley Clouse 去世两个多月，车间工人称现场没有上锁挂牌（lockout/tagout）系统。" data-src="WSWS" data-link="https://www.wsws.org/en/articles/2026/11/05/laxq-n05.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="b6f3fb8397c" data-ts="1793853533" href="https://www.wsws.org/en/articles/2026/11/05/aaqd-n05.html" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · WSWS</div>
+    WSWS：墨西哥瓜达拉哈拉居民为争取清洁水源继续堵路，辛鲍姆总统对州长的回应没有触及根本原因。
+    
+<div class="acts" data-key="ab6f3fb8397c" data-title="WSWS：墨西哥瓜达拉哈拉居民为争取清洁水源继续堵路，辛鲍姆总统对州长的回应没有触及根本原因。" data-text="WSWS：墨西哥瓜达拉哈拉居民为争取清洁水源继续堵路，辛鲍姆总统对州长的回应没有触及根本原因。" data-src="WSWS" data-link="https://www.wsws.org/en/articles/2026/11/05/aaqd-n05.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="b4a469f35a5" data-ts="1793853533" href="https://www.wsws.org/en/articles/2026/11/05/xfeh-n05.html" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · WSWS</div>
+    WSWS：安大略省学生将在周四抗议福特政府削减学生资助。
+    
+<div class="acts" data-key="ab4a469f35a5" data-title="WSWS：安大略省学生将在周四抗议福特政府削减学生资助。" data-text="WSWS：安大略省学生将在周四抗议福特政府削减学生资助。" data-src="WSWS" data-link="https://www.wsws.org/en/articles/2026/11/05/xfeh-n05.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="b012c6e3a5f" data-ts="1793853533" href="https://www.wsws.org/en/articles/2026/11/05/pvvl-n05.html" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · WSWS</div>
+    WSWS：美国邮递员工会 NALC 选出新的“改革派”领导层，将负责通过有约束力的仲裁来决定新全国合同。
+    
+<div class="acts" data-key="ab012c6e3a5f" data-title="WSWS：美国邮递员工会 NALC 选出新的“改革派”领导层，将负责通过有约束力的仲裁来决定新全国合同。" data-text="WSWS：美国邮递员工会 NALC 选出新的“改革派”领导层，将负责通过有约束力的仲裁来决定新全国合同。" data-src="WSWS" data-link="https://www.wsws.org/en/articles/2026/11/05/pvvl-n05.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="b27cff92700" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMigwFBVV95cUxOdVZGem4xX0NLbE9ZR1h4V2prYWtUWGZIcHhKWVJNeGd1Zi01TU5RdG9TbUlHSlBIQUxkLVU5VnFlczgwM21RSU1Ua01UZEctSXhWVFVRa1RCVTJCOEp6d2VZVU9zZ2VDS1VwOHJwaDFSc1pBeElpNXFmVTEwc3VMbWo0cw?oc=5" target="_blank" rel="noopener">
+    <div class="meta">中国 · 端传媒</div>
+    《华尔街日报》（经端传媒转载）报道，中国一家地方银行成为伊朗和俄罗斯资金流转的通道。
+    
+<div class="acts" data-key="ab27cff92700" data-title="《华尔街日报》（经端传媒转载）报道，中国一家地方银行成为伊朗和俄罗斯资金流转的通道。" data-text="《华尔街日报》（经端传媒转载）报道，中国一家地方银行成为伊朗和俄罗斯资金流转的通道。" data-src="端传媒" data-link="https://news.google.com/rss/articles/CBMigwFBVV95cUxOdVZGem4xX0NLbE9ZR1h4V2prYWtUWGZIcHhKWVJNeGd1Zi01TU5RdG9TbUlHSlBIQUxkLVU5VnFlczgwM21RSU1Ua01UZEctSXhWVFVRa1RCVTJCOEp6d2VZVU9zZ2VDS1VwOHJwaDFSc1pBeElpNXFmVTEwc3VMbWo0cw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="bb60954f8e4" data-ts="1793853533" href="https://www.scmp.com/news/china/diplomacy/article/3373321/china-us-defence-officials-agree-improve-communication-reduce-risks" target="_blank" rel="noopener">
+    <div class="meta">中国 · SCMP China</div>
+    中美国防官员在华盛顿召开危机沟通与预防工作组首次会议，同意改善沟通以降低风险。
+    
+<div class="acts" data-key="abb60954f8e4" data-title="中美国防官员在华盛顿召开危机沟通与预防工作组首次会议，同意改善沟通以降低风险。" data-text="中美国防官员在华盛顿召开危机沟通与预防工作组首次会议，同意改善沟通以降低风险。" data-src="SCMP China" data-link="https://www.scmp.com/news/china/diplomacy/article/3373321/china-us-defence-officials-agree-improve-communication-reduce-risks">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="b41dd569ab4" data-ts="1793853533" href="https://www.france24.com/en/asia-pacific/20261104-how-chinese-ai-is-censoring-the-controversy-around-mbappes-chairman-mao-comments" target="_blank" rel="noopener">
+    <div class="meta">中国 · France 24</div>
+    France 24 报道，姆巴佩（Mbappé）被指暗示毛泽东是独裁者，中国的 AI 聊天机器人在屏蔽相关争议。
+    
+<div class="acts" data-key="ab41dd569ab4" data-title="France 24 报道，姆巴佩（Mbappé）被指暗示毛泽东是独裁者，中国的 AI 聊天机器人在屏蔽相关争议。" data-text="France 24 报道，姆巴佩（Mbappé）被指暗示毛泽东是独裁者，中国的 AI 聊天机器人在屏蔽相关争议。" data-src="France 24" data-link="https://www.france24.com/en/asia-pacific/20261104-how-chinese-ai-is-censoring-the-controversy-around-mbappes-chairman-mao-comments">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="b48b2e7e24d" data-ts="1793853533" href="https://chinamediaproject.org/2026/11/05/a-loyal-journalist-takes-the-helm/" target="_blank" rel="noopener">
+    <div class="meta">中国 · China Media Project</div>
+    China Media Project：崔士鑫出任中国记协负责人，该协会把党的利益放在职业利益之前。
+    
+<div class="acts" data-key="ab48b2e7e24d" data-title="China Media Project：崔士鑫出任中国记协负责人，该协会把党的利益放在职业利益之前。" data-text="China Media Project：崔士鑫出任中国记协负责人，该协会把党的利益放在职业利益之前。" data-src="China Media Project" data-link="https://chinamediaproject.org/2026/11/05/a-loyal-journalist-takes-the-helm/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="bbf2b0782fc" data-ts="1793853533" href="https://www.scmp.com/news/china/military/article/3373139/whats-message-china-japan-weighs-us500-billion-defence-surge" target="_blank" rel="noopener">
+    <div class="meta">中国 · SCMP China</div>
+    SCMP：日本考虑把五年防卫开支近乎翻倍到最多 80 万亿日元（约 5080 亿美元），分析人士认为中国将面对更强大的日本军队。
+    
+<div class="acts" data-key="abbf2b0782fc" data-title="SCMP：日本考虑把五年防卫开支近乎翻倍到最多 80 万亿日元（约 5080 亿美元），分析人士认为中国将面对更强大的日" data-text="SCMP：日本考虑把五年防卫开支近乎翻倍到最多 80 万亿日元（约 5080 亿美元），分析人士认为中国将面对更强大的日本军队。" data-src="SCMP China" data-link="https://www.scmp.com/news/china/military/article/3373139/whats-message-china-japan-weighs-us500-billion-defence-surge">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国·政策" data-key="baa0bce9915" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMicEFVX3lxTE9IZHJ0aVkyVmdFQmhwVkd4cFNZRjMxVUNvUjVWMG02YXphLXZieEwwenFRVElZR2l6ZFo5NHdpcC1fUFp1ckFVd3RYbXJWY1U5V2NOUDk0WEg3ejNlQmVVeW43NVdyYWNmOUUzYTdBWHk?oc=5" target="_blank" rel="noopener">
+    <div class="meta">中国·政策 · 人民网</div>
+    河北推出 20 条政策措施支持人工智能 OPC（多指“一人公司”）创新发展，方向是扶持 AI 创业。条目只有标题，具体条款和适用对象需看原文。
+    
+<div class="acts" data-key="abaa0bce9915" data-title="河北推出 20 条政策措施支持人工智能 OPC（多指“一人公司”）创新发展，方向是扶持 AI 创业。条目只有标题，具体条" data-text="河北推出 20 条政策措施支持人工智能 OPC（多指“一人公司”）创新发展，方向是扶持 AI 创业。条目只有标题，具体条款和适用对象需看原文。" data-src="人民网" data-link="https://news.google.com/rss/articles/CBMicEFVX3lxTE9IZHJ0aVkyVmdFQmhwVkd4cFNZRjMxVUNvUjVWMG02YXphLXZieEwwenFRVElZR2l6ZFo5NHdpcC1fUFp1ckFVd3RYbXJWY1U5V2NOUDk0WEg3ejNlQmVVeW43NVdyYWNmOUUzYTdBWHk?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国·政策" data-key="bb9fe9e5510" data-ts="1793853533" href="https://news.google.com/rss/articles/CBMicEFVX3lxTE1WYTlKbjZzeE0zLXRJb1UzYlNiTkllTUVEOWpnZFNTMmdHUWRZMHZpem8tUWNLc1AzRFZZTWQ1dms3UG1UcjgwcFNRdEtPbW5nQ1hTU3VQSUlDZFNqWEJBMFdzLU5RdnR6aWRJWXBiX3k?oc=5" target="_blank" rel="noopener">
+    <div class="meta">中国·政策 · 人民网</div>
+    湖北传达学习习近平讲话精神，部署科技金融与高校思想政治工作，一手扶持科创融资，一手加强校园意识形态管理。条目只有标题。
+    
+<div class="acts" data-key="abb9fe9e5510" data-title="湖北传达学习习近平讲话精神，部署科技金融与高校思想政治工作，一手扶持科创融资，一手加强校园意识形态管理。条目只有标题。" data-text="湖北传达学习习近平讲话精神，部署科技金融与高校思想政治工作，一手扶持科创融资，一手加强校园意识形态管理。条目只有标题。" data-src="人民网" data-link="https://news.google.com/rss/articles/CBMicEFVX3lxTE1WYTlKbjZzeE0zLXRJb1UzYlNiTkllTUVEOWpnZFNTMmdHUWRZMHZpem8tUWNLc1AzRFZZTWQ1dms3UG1UcjgwcFNRdEtPbW5nQ1hTU3VQSUlDZFNqWEJBMFdzLU5RdnR6aWRJWXBiX3k?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="AI" data-key="b1315319224" data-ts="1793853533" href="https://go.dev/blog/jsonv2" target="_blank" rel="noopener">
+    <div class="meta">AI · Hacker News 热门</div>
+    Go 官方发布新的 JSON API（jsonv2），Hacker News 上热度较高。
+    
+<div class="acts" data-key="ab1315319224" data-title="Go 官方发布新的 JSON API（jsonv2），Hacker News 上热度较高。" data-text="Go 官方发布新的 JSON API（jsonv2），Hacker News 上热度较高。" data-src="Hacker News 热门" data-link="https://go.dev/blog/jsonv2">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="AI" data-key="bad3ee65b00" data-ts="1793853533" href="https://layer3intel.com/blog/residential-proxies-white-house-network" target="_blank" rel="noopener">
+    <div class="meta">AI · Hacker News 热门</div>
+    安全研究博客称在白宫网络中检测到住宅代理（residential proxies），Hacker News 上 795 分，讨论热烈。
+    
+<div class="acts" data-key="abad3ee65b00" data-title="安全研究博客称在白宫网络中检测到住宅代理（residential proxies），Hacker News 上 795 " data-text="安全研究博客称在白宫网络中检测到住宅代理（residential proxies），Hacker News 上 795 分，讨论热烈。" data-src="Hacker News 热门" data-link="https://layer3intel.com/blog/residential-proxies-white-house-network">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button>
+</div>
+  </a>
+  
+  <div class="end"><span class="dot">·</span>简讯就这些</div>
+</section>
+
+<section class="panel" id="video">
+  
+  
+  <div class="end">今天没有新视频</div>
+</section>
+
+<section class="panel" id="de">
+  <h3 class="sub">今日德语</h3>
+  
+  <div class="card"><div class="word"><b>die Wahlschlappe</b><span>选举惨败（口语）</span></div>
+    <div class="ex">Nach der Wahlschlappe sucht die Partei nach den Gründen.</div></div>
+  
+  <div class="card"><div class="word"><b>der Warnstreik</b><span>警告性罢工，在谈判期间短时间施压</span></div>
+    <div class="ex">Die IG Metall ruft in der Tarifrunde zu Warnstreiks auf.</div></div>
+  
+  <div class="card"><div class="word"><b>die Spurensuche</b><span>追查原因，找线索</span></div>
+    <div class="ex">Nach der Niederlage beginnt in der Partei die Spurensuche.</div></div>
+  
+  <div class="card"><div class="word"><b>die Zwangspause</b><span>被迫暂停，强制停播</span></div>
+    <div class="ex">Die Behörde verhängte eine Zwangspause gegen die Sendung.</div></div>
+  
+  <div class="card"><div class="word"><b>die Fußfessel</b><span>电子脚镣</span></div>
+    <div class="ex">Der Schlüssel der Fußfessel war billig im Netz zu haben.</div></div>
+  
+  <h3 class="sub">创作素材</h3>
+  
+  <div class="card"><h2>德语 Instagram 帖子：Warnstreik 和 Streik 有什么区别？用金属电气行业的现场举例，学徒也可以参加。</h2><p>各地警告性罢工正在进行，学徒也参与，德国学生关心工资和学徒待遇，你自己也将进入这个行业，有第一手视角。</p><div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMiugFBVV95cUxOQ1ZGVzdRME9CSlFnLTNZMFc5dVEwcXN5WTYxcUdRWXJBWXZ6bnhNWFdLWnBjSDNXeTU4Nkl2Z2ZUODRfbkowYy1MOFZBLVNwVHllUlpBVm5TaFdhdThGaEt0UHcxX2ZHbC1wME1QSHA5S2tnX29rdmdGb3k2YzBRUklqTXZZdVVoNXdaMl8ydUxobko5VEVCZC0wMWUzeGFBVFVCdlVsdm9ORVZpaHZmMVVQMTAtMEp4OXc?oc=5" target="_blank" rel="noopener">Neue Westfälische ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiyAFBVV95cUxQTGNhRTU0TmJoaHJYVXJZMkE2dDBhZ3lfeXl4TF95clFuRGV1enBIMTREOVczcUZMdVJab1FNOTExdUp0RGgtSUJCX05VTm5mcmZWdHl0UFRhRjNEVEg4UUpfb3I2Vi1teXNmZ0tyWXhRRTJRV2ZUWTEzRUVXQ1psc3E3WmRZRWx3YXI2cmw2YTBzOU5VbVR1NnRuR3lObXFmeGpaWXoxWk1yVmlYbTM4ZUF6NDNpaUI0czRCeWZ2bXdjYjdBVlY4Qg?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi0gFBVV95cUxPQU56TGtJTnE5MXVjeGZqWlhpbmFEMjVKODFZRnBUVlhNNmlOOWdQLXVRX2dIOElWOXRqM1dtSi03RWJZTU1qTzFxZ1dqYTYyb0plcGhPMjlCTzMxVDV0MC11X3djTjY5MXdpcGRTRVgzOVZxS2dTa3lDcDAwZUt5TXFrTnpLZlpENmRwRU85RzJ1QjJqalNDaS1QT1dKVG1DVDRSdWJ0U3d3RzFFaE1RME5vMEdBVllmVEF6am5IS2VxS0pKY2ZvTE8tTmtNU05GWnc?oc=5" target="_blank" rel="noopener">IG Metall ↗</a></div></div>
+  
+  <div class="card"><h2>政治视频：战争的账单如何变成选票——万斯为何公开把败选归因于伊朗战争。</h2><p>多家媒体在同一天给出不同框定，从 Tagesschau、BBC 到 TASS、WSWS，适合做“同一事件，多种说法”的对比。</p><div class="srcs"><a class="src" href="https://www.tagesschau.de/ausland/amerika/midterms-vance-irankrieg-100.html" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/crz98zqkz7z0o?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://tass.com/politics/2213035" target="_blank" rel="noopener">TASS ↗</a><a class="src" href="https://www.wsws.org/en/articles/2026/11/05/zweb-n05.html" target="_blank" rel="noopener">WSWS ↗</a></div></div>
+  
+  <div class="card"><h2>德语 Instagram 帖子：塞尔维亚学生名单赢得选举后，媒体开始变化，给德国学生讲学生运动如何走进议会。</h2><p>话题与欧洲各国的学生和青年抗议相关，Tagesschau 已有报道可引用，容易引起德国学生共鸣。</p><div class="srcs"><a class="src" href="https://www.tagesschau.de/ausland/europa/serbien-medienaufsicht-strafe-100.html" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.tagesschau.de/ausland/europa/proteste-streiks-frankreich-100.html" target="_blank" rel="noopener">Tagesschau ↗</a></div></div>
+  
+  <div class="end"><span class="dot">·</span>今天就到这里</div>
+</section>
+</main>
+<footer>
+  <details><summary>来源状态：59 个正常，22 个失败</summary>
+    <div>✕ JungNaiv：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCv1WDP5EiipMQ__C4Cg6aow</div><div>✕ MrWissen2go：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCFlqsKkyRi4nptSrdbkwdSA</div><div>✕ maiLab：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCyHDQ5C6z1NDmJ4g6SerW8g</div><div>✕ YKollektiv：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCLoWcRy-ZjA-Erh0p_VDLjQ</div><div>✕ STRG_F：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UClV0UnLCK39935KvVRAB3JA</div><div>✕ reporter：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCMWOu9jM-ndFLEjn-aL0LdA</div><div>✕ DieDaOben：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCfb7LAYCeJJiT3gyquv7V5Q</div><div>✕ zdfmagazinroyale：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCNNEMxGKV1LsKZRt4vaIbvw</div><div>✕ rezo：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCosUoDdFTm9n0PmuU7jzPCQ</div><div>✕ WohlstandfuerAlle：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCRprqV4FxwrWQJbZ0VLFS_g</div><div>✕ DoktorWhatson：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCesjlAoEgN_Sz_cKTvKEmmw</div><div>✕ KurzgesagtDE：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCwRH985XgMYXQ6NxXDo8npw</div><div>✕ Papaplatte：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCDmbhGe7-wC1a55l5ZYAZJw</div><div>✕ HandOfBlood：500 Server Error: Internal Server Error for url: https://www.youtube.com/feeds/videos.xml?channel_id=UC9YTp5M6yYgSd6t0Se</div><div>✕ Trymacs：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UC6Gc4KQ1ueDnh8x7plaAD3w</div><div>✕ TwoMinutePapers：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg</div><div>✕ Fireship：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA</div><div>✕ TheMorpheusTutorials：404 Client Error: Not Found for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCLGY6_j7kZfA1dmmjR1J_7w</div><div>✕ GreatScottLab：500 Server Error: Internal Server Error for url: https://www.youtube.com/feeds/videos.xml?channel_id=UC6mIxFTvXkWQVEHPsE</div><div>✕ AndreasSpiess：500 Server Error: Internal Server Error for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCu7_D0o48KbfhpEoho</div><div>✕ JeffGeerling：500 Server Error: Internal Server Error for url: https://www.youtube.com/feeds/videos.xml?channel_id=UCR-DXc1voovS8nhAvc</div><div>✕ B站关注动态：没有设置 BILI_SESSDATA</div>
+  </details>
+  <p style="margin-top:8px">往期：<a href="2026-11-04.html" style="text-decoration:underline">11-04</a></p>
+</footer>
+<script>
+const tabs=[...document.querySelectorAll('.tab')],panels=[...document.querySelectorAll('.panel')];
+function show(id){tabs.forEach(t=>t.classList.toggle('on',t.dataset.p===id));panels.forEach(p=>p.classList.toggle('on',p.id===id));window.scrollTo({top:0});try{sessionStorage.setItem('tab',id)}catch(e){}}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.p));
+try{const s=sessionStorage.getItem('tab');if(s)show(s)}catch(e){}
+const order=tabs.map(t=>t.dataset.p);let sx=0,sy=0;
+document.querySelector('main').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.querySelector('main').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const cur=order.indexOf(document.querySelector('.tab.on').dataset.p);
+ const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+ document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
+
+/* 夜间模式：自动 → 夜间 → 日间 */
+(()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
+ let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
+ const apply=()=>{if(cur==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=cur;b.textContent='◐ '+names[cur]};
+ apply();b.onclick=()=>{cur=next[cur];try{localStorage.setItem('theme',cur)}catch(e){};apply()}})();
+/* 已读记录：只存在这台手机的浏览器里 */
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const latest=+document.body.dataset.latest, prevSeen=LS.get('seenRun',0);
+let read=LS.get('read',{});
+const cutoff=Date.now()/1000-3*86400; for(const k in read){if(read[k]<cutoff)delete read[k]}
+const cards=[...document.querySelectorAll('[data-key]')];
+// 1. 上次打开后新增的内容标"新"
+if(prevSeen&&latest>prevSeen){cards.forEach(c=>{if(+c.dataset.ts>prevSeen&&!read[c.dataset.key]){
+  const b=document.createElement('span');b.className='new';b.textContent='新';
+  (c.querySelector('.label,h2,.meta,.t')||c).prepend(b)}})}
+LS.set('seenRun',latest);
+// 2. 之前看过的收进每个板块底部的"已看过"
+panels.forEach(p=>{const old=[...p.querySelectorAll(':scope > [data-key], :scope > a[data-key]')].filter(c=>read[c.dataset.key]);
+  if(!old.length)return;const d=document.createElement('details');d.className='folded';
+  d.innerHTML='<summary>已看过 '+old.length+' 条</summary>';old.forEach(c=>{c.classList.add('read');d.appendChild(c)});
+  const end=p.querySelector(':scope > .end');p.insertBefore(d,end)});
+cards.forEach(c=>{if(read[c.dataset.key])c.classList.add('read')});
+// 3. 在屏幕上停留超过 1.5 秒或点开过，算看过
+const timers=new Map();
+const io=new IntersectionObserver(es=>es.forEach(e=>{const k=e.target.dataset.key;
+  if(e.isIntersecting){timers.set(k,setTimeout(()=>{read[k]=Date.now()/1000;LS.set('read',read);io.unobserve(e.target)},1500))}
+  else{clearTimeout(timers.get(k))}}),{threshold:.6});
+cards.forEach(c=>{if(!read[c.dataset.key]){io.observe(c);c.addEventListener('click',()=>{read[c.dataset.key]=Date.now()/1000;LS.set('read',read)})}});
+
+/* 赞 / 追踪：打开预填好的 GitHub Issue，你点"Submit"就生效 */
+const REPO='prima-bottle/info-feed';let acted=LS.get('acted',{});
+document.querySelectorAll('.acts').forEach(box=>{
+  box.querySelectorAll('.act').forEach(btn=>{
+    const k=box.dataset.key+':'+btn.dataset.act;
+    if(acted[k]){btn.classList.add('done');btn.textContent=btn.dataset.act==='like'?'♥ 已赞':'✓ 追踪中'}
+    btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();
+      const like=btn.dataset.act==='like';
+      const title=(like?'赞：':'追踪：')+box.dataset.title.slice(0,80);
+      const body=[box.dataset.text,box.dataset.src&&('来源：'+box.dataset.src),box.dataset.link,'','（来自信息台 '+document.body.dataset.date+'。想取消就把这个 Issue 关掉。）'].filter(x=>x!==undefined&&x!==null).join('\n');
+      window.open('https://github.com/'+REPO+'/issues/new?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body),'_blank');
+      acted[k]=Date.now();LS.set('acted',acted);btn.classList.add('done');btn.textContent=like?'♥ 已赞':'✓ 追踪中';
+    })})});
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
