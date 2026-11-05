@@ -30,6 +30,16 @@ threads:
     title: 金属电器行业劳资谈判与警告罢工
     keywords: [Metall- und Elektroindustrie, Gesamtmetall, Warnstreik, Tarifrunde, IG Metall, Metall NRW, Düsseldorf]
 
+# ---------- 艺术赏析：每周一个主题轮换，每天精读一件作品 ----------
+art_themes:
+  - 政治海报与宣传画（构成主义、1968 巴黎 Atelier Populaire、古巴 OSPAAAL、中国宣传画、波兰海报学派）
+  - 字体与标语（标语排版、手写字、字体如何传达立场）
+  - 符号与标志（符号的借用、反转和再造，徽章、旗帜、宗教与政治符号）
+  - 构图与色彩（有限色、对比、视线引导、留白）
+  - 拼贴与摄影蒙太奇（Heartfield、达达、当代数字拼贴）
+  - 信息图像与图示（Isotype、Gerd Arntz、图标语言）
+  - 当代社运视觉（抗议标牌、运动品牌、社交媒体图像）
+
 # ---------- 媒体 RSS ----------
 feeds:
   # 德国主流
@@ -90,6 +100,12 @@ feeds:
   - {name: 南方周末, url: "https://news.google.com/rss/search?q=site%3Ainfzm.com+when%3A4d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 中国·社会, max: 3, stance: "广州市场化周报，曾以调查报道著称"}
   - {name: Sixth Tone, url: "https://news.google.com/rss/search?q=site%3Asixthtone.com+when%3A3d&hl=en-US&gl=US&ceid=US:en", section: 中国·社会, max: 4, stance: "澎湃旗下英文媒体，聚焦普通人社会生活"}
   - {name: 中国劳动与民生, url: "https://news.google.com/rss/search?q=%28%E8%AE%A8%E8%96%AA+OR+%E6%AC%A0%E8%96%AA+OR+%E7%BD%A2%E5%B7%A5+OR+%E5%81%9C%E5%B7%A5+OR+%E8%A3%81%E5%91%98+OR+%E5%A4%96%E5%8D%96%E9%AA%91%E6%89%8B+OR+%E5%86%9C%E6%B0%91%E5%B7%A5+OR+%E7%83%82%E5%B0%BE%E6%A5%BC+OR+%E6%96%AD%E4%BE%9B+OR+%E9%9D%92%E5%B9%B4%E5%A4%B1%E4%B8%9A%29+%E4%B8%AD%E5%9B%BD+when%3A2d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·社会, max: 5, stance: "Google 新闻聚合，来源各异"}
+  # 艺术与设计（海报、字体、符号、视觉文化）
+  - {name: AIGA Eye on Design, url: "https://eyeondesign.aiga.org/feed/", section: 艺术, max: 3, stance: "美国平面设计协会的设计评论"}
+  - {name: Creative Review, url: "https://www.creativereview.co.uk/feed/", section: 艺术, max: 3, stance: "英国创意行业杂志"}
+  - {name: It's Nice That, url: "https://news.google.com/rss/search?q=site%3Aitsnicethat.com+when%3A4d&hl=en-US&gl=US&ceid=US:en", section: 艺术, max: 3, stance: "英国视觉创意网站"}
+  - {name: Hyperallergic, url: "https://hyperallergic.com/feed/", section: 艺术, max: 2, stance: "美国独立艺术媒体，关注艺术与政治"}
+  - {name: The Public Domain Review, url: "https://publicdomainreview.org/rss.xml", section: 艺术, max: 2, stance: "公有领域的历史图像与文献"}
   # AI 与极客
   - {name: Simon Willison, url: "https://simonwillison.net/atom/everything/", section: AI, stance: "独立开发者博客"}
   - {name: Hacker News 热门, url: "https://hnrss.org/frontpage?points=150", section: AI, stance: "程序员社区热门"}

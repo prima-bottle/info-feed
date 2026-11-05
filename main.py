@@ -28,6 +28,20 @@ def load_json(p: Path, default):
     return json.loads(p.read_text()) if p.exists() else default
 
 
+def wiki_image(title: str) -> str:
+    """从维基百科取作品配图，取不到就返回空。"""
+    if not title:
+        return ""
+    import requests
+    try:
+        r = requests.get("https://en.wikipedia.org/api/rest_v1/page/summary/" + requests.utils.quote(title.replace(" ", "_")),
+                         headers={"User-Agent": "info-feed/1.0 (personal reader)"}, timeout=15)
+        j = r.json()
+        return (j.get("originalimage") or j.get("thumbnail") or {}).get("source", "")
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sample", action="store_true")
@@ -95,7 +109,13 @@ def main() -> int:
         if not items:
             print("没有新条目")
             return 0
-        digest = edit(items, cfg, history, date, mode, likes)
+        art_history = load_json(DATA / "art.json", [])
+        digest = edit(items, cfg, history, date, mode, likes, art_history)
+        art = digest.get("art") or {}
+        if art.get("work"):
+            art["image"] = wiki_image(art.get("wiki", ""))
+            art_history.append({"date": date, "work": art["work"], "creator": art.get("creator", "")})
+            (DATA / "art.json").write_text(json.dumps(art_history[-200:], ensure_ascii=False, indent=1))
         for it in items:
             seen[it["id"]] = time.time()
         (DATA / "seen.json").write_text(json.dumps(seen))

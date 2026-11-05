@@ -45,6 +45,17 @@ SCHEMA = """输出格式（JSON）：
   "german": [    // 从当天德语条目里挑5个实用词或表达
     {"word": "", "meaning": "", "example": "德语例句"}
   ],
+  "art": {       // 每日一件作品精读，从创作者的思路出发，服务于读者用 AI 工具做海报和文化符号
+    "work": "作品名（中文 + 原名）", "creator": "作者", "year": "年代",
+    "wiki": "这件作品或作者在英文维基百科的条目标题，用于配图，不确定就留空",
+    "brief": "创作时要解决的问题：谁委托、给谁看、在什么场合、要达到什么效果",
+    "decisions": ["创作者的关键决定，每条讲一个：构图/色彩/字体/符号/媒介，以及为什么这么选"],
+    "symbols": "用了哪些符号，是怎么借用、改造或反转的",
+    "takeaway": ["读者做海报时可以直接借用的手法，具体到可操作"],
+    "ai_prompt": "用 AI 图像工具做类似效果的英文提示词示例（写风格、构图、色彩、质感，不要写作者姓名）",
+    "ai_tips": "AI 容易做错的地方和修正办法，比如文字、符号变形、风格太甜",
+    "item_ids": ["如果和今天「艺术」板块的某条有关，写它的 id，否则空数组"]
+  },
   "creative": [  // 2到3个适合做视频或德语 Instagram 帖子的选题
     {"idea": "", "why": "", "item_ids": ["..."]}
   ]
@@ -92,11 +103,25 @@ UPDATE_SCHEMA = """这是午间增量更新：上午的日报已经发出，下�
   "picks": [ 0到2篇，只有真正重要或和读者直接相关时才写，格式同上 ],
   "briefs": [ 10到25条简讯，格式同上 ],
   "videos": [ 给新视频写一句中文看点，格式同上 ]
-}"""
+}
+午间版不要输出 art、german、creative。"""
+
+
+def _art(cfg: dict, art_history: list[dict], date: str) -> str:
+    import datetime as _dt
+    themes = cfg.get("art_themes") or []
+    if not themes:
+        return ""
+    week = _dt.date.fromisoformat(date).isocalendar()[1]
+    done = "；".join(f'{a["work"]}（{a["creator"]}）' for a in art_history[-40:]) or "无"
+    return (f"## 艺术赏析\n本周主题：{themes[week % len(themes)]}\n"
+            f"已经讲过的作品（不要重复）：{done}\n"
+            "挑一件真实存在、资料可靠的作品；可以是经典，也可以是今天「艺术」板块里的当代作品。"
+            "读者是做政治与文化内容的创作者，用 AI 工具做海报和文化符号，讲解要从创作者的决策出发，少讲艺术史八卦。\n\n")
 
 
 def edit(items: list[dict], cfg: dict, history: dict, date: str, mode: str = "full",
-         likes: list[str] | None = None) -> dict:
+         likes: list[str] | None = None, art_history: list[dict] | None = None) -> dict:
     profile = os.environ.get("READER_PROFILE", "（未设置）")
     client = anthropic.Anthropic()
     user = (f"日期：{date}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n## 长期主线\n{_threads(cfg, history)}\n\n"

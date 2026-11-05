@@ -214,5 +214,26 @@
     "a3"
    ]
   }
- ]
+ ],
+ "art": {
+  "work": "《我参加，你参加，他们获利》（Je participe, tu participes...）",
+  "creator": "Atelier Populaire",
+  "year": "1968",
+  "wiki": "Atelier Populaire",
+  "brief": "1968年5月巴黎美院学生占领工作室，每晚开会定口号，第二天一早就要把海报贴满街头，必须快、便宜、一眼看懂。",
+  "decisions": [
+   "只用一种颜色丝网印刷：一夜能印几百张，红或黑在灰墙上最醒目",
+   "手写粗体字代替印刷字体：显得是群众自己写的，不是官方发的",
+   "一个图形只讲一件事：工厂烟囱、警察盾牌，图形占画面一半以上"
+  ],
+  "symbols": "把国家权力的符号（警察、戴高乐的剪影）简化成轮廓再反过来用，让对方的形象变成被嘲讽的对象。",
+  "takeaway": [
+   "先定一句不超过8个字的口号，再找一个能单独成立的图形",
+   "限制自己只用1到2个颜色，背景留纸色",
+   "字和图手绘感一致，不要混用电脑字体"
+  ],
+  "ai_prompt": "single-color screen print protest poster, bold hand-painted lettering area left blank, one strong silhouette symbol, rough ink texture, off-white paper, high contrast, 1968 French student poster style, flat, no gradients",
+  "ai_tips": "AI 写不好字，提示词里让它留白，口号之后用 Canva 或 Photoshop 自己加；生成的线条太干净时加 rough ink texture。",
+  "item_ids": []
+ }
 }

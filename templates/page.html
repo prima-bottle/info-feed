@@ -91,6 +91,12 @@ footer details{border:0}
 .thread .label .mine{margin-left:4px}
 .topline{display:flex;justify-content:space-between;align-items:center}
 .theme{font:inherit;font-size:13px;color:var(--muted);background:var(--chip);border:0;border-radius:999px;padding:4px 11px;cursor:pointer}
+.artimg{display:block;width:100%;max-height:420px;object-fit:contain;background:var(--chip);border-radius:10px;margin:4px 0 12px}
+.art h2{font-size:20px}.art .by{font-size:13.5px;color:var(--muted);margin-bottom:10px}
+.art h4{font-size:14px;margin:14px 0 4px;color:var(--accent)}
+.art ol,.art ul{padding-left:20px;font-size:14.5px}.art li{margin-bottom:6px}
+.prompt{font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;background:var(--chip);border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-word;position:relative}
+.copy{position:absolute;top:6px;right:6px;font:inherit;font-size:12px;border:0;border-radius:6px;padding:2px 8px;background:var(--card);color:var(--muted);cursor:pointer}
 .runs{font-size:12.5px;color:var(--muted);margin-top:4px}
 .new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
 [data-key].read{opacity:.55}
@@ -112,6 +118,7 @@ footer details{border:0}
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
   <button class="tab" data-p="video">视频</button>
+  <button class="tab" data-p="art">艺术</button>
   <button class="tab" data-p="de">德语·创作</button>
 </div></nav>
 <main>
@@ -206,6 +213,30 @@ footer details{border:0}
   {% if not video_groups and not shorts %}<div class="end">今天没有新视频</div>{% else %}<div class="end"><span class="dot">·</span>视频看完了</div>{% endif %}
 </section>
 
+<section class="panel" id="art">
+  {% set a = m.art %}
+  {% if a %}
+  <article class="card art" data-key="{{ a.key }}" data-ts="0">
+    <span class="label">今日作品</span>
+    {% if a.image %}<img class="artimg" src="{{ a.image }}" alt="{{ a.work }}" loading="lazy">{% endif %}
+    <h2>{{ a.work }}</h2>
+    <div class="by">{{ a.creator }}{% if a.year %} · {{ a.year }}{% endif %}</div>
+    {% if a.brief %}<h4>它要解决什么问题</h4><p>{{ a.brief }}</p>{% endif %}
+    {% if a.decisions %}<h4>创作者的关键决定</h4><ol>{% for x in a.decisions %}<li>{{ x }}</li>{% endfor %}</ol>{% endif %}
+    {% if a.symbols %}<h4>符号怎么用</h4><p>{{ a.symbols }}</p>{% endif %}
+    {% if a.takeaway %}<h4>你可以借用的手法</h4><ul>{% for x in a.takeaway %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+    {% if a.ai_prompt %}<h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>{{ a.ai_prompt }}</div>{% endif %}
+    {% if a.ai_tips %}<p style="margin-top:8px;font-size:14px;color:var(--muted)">{{ a.ai_tips }}</p>{% endif %}
+    {{ sources(a.item_ids or []) }}
+    <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search={{ (a.work ~ ' ' ~ a.creator)|urlencode }}" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  {% else %}<div class="end">今天的作品赏析在早间版里</div>{% endif %}
+  {% set artb = m.briefs|selectattr("section","equalto","艺术")|list %}
+  {% if artb %}<h3 class="sub">设计与艺术动态</h3>
+  {% for b in artb %}<a class="brief" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener"><div class="meta">{{ items[b.item_id].source if b.item_id in items else '艺术' }}</div>{{ b.text }}</a>{% endfor %}{% endif %}
+  <div class="end"><span class="dot">·</span>艺术看完了</div>
+</section>
+
 <section class="panel" id="de">
   <h3 class="sub">今日德语</h3>
   {% for w in m.german %}
@@ -238,6 +269,8 @@ document.querySelector('main').addEventListener('touchend',e=>{const dx=e.change
 document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
  document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
 
+document.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})});
 /* 夜间模式：自动 → 夜间 → 日间 */
 (()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
  let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
