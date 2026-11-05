@@ -91,6 +91,25 @@ footer details{border:0}
 .thread .label .mine{margin-left:4px}
 .topline{display:flex;justify-content:space-between;align-items:center}
 .theme{font:inherit;font-size:13px;color:var(--muted);background:var(--chip);border:0;border-radius:999px;padding:4px 11px;cursor:pointer}
+.artimg{display:block;width:100%;max-height:420px;object-fit:contain;background:var(--chip);border-radius:10px;margin:4px 0 12px}
+.art h2{font-size:20px}.art .by{font-size:13.5px;color:var(--muted);margin-bottom:10px}
+.art h4{font-size:14px;margin:14px 0 4px;color:var(--accent)}
+.art ol,.art ul{padding-left:20px;font-size:14.5px}.art li{margin-bottom:6px}
+.prompt{font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;background:var(--chip);border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-word;position:relative}
+.copy{position:absolute;top:6px;right:6px;font:inherit;font-size:12px;border:0;border-radius:6px;padding:2px 8px;background:var(--card);color:var(--muted);cursor:pointer}
+.work .lv{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.lv-red{background:#d0453a}.lv-yellow{background:#d9a21b}.lv-green{background:#3f9a5c}.lv-later{background:#8a8f99}.lv-paused{background:var(--line)}
+.todo{list-style:none;margin-top:6px}.todo li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.todo li:last-child{border-bottom:0}.todo input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.todo li.done span{text-decoration:line-through;color:var(--muted)}
+.todo .tag{font-size:12px;color:var(--muted);margin-left:4px;white-space:nowrap}
+.due{display:flex;justify-content:space-between;font-size:14.5px;padding:5px 0}.due b{color:var(--accent);white-space:nowrap;margin-left:10px}
+.due.key b{color:#d0453a}
+.wstat{font-size:14.5px;margin-top:4px}.wnote{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stale{font-size:12px;color:#d0453a;margin-left:6px}
+.lock{display:flex;gap:8px;margin-top:10px}.lock input{flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.lock button{font:inherit;padding:8px 14px;border:0;border-radius:10px;background:var(--ink);color:var(--bg)}
+.wlog{font-size:13.5px;color:var(--muted);margin-top:6px}
 .runs{font-size:12.5px;color:var(--muted);margin-top:4px}
 .new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
 [data-key].read{opacity:.55}
@@ -109,9 +128,11 @@ footer details{border:0}
 </header>
 <nav><div class="tabs" id="tabs">
   <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="work">工作</button>
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
   <button class="tab" data-p="video">视频</button>
+  <button class="tab" data-p="art">艺术</button>
   <button class="tab" data-p="de">德语·创作</button>
 </div></nav>
 <main>
@@ -125,6 +146,10 @@ footer details{border:0}
 
 
 <section class="panel on" id="rec">
+  <article class="card work" id="today"><span class="label">今日安排</span>
+    <div id="todayBody"><p style="font-size:14.5px;color:var(--muted)">工作安排已加密，输入密码后这台手机会记住。</p>
+    <form class="lock" id="lockForm"><input type="password" id="lockPw" placeholder="密码" autocomplete="current-password"><button>解锁</button></form></div>
+  </article>
   
   <article class="card" data-key="p40d326a9f0" data-ts="1793853533">
     <span class="label">精选</span>
@@ -193,6 +218,8 @@ footer details{border:0}
   
   <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
 </section>
+
+<section class="panel" id="work"><div id="workBody"><div class="end">先在「推荐」页最上面输入密码</div></div></section>
 
 <section class="panel" id="threads">
   <article class="card thread" data-key="t2d6527e74a" data-ts="1793853533">
@@ -601,6 +628,14 @@ footer details{border:0}
   <div class="end">今天没有新视频</div>
 </section>
 
+<section class="panel" id="art">
+  
+  <div class="end">今天的作品赏析在早间版里</div>
+  
+  
+  <div class="end"><span class="dot">·</span>艺术看完了</div>
+</section>
+
 <section class="panel" id="de">
   <h3 class="sub">今日德语</h3>
   
@@ -649,6 +684,67 @@ document.querySelector('main').addEventListener('touchend',e=>{const dx=e.change
 document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
  document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
 
+document.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})});
+
+/* ===== 工作安排：加密存放，在手机上解密 ===== */
+(()=>{
+const ENC=(location.pathname.includes('/archive/')?'../':'')+'work.enc';
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const b64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+async function dec(box,pw){const k0=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+ const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(box.salt),iterations:box.iter,hash:'SHA-256'},k0,{name:'AES-GCM',length:256},false,['decrypt']);
+ return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(box.iv)},k,b64(box.ct))))}
+const todayStr=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+const days=d=>Math.round((new Date(d+'T12:00')-new Date(todayStr+'T12:00'))/864e5);
+const md=d=>{const[y,m,dd]=d.split('-');return (+m)+'月'+(+dd)+'日'};
+let done={};try{done=JSON.parse(localStorage.getItem('workDone'))||{}}catch(e){}
+const saveDone=()=>{try{localStorage.setItem('workDone',JSON.stringify(done))}catch(e){}};
+const kid=(l,i)=>l.id+'|'+(i.date||'')+'|'+i.text;
+const LVN={red:'最优先',yellow:'有固定时间点',green:'持续推进',later:'以后再开',paused:'暂停'};
+function todo(list,inLine){return '<ul class="todo">'+list.map(([l,i])=>{const k=kid(l,i),d=done[k];
+  const tag=i.date&&i.date<todayStr?'<span class="tag">逾期 '+(-days(i.date))+' 天</span>':(i.kind==='wait'?'<span class="tag">等待中</span>':'');
+  return '<li class="'+(d?'done':'')+'"><input type="checkbox" data-k="'+esc(k)+'"'+(d?' checked':'')+'><span>'+esc(i.text)+(inLine?'':'<span class="tag">'+esc(l.title)+'</span>')+tag+'</span></li>'}).join('')+'</ul>'}
+function render(plan){
+ const all=[];plan.lines.forEach(l=>(l.items||[]).forEach(i=>all.push([l,i])));
+ const today=all.filter(([l,i])=>i.date===todayStr&&i.kind!=='deadline');
+ const overdue=all.filter(([l,i])=>i.date&&i.date<todayStr&&!done[kid(l,i)]&&i.kind!=='deadline');
+ const order=plan.today_order||[];
+ today.sort((a,b)=>{const ia=order.findIndex(o=>a[1].text.includes(o.slice(-4))),ib=order.findIndex(o=>b[1].text.includes(o.slice(-4)));return (ia<0?99:ia)-(ib<0?99:ib)});
+ const soon=all.filter(([l,i])=>i.date&&i.date>todayStr&&days(i.date)<=14).sort((a,b)=>a[1].date<b[1].date?-1:1);
+ let h='';
+ if(order.length)h+='<p class="wnote">今天的顺序：'+order.map(esc).join(' → ')+'</p>';
+ h+=today.length||overdue.length?todo([...overdue,...today]):'<p class="wstat">今天没有排定的事。</p>';
+ if(soon.length)h+='<h3 class="sub" style="margin:14px 0 4px">接下来两周</h3>'+soon.map(([l,i])=>'<div class="due'+(i.kind==='key'||i.kind==='deadline'?' key':'')+'"><span>'+md(i.date)+' · '+esc(i.text)+'</span><b>'+(days(i.date)===1?'明天':days(i.date)+' 天后')+'</b></div>').join('');
+ h+='<p class="wnote" style="margin-top:10px">安排更新于 '+md(plan.updated)+'。完成情况记在这台手机上；有变化直接告诉 Claude。</p>';
+ document.getElementById('todayBody').innerHTML=h;
+ let w='';
+ if(plan.principle)w+='<div class="card work"><p class="wnote" style="margin:0">'+esc(plan.principle)+'</p></div>';
+ plan.lines.forEach(l=>{
+  const last=(l.log||[]).map(x=>x.date).sort().pop();const idle=last?-days(last):null;
+  const open=(l.items||[]).filter(i=>!done[kid(l,i)]);
+  w+='<article class="card work"><span class="label"><span class="lv lv-'+l.level+'"></span>'+esc(LVN[l.level]||'')+'</span>'
+   +'<h2>'+esc(l.title)+(idle!==null&&idle>=5&&['red','yellow','green'].includes(l.level)?'<span class="stale">'+idle+' 天没进展</span>':'')+'</h2>'
+   +(l.goal?'<p class="wnote" style="margin-top:0">目标：'+esc(l.goal)+'</p>':'')
+   +(l.status?'<p class="wstat">'+esc(l.status)+'</p>':'')
+   +(open.length?todo(open.map(i=>[l,i]),true):'')
+   +(l.note?'<p class="wnote">'+esc(l.note)+'</p>':'')
+   +((l.log||[]).length?'<details><summary>进展记录</summary><ul class="tl">'+l.log.slice().reverse().map(x=>'<li><b>'+md(x.date)+'</b>'+esc(x.text)+'</li>').join('')+'</ul></details>':'')
+   +'</article>'});
+ w+='<div class="end"><span class="dot">·</span>工作安排就这些</div>';
+ document.getElementById('workBody').innerHTML=w;
+ document.querySelectorAll('.todo input').forEach(c=>c.onchange=()=>{if(c.checked)done[c.dataset.k]=todayStr;else delete done[c.dataset.k];saveDone();render(plan)});
+}
+async function unlock(pw,silent){
+ try{const box=await (await fetch(ENC,{cache:'no-store'})).json();const plan=await dec(box,pw);
+  try{localStorage.setItem('workPass',pw)}catch(e){};render(plan)}
+ catch(e){if(!silent){const i=document.getElementById('lockPw');i.value='';i.placeholder='密码不对，再试一次'}}
+}
+const f=document.getElementById('lockForm');
+if(f)f.onsubmit=e=>{e.preventDefault();unlock(document.getElementById('lockPw').value.trim())};
+let saved='';try{saved=localStorage.getItem('workPass')||''}catch(e){}
+if(saved)unlock(saved,true);
+})();
 /* 夜间模式：自动 → 夜间 → 日间 */
 (()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
  let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
