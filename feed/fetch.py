@@ -109,6 +109,59 @@ def resolve_youtube(ch: dict, cache: dict) -> str | None:
     return cid
 
 
+_YT_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                             "(KHTML, like Gecko) Chrome/130.0 Safari/537.36",
+               "Accept-Language": "en-US,en;q=0.8", "Cookie": "CONSENT=YES+1; SOCS=CAI"}
+_AGO = {"second": 1, "minute": 60, "hour": 3600, "day": 86400, "week": 604800, "month": 2592000, "year": 31536000}
+
+
+def _scrape_channel(cid: str, src: dict, max_items: int, age_days: int) -> list[dict]:
+    """RSS 不可用时的备用方案：直接读频道的视频页。"""
+    page = requests.get(f"https://www.youtube.com/channel/{cid}/videos?hl=en&gl=US",
+                        headers=_YT_HEADERS, timeout=TIMEOUT).text
+    m = re.search(r'"channelMetadataRenderer":\{"title":"((?:[^"\\]|\\.)*)"', page)
+    name = json.loads(f'"{m.group(1)}"') if m else src["name"]
+    now, out, seen = time.time(), [], set()
+    for vm in re.finditer(r'"videoRenderer":\{"videoId":"([\w-]{11})"', page):
+        vid = vm.group(1)
+        if vid in seen:
+            continue
+        seen.add(vid)
+        chunk = page[vm.end(): vm.end() + 6000]
+        t = re.search(r'"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"', chunk)
+        ago = re.search(r'"publishedTimeText":\{"simpleText":"(?:Streamed )?(\d+) (second|minute|hour|day|week|month|year)s? ago"', chunk)
+        ts = now - int(ago.group(1)) * _AGO[ago.group(2)] if ago else now - 86400 * 30
+        if now - ts > age_days * 86400:
+            continue
+        link = f"https://www.youtube.com/watch?v={vid}"
+        out.append({"id": hashlib.sha1(link.encode()).hexdigest()[:10], "kind": "video", "source": name,
+                    "section": src["section"], "stance": src.get("stance", ""),
+                    "title": _clean(json.loads(f'"{t.group(1)}"') if t else "", 200), "summary": "",
+                    "link": link, "image": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg", "published": ts})
+        if len(out) >= max_items:
+            break
+    if not out and "videoRenderer" not in page:
+        raise RuntimeError("频道页没有读到视频")
+    return out
+
+
+def youtube_videos(cid: str, src: dict, max_items: int, age_days: int) -> list[dict]:
+    """依次尝试：频道 RSS（重试一次）→ 上传列表 RSS → 读频道页。"""
+    errors = []
+    for url in (f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}",
+                f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}",
+                f"https://www.youtube.com/feeds/videos.xml?playlist_id=UU{cid[2:]}"):
+        try:
+            return parse_feed(url, src, "video", max_items, age_days * 24)
+        except Exception as ex:  # noqa: BLE001
+            errors.append(str(ex)[:40])
+            time.sleep(1.5)
+    try:
+        return _scrape_channel(cid, src, max_items, age_days)
+    except Exception as ex:  # noqa: BLE001
+        raise RuntimeError("RSS 和频道页都失败：" + " | ".join(errors + [str(ex)[:60]])) from ex
+
+
 def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
     s = cfg["settings"]
     items, status = [], []
@@ -133,8 +186,7 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
             cid = resolve_youtube(ch, cache)
             if not cid:
                 raise ValueError("找不到频道 ID")
-            got = parse_feed(f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}",
-                             src, "video", s.get("videos_per_channel", 5), s.get("video_age_days", 10) * 24)
+            got = youtube_videos(cid, src, s.get("videos_per_channel", 5), s.get("video_age_days", 10))
             if ch["section"] in shorts_groups:
                 try:
                     shorts = parse_feed(

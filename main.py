@@ -31,7 +31,7 @@ def load_json(p: Path, default):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sample", action="store_true")
-    ap.add_argument("--mode", choices=["auto", "full", "update"], default=os.environ.get("RUN_MODE") or "auto")
+    ap.add_argument("--mode", choices=["auto", "full", "update", "test"], default=os.environ.get("RUN_MODE") or "auto")
     ap.add_argument("--force", action="store_true", default=os.environ.get("FORCE_RUN") == "true")
     args = ap.parse_args()
 
@@ -49,6 +49,13 @@ def main() -> int:
     mode = args.mode
     if mode == "auto":
         mode = "full" if now.hour < 10 or "full" not in done else "update"
+    if mode == "test":  # 只检查来源能不能抓到，不调用 AI、不改网页
+        from feed.fetch import fetch_all
+        _, status = fetch_all(cfg, DATA)
+        for st in status:
+            print(("OK  " if st["ok"] else "失败 ") + st["source"]
+                  + (f' {st.get("count")}条' if st["ok"] else f' {st["error"]}'))
+        return 0
     if mode in done and not args.force and not args.sample:
         print(f"今天的{'早间' if mode == 'full' else '午间'}版已经生成过，跳过")
         return 0

@@ -11,10 +11,10 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "auto 按时间判断 / full 完整版 / update 午间增量"
+        description: "auto 按时间判断 / full 完整版 / update 午间增量 / test 只检查来源"
         default: auto
         type: choice
-        options: [auto, full, update]
+        options: [auto, full, update, test]
       force:
         description: "这个时段已经跑过也重新跑"
         default: true
