@@ -95,7 +95,16 @@ def resolve_youtube(ch: dict, cache: dict) -> str | None:
     if key in cache:
         return cache[key]
     cid = None
-    if ch.get("handle"):
+    api_key = os.environ.get("YOUTUBE_API_KEY", "").strip()
+    if api_key and ch.get("handle"):
+        try:
+            r = requests.get("https://www.googleapis.com/youtube/v3/channels",
+                             params={"part": "id", "forHandle": ch["handle"], "key": api_key}, timeout=TIMEOUT)
+            items_ = r.json().get("items") or []
+            cid = items_[0]["id"] if items_ else None
+        except Exception:  # noqa: BLE001
+            cid = None
+    if not cid and ch.get("handle"):
         try:
             cid = _channel_from(_get(f"https://www.youtube.com/{ch['handle']}").decode("utf-8", "ignore"))
         except Exception:  # noqa: BLE001
@@ -145,8 +154,45 @@ def _scrape_channel(cid: str, src: dict, max_items: int, age_days: int) -> list[
     return out
 
 
+def _api_playlist(pid: str, src: dict, kind: str, max_items: int, age_days: int, key: str) -> list[dict]:
+    """YouTube Data API：读取一个播放列表（上传列表 UU… 或短视频列表 UUSH…）。每次调用消耗 1 点配额。"""
+    r = requests.get("https://www.googleapis.com/youtube/v3/playlistItems",
+                     params={"part": "snippet,contentDetails", "playlistId": pid,
+                             "maxResults": min(max_items * 2, 50), "key": key}, timeout=TIMEOUT)
+    if r.status_code == 404:
+        return []
+    r.raise_for_status()
+    now, out = time.time(), []
+    for it in r.json().get("items", []):
+        sn, cd = it.get("snippet", {}), it.get("contentDetails", {})
+        vid = cd.get("videoId") or sn.get("resourceId", {}).get("videoId")
+        if not vid or sn.get("title") in ("Private video", "Deleted video"):
+            continue
+        published = cd.get("videoPublishedAt") or sn.get("publishedAt") or ""
+        try:
+            ts = calendar.timegm(time.strptime(published[:19], "%Y-%m-%dT%H:%M:%S"))
+        except ValueError:
+            ts = now
+        if now - ts > age_days * 86400:
+            continue
+        link = f"https://www.youtube.com/watch?v={vid}" if kind == "video" else f"https://www.youtube.com/shorts/{vid}"
+        thumbs = sn.get("thumbnails", {})
+        img = (thumbs.get("high") or thumbs.get("medium") or thumbs.get("default") or {}).get("url", "")
+        out.append({"id": hashlib.sha1(f"https://www.youtube.com/watch?v={vid}".encode()).hexdigest()[:10],
+                    "kind": kind, "source": sn.get("channelTitle") or src["name"],
+                    "section": src["section"], "stance": src.get("stance", ""),
+                    "title": _clean(sn.get("title", ""), 200), "summary": _clean(sn.get("description", ""), 300),
+                    "link": link, "image": img, "published": ts})
+        if len(out) >= max_items:
+            break
+    return out
+
+
 def youtube_videos(cid: str, src: dict, max_items: int, age_days: int) -> list[dict]:
-    """依次尝试：频道 RSS（重试一次）→ 上传列表 RSS → 读频道页。"""
+    """有 YOUTUBE_API_KEY 时用官方 API（最稳）；否则依次尝试 RSS 和频道页。"""
+    key = os.environ.get("YOUTUBE_API_KEY", "").strip()
+    if key:
+        return _api_playlist("UU" + cid[2:], src, "video", max_items, age_days, key)
     errors = []
     for url in (f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}",
                 f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}",
@@ -159,7 +205,7 @@ def youtube_videos(cid: str, src: dict, max_items: int, age_days: int) -> list[d
     try:
         return _scrape_channel(cid, src, max_items, age_days)
     except Exception as ex:  # noqa: BLE001
-        raise RuntimeError("RSS 和频道页都失败：" + " | ".join(errors + [str(ex)[:60]])) from ex
+        raise RuntimeError("YouTube 拦截了服务器请求（需要设置 YOUTUBE_API_KEY）：" + str(ex)[:60]) from ex
 
 
 def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
@@ -189,9 +235,10 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
             got = youtube_videos(cid, src, s.get("videos_per_channel", 5), s.get("video_age_days", 10))
             if ch["section"] in shorts_groups:
                 try:
-                    shorts = parse_feed(
-                        f"https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH{cid[2:]}",
-                        src, "short", 6, s.get("video_age_days", 10) * 24)
+                    key = os.environ.get("YOUTUBE_API_KEY", "").strip()
+                    shorts = (_api_playlist("UUSH" + cid[2:], src, "short", 6, s.get("video_age_days", 10), key) if key
+                              else parse_feed(f"https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH{cid[2:]}",
+                                              src, "short", 6, s.get("video_age_days", 10) * 24))
                     ids = {x["id"] for x in shorts}
                     got = [x for x in got if x["id"] not in ids] + shorts
                 except Exception:  # noqa: BLE001
