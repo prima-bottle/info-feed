@@ -86,7 +86,7 @@ def render(edition: dict, cfg: dict, history: dict, root: Path, archive: list[st
 
     runs = sorted(edition["runs"], key=lambda r: r["ts"])
     d = dt.date.fromisoformat(edition["date"])
-    run_label = " · ".join(("早间 " if r["mode"] == "full" else "午间 ") + r["label"] for r in runs)
+    run_label = " · ".join(("早间 " if r["mode"] == "full" else "更新 ") + r["label"] for r in runs)
     status = m["status"]
     return env.get_template("page.html").render(
         m=m, date=edition["date"], date_label=f"{d.month}月{d.day}日 周{WEEKDAYS[d.weekday()]}",

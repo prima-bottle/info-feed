@@ -123,7 +123,8 @@ def main() -> int:
 
     run = {"mode": mode, "ts": int(time.time()), "label": now.strftime("%H:%M"),
            "digest": digest, "items": items, "status": status}
-    edition["runs"] = [r for r in edition["runs"] if r["mode"] != mode] + [run]
+    # 早间版重跑会替换；增量每次都追加，不覆盖之前的增量
+    edition["runs"] = ([r for r in edition["runs"] if r["mode"] != "full"] if mode == "full" else edition["runs"]) + [run]
     edition["runs"].sort(key=lambda r: r["ts"])
     (DATA / "edition.json").write_text(json.dumps(edition, ensure_ascii=False))
 
