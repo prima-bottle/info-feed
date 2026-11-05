@@ -79,7 +79,7 @@ feeds:
   - {name: France 24, url: "https://www.france24.com/en/rss", section: 国际, stance: "法国政府出资对外广播"}
   - {name: TASS, url: "https://tass.com/rss/v2.xml", section: 国际, stance: "俄罗斯国家通讯社，官方立场"}
   - {name: Meduza, url: "https://meduza.io/rss/en/all", section: 国际, stance: "流亡俄罗斯独立媒体，反克宫"}
-  - {name: Brasil de Fato, url: "https://www.brasildefato.com.br/rss2.xml", section: 国际, stance: "巴西左翼，接近无地农民运动"}
+  - {name: Brasil de Fato, url: "https://news.google.com/rss/search?q=site%3Abrasildefato.com.br+when%3A3d&hl=pt-BR&gl=BR&ceid=BR:pt-419", section: 国际, stance: "巴西左翼，接近无地农民运动"}
   - {name: teleSUR, url: "https://news.google.com/rss/search?q=site:telesurenglish.net+when:3d&hl=en&gl=US&ceid=US:en", section: 国际, stance: "拉美左翼政府出资，反美"}
   - {name: El País América, url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/america/portada", section: 国际, stance: "西班牙中左建制"}
   - {name: The Economist, url: "https://www.economist.com/international/rss.xml", section: 国际, stance: "古典自由主义，亲市场"}
@@ -100,9 +100,24 @@ feeds:
   - {name: 南方周末, url: "https://news.google.com/rss/search?q=site%3Ainfzm.com+when%3A4d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 中国·社会, max: 3, stance: "广州市场化周报，曾以调查报道著称"}
   - {name: Sixth Tone, url: "https://news.google.com/rss/search?q=site%3Asixthtone.com+when%3A3d&hl=en-US&gl=US&ceid=US:en", section: 中国·社会, max: 4, stance: "澎湃旗下英文媒体，聚焦普通人社会生活"}
   - {name: 中国劳动与民生, url: "https://news.google.com/rss/search?q=%28%E8%AE%A8%E8%96%AA+OR+%E6%AC%A0%E8%96%AA+OR+%E7%BD%A2%E5%B7%A5+OR+%E5%81%9C%E5%B7%A5+OR+%E8%A3%81%E5%91%98+OR+%E5%A4%96%E5%8D%96%E9%AA%91%E6%89%8B+OR+%E5%86%9C%E6%B0%91%E5%B7%A5+OR+%E7%83%82%E5%B0%BE%E6%A5%BC+OR+%E6%96%AD%E4%BE%9B+OR+%E9%9D%92%E5%B9%B4%E5%A4%B1%E4%B8%9A%29+%E4%B8%AD%E5%9B%BD+when%3A2d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant", section: 中国·社会, max: 5, stance: "Google 新闻聚合，来源各异"}
+  # 香港：官方、主流、独立、建制各一
+  - {name: 香港电台 RTHK, url: "https://rthk.hk/rthk/news/rss/c_expressnews_clocal.xml", section: 香港, max: 5, stance: "香港公营广播，2021年后管理层改组，取向趋于官方"}
+  - {name: 明报, url: "https://news.google.com/rss/search?q=site%3Amingpao.com+when%3A2d&hl=zh-HK&gl=HK&ceid=HK:zh-Hant", section: 香港, max: 4, stance: "香港老牌中文大报，中间偏建制，知识分子读者多"}
+  - {name: 香港01, url: "https://news.google.com/rss/search?q=site%3Ahk01.com+when%3A2d&hl=zh-HK&gl=HK&ceid=HK:zh-Hant", section: 香港, max: 4, stance: "香港网络媒体，民生报道多，立场中间偏建制"}
+  - {name: 大公文汇, url: "https://news.google.com/rss/search?q=%28site%3Atakungpao.com+OR+site%3Awenweipo.com%29+when%3A2d&hl=zh-HK&gl=HK&ceid=HK:zh-Hant", section: 香港, max: 3, stance: "中联办系统主管的建制派报纸，代表北京立场"}
+  - {name: Hong Kong Free Press, url: "https://hongkongfp.com/feed/", section: 香港, max: 4, stance: "香港独立英文媒体，偏自由派，关注公民社会与新闻自由"}
+  - {name: 法广 RFI 香港, url: "https://news.google.com/rss/search?q=%E9%A6%99%E6%B8%AF+site%3Arfi.fr+when%3A3d&hl=zh-HK&gl=HK&ceid=HK:zh-Hant", section: 香港, max: 2, stance: "法国政府出资的对外广播，批评北京对港政策"}
+  # 珠三角、长三角：政治、经济政策、社会
+  - {name: 珠三角动态, url: "https://news.google.com/rss/search?q=%28%E5%B9%BF%E4%B8%9C+OR+%E6%B7%B1%E5%9C%B3+OR+%E5%B9%BF%E5%B7%9E+OR+%E4%BD%9B%E5%B1%B1+OR+%E4%B8%9C%E8%8E%9E+OR+%E7%8F%A0%E6%B5%B7+OR+%E4%B8%AD%E5%B1%B1+OR+%E6%83%A0%E5%B7%9E+OR+%E6%B1%9F%E9%97%A8+OR+%E7%B2%A4%E6%B8%AF%E6%BE%B3%E5%A4%A7%E6%B9%BE%E5%8C%BA%29+%28%E6%94%BF%E7%AD%96+OR+%E7%BB%8F%E6%B5%8E+OR+%E4%BA%A7%E4%B8%9A+OR+%E5%B0%B1%E4%B8%9A+OR+%E8%A3%81%E5%91%98+OR+%E6%A5%BC%E5%B8%82+OR+%E6%88%BF%E5%9C%B0%E4%BA%A7+OR+%E5%B7%A5%E5%8E%82+OR+%E5%87%BA%E5%8F%A3+OR+%E5%A4%96%E8%B4%B8+OR+%E5%B7%A5%E8%B5%84+OR+%E6%AC%A0%E8%96%AA+OR+%E7%A4%BE%E4%BF%9D+OR+%E4%BA%BA%E4%BA%8B+OR+%E4%B9%A6%E8%AE%B0+OR+%E5%B8%82%E9%95%BF%29+when%3A2d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 珠三角, max: 8, stance: "Google 新闻聚合，来源各异"}
+  - {name: 21世纪经济报道, url: "https://news.google.com/rss/search?q=site%3A21jingji.com+%28%E5%B9%BF%E4%B8%9C+OR+%E6%B7%B1%E5%9C%B3+OR+%E5%A4%A7%E6%B9%BE%E5%8C%BA%29+when%3A3d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 珠三角, max: 3, stance: "广州的市场化财经报纸，南方报业系"}
+  - {name: 南方都市报, url: "https://news.google.com/rss/search?q=site%3Anandu.com+OR+site%3Aoeeee.com+when%3A3d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 珠三角, max: 3, stance: "广州都市报，南方报业系，民生和社会新闻"}
+  - {name: 长三角动态, url: "https://news.google.com/rss/search?q=%28%E9%95%BF%E4%B8%89%E8%A7%92+OR+%E4%B8%8A%E6%B5%B7+OR+%E6%B1%9F%E8%8B%8F+OR+%E6%B5%99%E6%B1%9F+OR+%E8%8B%8F%E5%B7%9E+OR+%E6%9D%AD%E5%B7%9E+OR+%E5%AE%81%E6%B3%A2+OR+%E5%8D%97%E4%BA%AC+OR+%E6%97%A0%E9%94%A1+OR+%E5%90%88%E8%82%A5+OR+%E6%B8%A9%E5%B7%9E%29+%28%E6%94%BF%E7%AD%96+OR+%E7%BB%8F%E6%B5%8E+OR+%E4%BA%A7%E4%B8%9A+OR+%E5%B0%B1%E4%B8%9A+OR+%E8%A3%81%E5%91%98+OR+%E6%A5%BC%E5%B8%82+OR+%E6%88%BF%E5%9C%B0%E4%BA%A7+OR+%E5%B7%A5%E5%8E%82+OR+%E5%87%BA%E5%8F%A3+OR+%E5%A4%96%E8%B4%B8+OR+%E5%B7%A5%E8%B5%84+OR+%E6%AC%A0%E8%96%AA+OR+%E7%A4%BE%E4%BF%9D+OR+%E4%BA%BA%E4%BA%8B+OR+%E4%B9%A6%E8%AE%B0+OR+%E5%B8%82%E9%95%BF%29+when%3A2d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 长三角, max: 8, stance: "Google 新闻聚合，来源各异"}
+  - {name: 第一财经, url: "https://news.google.com/rss/search?q=site%3Ayicai.com+%28%E4%B8%8A%E6%B5%B7+OR+%E9%95%BF%E4%B8%89%E8%A7%92+OR+%E6%B1%9F%E8%8B%8F+OR+%E6%B5%99%E6%B1%9F%29+when%3A3d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 长三角, max: 3, stance: "上海文广旗下财经媒体，官方背景的市场化报道"}
+  - {name: 界面新闻, url: "https://news.google.com/rss/search?q=site%3Ajiemian.com+%28%E4%B8%8A%E6%B5%B7+OR+%E9%95%BF%E4%B8%89%E8%A7%92+OR+%E6%B1%9F%E8%8B%8F+OR+%E6%B5%99%E6%B1%9F%29+when%3A3d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans", section: 长三角, max: 3, stance: "上海报业集团旗下财经媒体"}
+  - {name: SCMP 大湾区与经济, url: "https://news.google.com/rss/search?q=site%3Ascmp.com+%28%22Greater+Bay+Area%22+OR+Guangdong+OR+Shenzhen+OR+Shanghai+OR+%22Yangtze+River+Delta%22+OR+Zhejiang+OR+Jiangsu%29+when%3A3d&hl=en-US&gl=US&ceid=US:en", section: 珠三角, max: 4, stance: "阿里巴巴旗下香港英文报，近年对北京态度更温和"}
   # 艺术与设计（海报、字体、符号、视觉文化）
-  - {name: AIGA Eye on Design, url: "https://eyeondesign.aiga.org/feed/", section: 艺术, max: 3, stance: "美国平面设计协会的设计评论"}
-  - {name: Creative Review, url: "https://www.creativereview.co.uk/feed/", section: 艺术, max: 3, stance: "英国创意行业杂志"}
+  - {name: AIGA Eye on Design, url: "https://news.google.com/rss/search?q=site%3Aeyeondesign.aiga.org+when%3A7d&hl=en-US&gl=US&ceid=US:en", section: 艺术, max: 3, stance: "美国平面设计协会的设计评论"}
+  - {name: Creative Review, url: "https://news.google.com/rss/search?q=site%3Acreativereview.co.uk+when%3A5d&hl=en-US&gl=US&ceid=US:en", section: 艺术, max: 3, stance: "英国创意行业杂志"}
   - {name: It's Nice That, url: "https://news.google.com/rss/search?q=site%3Aitsnicethat.com+when%3A4d&hl=en-US&gl=US&ceid=US:en", section: 艺术, max: 3, stance: "英国视觉创意网站"}
   - {name: Hyperallergic, url: "https://hyperallergic.com/feed/", section: 艺术, max: 2, stance: "美国独立艺术媒体，关注艺术与政治"}
   - {name: The Public Domain Review, url: "https://publicdomainreview.org/rss.xml", section: 艺术, max: 2, stance: "公有领域的历史图像与文献"}
