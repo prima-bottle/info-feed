@@ -122,7 +122,7 @@ footer details{border:0}
 </head>
 <body data-latest="{{ latest_ts }}" data-date="{{ date }}">
 <header>
-  <div class="topline"><div class="date">{{ date_label }}</div><button class="theme" id="theme">自动</button></div>
+  <div class="topline"><div class="date">{{ date_label }}</div><span><button class="theme" id="reload">↻ 刷新</button> <button class="theme" id="theme">自动</button></span></div>
   <div class="headline">{{ m.headline }}</div>
   <div class="runs">{{ run_label }}</div>
 </header>
@@ -350,6 +350,15 @@ if(f)f.onsubmit=e=>{e.preventDefault();unlock(document.getElementById('lockPw').
 let saved='';try{saved=localStorage.getItem('workPass')||''}catch(e){}
 if(saved)unlock(saved,true);
 })();
+/* 刷新：主屏幕 App 没有下拉刷新，回到前台时自动检查有没有新一期 */
+(()=>{const cur=+document.body.dataset.latest;let busy=false;
+ async function check(force){if(busy)return;busy=true;
+  try{const t=await (await fetch(location.pathname+'?t='+Date.now(),{cache:'no-store'})).text();
+   const m=t.match(/data-latest="(\d+)"/);if(force||(m&&+m[1]>cur))location.reload()}catch(e){if(force)location.reload()}busy=false}
+ document.getElementById('reload').onclick=()=>check(true);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check(false)});
+ window.addEventListener('pageshow',e=>{if(e.persisted)check(false)});
+ check(false)})();
 /* 夜间模式：自动 → 夜间 → 日间 */
 (()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
  let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
