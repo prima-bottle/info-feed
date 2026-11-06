@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="阅读器">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../icon-192.png">
+<title>阅读器</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --blue:#2f5d8a; --blue-soft:#e2ecf5;
+  --green:#3d7a4a; --green-soft:#e1efe3; --chip:#efe9e0; --mark:#f7dd8a; --fs:19px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --blue:#7fb0de; --blue-soft:#1d2a37;
+  --green:#7cc28a; --green-soft:#1e2e22; --chip:#2a2825; --mark:#6b5a1f;
+}}
+:root[data-theme=dark]{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --blue:#7fb0de; --blue-soft:#1d2a37;
+  --green:#7cc28a; --green-soft:#1e2e22; --chip:#2a2825; --mark:#6b5a1f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--chip);font-size:15px;white-space:nowrap}
+.btn.pri{background:var(--accent);color:#fff;font-weight:600}
+.btn.sm{padding:5px 11px;font-size:14px}
+.btn:disabled{opacity:.5}
+.muted{color:var(--muted)}
+.hide{display:none!important}
+
+/* 书库 */
+#lib{max-width:680px;margin:0 auto;padding:20px 16px 60px}
+#lib header{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+#lib h1{font-size:22px;flex:1}
+.doc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+.doc .main{flex:1;min-width:0}
+.doc h2{font-size:16.5px;line-height:1.45;word-break:break-all}
+.doc .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.doc .q{font-size:14px;margin-top:6px;padding:6px 10px;border-left:3px solid var(--blue);background:var(--blue-soft);border-radius:0 8px 8px 0}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.drop{display:block;cursor:pointer;border:2px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--muted);margin-bottom:14px}
+
+/* 阅读 */
+#rd{min-height:100vh}
+.top{position:fixed;top:0;left:0;right:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:2px;padding:6px 6px;padding-top:max(6px,env(safe-area-inset-top));transition:transform .2s}
+.top .title{flex:1;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+.ib{min-width:40px;height:38px;border-radius:10px;font-size:15px;padding:0 8px}
+.ib:active{background:var(--chip)}
+.bot{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:6px 10px;padding-bottom:max(6px,env(safe-area-inset-bottom));transition:transform .2s}
+.hidebars .top{transform:translateY(-110%)}.hidebars .bot{transform:translateY(110%)}
+.pg{display:flex;align-items:center;gap:4px;font-size:14px;color:var(--muted)}
+.pg input{width:58px;padding:4px 6px;text-align:center;border-radius:8px}
+.seg{display:flex;background:var(--chip);border-radius:999px;padding:2px}
+.seg button{padding:5px 12px;border-radius:999px;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--ink);color:var(--bg);font-weight:600}
+#view{padding:56px 0 64px}
+.sec{position:relative;overflow-anchor:auto}
+.sec .ph{display:flex;justify-content:space-between;align-items:center;font:12px sans-serif;color:var(--muted);border-top:1px dashed var(--line);padding:4px 16px;max-width:720px;margin:0 auto;opacity:.75}
+.sec .ph button{font-size:12px;color:var(--muted);padding:2px 6px}
+.rf{max-width:720px;margin:0 auto;padding:4px 18px 12px;font:var(--fs)/1.85 "Noto Serif SC","Songti SC","Source Han Serif SC",Georgia,serif}
+.rf p{margin:.55em 0;text-indent:2em;text-align:justify;word-break:break-word;overflow-wrap:anywhere}
+.rf p.h{text-indent:0;font-weight:700;font-size:1.12em;margin:1.2em 0 .5em;text-align:left}
+.rf p.c{text-indent:0;text-align:center;color:var(--muted);font-size:.8em}
+.rf mark{background:var(--mark);color:inherit;border-radius:2px;cursor:pointer}
+.rf mark.n{border-bottom:2px solid var(--accent)}
+.rf .none{text-indent:0;color:var(--muted);font-size:15px;font-family:sans-serif}
+.loading{color:var(--muted);font-size:14px;padding:30px 18px;text-align:center}
+.og{overflow-x:auto;padding:4px 0}
+.cv{position:relative;margin:0 auto;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.cv canvas{display:block;width:100%;height:100%}
+.textLayer{position:absolute;text-align:initial;inset:0;overflow:hidden;opacity:1;line-height:1;-webkit-text-size-adjust:none;text-size-adjust:none;forced-color-adjust:none;transform-origin:0 0;z-index:2}
+.textLayer span,.textLayer br{color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%}
+.textLayer ::selection{background:rgba(194,80,45,.3)}
+.textLayer .endOfContent{display:block;position:absolute;inset:100% 0 0;z-index:-1;cursor:default;user-select:none}
+.zoom{display:flex;gap:2px}
+
+/* 选中工具条 */
+#selbar{position:fixed;left:8px;right:8px;bottom:max(10px,env(safe-area-inset-bottom));z-index:40;background:var(--ink);color:var(--bg);border-radius:14px;display:flex;justify-content:space-around;padding:4px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+#selbar button{color:var(--bg);padding:10px 8px;font-size:15px;font-weight:600;flex:1}
+
+/* 底部面板 */
+#mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;background:var(--bg);border-radius:18px 18px 0 0;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 -4px 24px rgba(0,0,0,.2);max-width:720px;margin:0 auto}
+#sheet .sh{display:flex;align-items:center;padding:12px 16px 8px;gap:8px;border-bottom:1px solid var(--line)}
+#sheet .sh h3{flex:1;font-size:17px}
+#sheet .sb{overflow-y:auto;padding:12px 16px calc(16px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+.quote{font:15.5px/1.7 "Noto Serif SC","Songti SC",serif;padding:8px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;margin-bottom:10px;max-height:9.5em;overflow:auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{padding:5px 11px;border-radius:999px;background:var(--chip);font-size:13.5px;color:var(--muted)}
+.chip.on{background:var(--blue);color:#fff}
+.chip.t1.on{background:var(--green)}.chip.t2.on{background:var(--accent)}
+.row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.lbl{font-size:13px;color:var(--muted);margin:12px 0 4px;font-weight:600}
+.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.note .nq{font:14.5px/1.65 "Noto Serif SC","Songti SC",serif;color:var(--muted);border-left:2px solid var(--line);padding-left:8px}
+.note .nt{font-size:14.5px;margin-top:6px;white-space:pre-wrap}
+.note .nm{font-size:12px;color:var(--muted);margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{font-size:11.5px;padding:1px 7px;border-radius:6px;background:var(--chip)}
+.tag.t1{background:var(--green-soft);color:var(--green)}.tag.t2{background:var(--accent-soft);color:var(--accent)}.tag.t3{background:var(--blue-soft);color:var(--blue)}
+.msg{margin:10px 0;font-size:15px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.msg.u{background:var(--blue-soft);padding:8px 12px;border-radius:12px 12px 2px 12px;margin-left:12%}
+.msg.a{background:var(--card);border:1px solid var(--line);padding:8px 12px;border-radius:12px 12px 12px 2px;margin-right:4%}
+.msg.e{color:var(--accent);font-size:14px}
+.toc a{display:block;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px;color:inherit;text-decoration:none}
+.toc a small{color:var(--muted);float:right}
+.guide{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14.5px;white-space:pre-wrap}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:60;max-width:90vw}
+</style>
+</head>
+<body>
+
+<div id="lib">
+  <header>
+    <h1>阅读器</h1>
+    <a class="btn sm" href="../">← 信息台</a>
+    <button class="ib" id="bSet" title="设置">⚙︎</button>
+  </header>
+  <label class="drop" id="drop"><input type="file" id="file" accept="application/pdf,.pdf" multiple hidden>＋ 添加 PDF<br><small>文件只存在这台设备上</small></label>
+  <div id="docs"></div>
+  <div class="row" style="justify-content:center;margin-top:24px;flex-wrap:wrap">
+    <button class="btn sm" id="bBackup">备份笔记</button>
+    <label class="btn sm">恢复备份<input type="file" id="restore" accept=".json,application/json" hidden></label>
+  </div>
+</div>
+
+<div id="rd" class="hide">
+  <div class="top">
+    <button class="ib" id="bBack">‹</button>
+    <div class="title" id="title"></div>
+    <button class="ib" id="bToc">目录</button>
+    <button class="ib" id="bStudy">研究</button>
+    <button class="ib" id="bNotes">笔记</button>
+    <button class="ib" id="bFont">Aa</button>
+  </div>
+  <div id="view"></div>
+  <div class="bot">
+    <div class="pg">p.<input id="pgIn" inputmode="numeric"> / <span id="pgN"></span></div>
+    <div style="flex:1"></div>
+    <div class="zoom hide" id="zoom"><button class="ib" id="zOut">－</button><button class="ib" id="zIn">＋</button></div>
+    <div class="seg"><button data-m="og">原版</button><button data-m="rf">重排</button></div>
+  </div>
+</div>
+
+<div id="selbar" class="hide">
+  <button id="sMark">划线</button>
+  <button id="sNote">笔记</button>
+  <button id="sAsk">问AI</button>
+  <button id="sCopy">复制</button>
+</div>
+
+<div id="mask" class="hide"></div>
+<div id="sheet" class="hide"><div class="sh"><h3 id="shT"></h3><button class="ib" id="shX">✕</button></div><div class="sb" id="shB"></div></div>
+
+<script src="lib/pdf.min.js"></script>
+<script>
+'use strict';
+pdfjsLib.GlobalWorkerOptions.workerSrc='lib/pdf.worker.min.js';
+const PDFOPT={cMapUrl:'lib/cmaps/',cMapPacked:true,standardFontDataUrl:'lib/standard_fonts/'};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(t,ms=2200){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.append(d);setTimeout(()=>d.remove(),ms)}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const TAGS=[['t1','支持我'],['t2','反对我'],['t3','背景'],['t4','疑问']];
+const tagName=t=>(TAGS.find(x=>x[0]===t)||[])[1]||'';
+
+/* ---------- 存储 ---------- */
+let db;
+const P=r=>new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('reader',1);
+  r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('docs',{keyPath:'id'});d.createObjectStore('files');
+    const n=d.createObjectStore('notes',{keyPath:'id'});n.createIndex('doc','docId');d.createObjectStore('ocr');d.createObjectStore('chats');d.createObjectStore('meta')};
+  r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+const st=(s,m='readonly')=>db.transaction(s,m).objectStore(s);
+const dget=(s,k)=>P(st(s).get(k));
+const dput=(s,v,k)=>P(k===undefined?st(s,'readwrite').put(v):st(s,'readwrite').put(v,k));
+const ddel=(s,k)=>P(st(s,'readwrite').delete(k));
+const dall=s=>P(st(s).getAll());
+const notesOf=id=>P(st('notes').index('doc').getAll(id));
+async function getLines(){return (await dget('meta','lines'))||['YouTube频道','更舵','Ausbildung学习']}
+
+/* ---------- Claude ---------- */
+const MODELS=[['claude-sonnet-5-5','Sonnet 5.5（推荐）'],['claude-opus-5-5','Opus 5.5（更强，更贵）'],['claude-haiku-5-5','Haiku 5.5（快，便宜）']];
+async function claude({system,messages,max=1600,onText}){
+  const key=ls.get('key','');if(!key)throw new Error('还没有填 Claude API 密钥：回到书库点右上角 ⚙︎ 设置');
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:ls.get('model',MODELS[0][0]),max_tokens:max,system,messages,stream:true})});
+  if(!r.ok){let t=await r.text();try{t=JSON.parse(t).error.message}catch(e){}throw new Error('接口返回 '+r.status+'：'+t.slice(0,300))}
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',out='';
+  for(;;){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
+    while((i=buf.indexOf('\n\n'))>=0){const ev=buf.slice(0,i);buf=buf.slice(i+2);const ln=ev.split('\n').find(l=>l.startsWith('data:'));if(!ln)continue;
+      let d;try{d=JSON.parse(ln.slice(5))}catch(e){continue}
+      if(d.type==='content_block_delta'&&d.delta&&d.delta.type==='text_delta'){out+=d.delta.text;onText&&onText(out)}
+      else if(d.type==='error')throw new Error(d.error.message)}}
+  return out}
+function fmt(t){return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#{1,4}\s*(.+)$/gm,'<b>$1</b>')}
+
+/* ---------- 文字提取与重排 ---------- */
+const isCJK=c=>/[⺀-鿿豈-﫿＀-￯　-〿]/.test(c||'');
+async function rawLines(n){
+  const page=await S.pdf.getPage(n);const tc=await page.getTextContent();const vp=page.getViewport({scale:1});
+  const lines=[];let L=null;
+  for(const it of tc.items){
+    if(!('str' in it))continue;
+    const x=it.transform[4],y=it.transform[5],h=Math.abs(it.transform[3])||Math.hypot(it.transform[2],it.transform[3])||it.height||10;
+    if(!it.str.trim()){if(L&&it.str)L.t+=' ';if(it.hasEOL)L=null;continue}
+    if(L&&Math.abs(L.y-y)<=h*.6&&x>=L.x0-2){
+      const gap=x-L.xe;if(gap>h*.25&&!L.t.endsWith(' ')&&!(isCJK(L.t.slice(-1))&&isCJK(it.str[0])))L.t+=' ';
+      L.t+=it.str;L.xe=Math.max(L.xe,x+it.width);L.h=Math.max(L.h,h)}
+    else{L={x,x0:x,y,h,t:it.str,xe:x+it.width};lines.push(L)}
+    if(it.hasEOL)L=null}
+  return {lines:lines.map(l=>({x:l.x,y:l.y,h:l.h,xe:l.xe,t:l.t.replace(/\s+/g,' ').trim()})).filter(l=>l.t),W:vp.width,H:vp.height}}
+const norm=t=>t.replace(/\d+/g,'#').replace(/\s/g,'');
+async function learnBoiler(){
+  const n=Math.min(S.pdf.numPages,14),cnt=new Map();
+  for(let i=1;i<=n;i++){try{const {lines}=await rawLines(i);const seen=new Set();
+    for(const l of [...lines.slice(0,3),...lines.slice(-3)]){const k=norm(l.t);if(k&&!seen.has(k)){seen.add(k);cnt.set(k,(cnt.get(k)||0)+1)}}}catch(e){}}
+  S.boiler=new Set([...cnt].filter(([k,c])=>c>=Math.max(3,n*.4)).map(([k])=>k))}
+function median(a){if(!a.length)return 0;const b=[...a].sort((x,y)=>x-y);return b[b.length>>1]}
+function joinLine(a,b){
+  if(/[A-Za-zÄÖÜäöüß]-$/.test(a)&&/^[a-zäöüß]/.test(b))return a.slice(0,-1)+b;
+  if(isCJK(a.slice(-1))||isCJK(b[0]))return a+b;
+  return a+' '+b}
+async function pageParas(n){
+  if(S.paras.has(n))return S.paras.get(n);
+  const ocr=await dget('ocr',S.doc.id+':'+n);
+  if(ocr){const r=ocr.split(/\n\s*\n/).map(t=>t.trim()).filter(Boolean).map(t=>t.startsWith('#')?{h:1,t:t.replace(/^#+\s*/,'')}:{t:t.replace(/\n/g,'')});S.paras.set(n,r);return r}
+  let {lines}=await rawLines(n);
+  lines=lines.filter(l=>!/^[-–—\s]*\d{1,4}[-–—\s]*$/.test(l.t)&&!S.boiler.has(norm(l.t)));
+  if(!lines.length){S.paras.set(n,[]);return []}
+  const mh=median(lines.map(l=>l.h)),left=median(lines.map(l=>l.x)),right=Math.max(...lines.map(l=>l.xe));
+  const gaps=[];for(let i=1;i<lines.length;i++){const g=lines[i-1].y-lines[i].y;if(g>0)gaps.push(g)}
+  const mg=median(gaps)||mh*1.5;
+  const out=[];let cur=null,prev=null;
+  for(const l of lines){
+    const big=l.h>mh*1.18&&l.t.length<60;
+    const cap=/^(图|表|Abb\.|Tab\.|Figure|Table)\s*\d/.test(l.t)&&l.t.length<80;
+    if(big&&cur&&cur.h&&prev&&prev.y-l.y<mg*1.8){cur.t=joinLine(cur.t,l.t);prev=l;continue}
+    let brk=!cur||big||cap||(cur&&(cur.h||cur.c));
+    if(!brk&&prev){
+      const g=prev.y-l.y;
+      if(g>mg*1.45||g<-mh)brk=true;
+      else if(l.x>left+mh*1.3&&l.x>prev.x+mh*.8)brk=true;
+      else if(prev.xe<right-mh*2.2&&/[。！？”」』.!?:：…]$/.test(prev.t))brk=true}
+    if(brk){cur={t:l.t};if(big)cur.h=1;if(cap)cur.c=1;out.push(cur)}
+    else cur.t=joinLine(cur.t,l.t);
+    prev=l}
+  S.paras.set(n,out);return out}
+async function pageText(n){const p=await pageParas(n);return p.map(x=>x.t).join('\n')}
+
+/* ---------- 状态 ---------- */
+const S={doc:null,pdf:null,mode:'rf',zoom:1,paras:new Map(),boiler:new Set(),secs:[],cur:1,notes:[],sel:null,avgH:1800,ratio:1.3,io:null,ioFar:null};
+
+/* ---------- 书库 ---------- */
+async function renderLib(){
+  const docs=(await dall('docs')).sort((a,b)=>(b.opened||b.added)-(a.opened||a.added));
+  const el=$('#docs');
+  if(!docs.length){el.innerHTML='<div class="empty">还没有书。点上面添加一份 PDF。</div>';return}
+  el.innerHTML=docs.map(d=>`<div class="doc" data-id="${d.id}"><div class="main"><h2>${esc(d.name)}</h2>
+    <div class="meta">${d.pages} 页 · 读到 p.${d.page||1}${d.study&&d.study.line?' · '+esc(d.study.line):''}</div>
+    ${d.study&&d.study.q?`<div class="q">${esc(d.study.q)}</div>`:''}
+    <div class="bar"><i style="width:${Math.round((d.page||1)/d.pages*100)}%"></i></div></div>
+    <button class="ib del" data-id="${d.id}" title="删除">⋯</button></div>`).join('');
+  el.querySelectorAll('.doc').forEach(x=>x.onclick=e=>{if(e.target.closest('.del'))return;openDoc(x.dataset.id)});
+  el.querySelectorAll('.del').forEach(b=>b.onclick=()=>docMenu(b.dataset.id))}
+async function docMenu(id){
+  const d=await dget('docs',id);
+  sheet(d.name,`<button class="btn" id="mExp">导出笔记（Markdown）</button>
+    <div class="lbl">删除</div><p class="muted" style="font-size:14px">会删掉这本书和它的所有笔记、对谈记录。</p>
+    <div class="row"><button class="btn" id="mDel" style="color:var(--accent)">删除这本书</button></div>`);
+  $('#mExp').onclick=()=>exportMd(id);
+  let armed=false;$('#mDel').onclick=async e=>{if(!armed){armed=true;e.target.textContent='再点一次确认删除';return}
+    for(const n of await notesOf(id))await ddel('notes',n.id);
+    await ddel('files',id);await ddel('docs',id);await ddel('chats',id);closeSheet();renderLib();toast('已删除')}}
+async function addFiles(files){
+  for(const f of files){
+    if(!/pdf$/i.test(f.type)&&!/\.pdf$/i.test(f.name))continue;
+    const id='d'+f.size.toString(36)+'_'+[...f.name].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7).toString(36);
+    if(await dget('docs',id)){toast('已经在书库里：'+f.name);continue}
+    toast('正在添加：'+f.name,4000);
+    try{const buf=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf.slice(0),...PDFOPT}).promise;
+      let name=f.name.replace(/\.pdf$/i,'');try{const m=await pdf.getMetadata();const t=m&&m.info&&m.info.Title;if(t&&t.trim().length>1&&!/^untitled|^microsoft/i.test(t))name=t.trim()}catch(e){}
+      await dput('files',new Blob([buf],{type:'application/pdf'}),id);
+      await dput('docs',{id,name,file:f.name,pages:pdf.numPages,added:Date.now(),page:1,mode:'rf',study:{q:'',side:'',line:''},guides:[]});
+      pdf.destroy()}catch(e){toast('打不开这个 PDF：'+e.message,4000)}}
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+  renderLib()}
+$('#file').onchange=e=>{addFiles([...e.target.files]);e.target.value=''};
+['dragover','drop'].forEach(t=>document.addEventListener(t,e=>{e.preventDefault();if(t==='drop'&&!$('#lib').classList.contains('hide'))addFiles([...e.dataTransfer.files])}));
+
+/* ---------- 打开 ---------- */
+async function openDoc(id){
+  const doc=await dget('docs',id),blob=await dget('files',id);
+  if(!doc||!blob){toast('找不到文件');return}
+  $('#lib').classList.add('hide');$('#rd').classList.remove('hide');
+  $('#title').textContent=doc.name;$('#pgN').textContent=doc.pages;
+  $('#view').innerHTML='<div class="loading">正在打开…</div>';
+  Object.assign(S,{doc,mode:doc.mode||'rf',zoom:doc.zoom||1,paras:new Map(),boiler:new Set(),cur:doc.page||1,sel:null});
+  S.pdf=await pdfjsLib.getDocument({data:await blob.arrayBuffer(),...PDFOPT}).promise;
+  const p1=await S.pdf.getPage(1);const v=p1.getViewport({scale:1});S.ratio=v.height/v.width;
+  await learnBoiler();
+  S.notes=await notesOf(id);
+  doc.opened=Date.now();dput('docs',doc);
+  history.pushState({r:1},'');
+  build();goPage(S.cur,false)}
+function closeDoc(){
+  if(S.io)S.io.disconnect();if(S.pdf)S.pdf.destroy();S.pdf=null;
+  $('#view').innerHTML='';$('#rd').classList.add('hide');$('#lib').classList.remove('hide');hideSel();renderLib()}
+$('#bBack').onclick=()=>history.back();
+addEventListener('popstate',()=>{if(!$('#sheet').classList.contains('hide')){closeSheet(true);history.pushState({r:1},'');return}if(S.pdf)closeDoc()});
+
+/* ---------- 构建页面 ---------- */
+function build(){
+  const v=$('#view');v.innerHTML='';S.secs=[];
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
+  $('#zoom').classList.toggle('hide',S.mode!=='og');
+  if(S.io)S.io.disconnect();
+  S.io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)loadSec(e.target)}),{rootMargin:'1800px 0px'});
+  const frag=document.createDocumentFragment();
+  for(let n=1;n<=S.doc.pages;n++){
+    const s=document.createElement('div');s.className='sec';s.dataset.p=n;
+    s.innerHTML=`<div class="ph"><span>p.${n}</span><button class="flip">${S.mode==='rf'?'看原页':'重排此页'}</button></div><div class="body"></div>`;
+    sizePh(s);frag.append(s);S.secs.push(s)}
+  v.append(frag);S.secs.forEach(s=>S.io.observe(s))}
+function ogWidth(){return Math.min(innerWidth,900)*S.zoom}
+function sizePh(s){const b=s.querySelector('.body');const m=s.dataset.m||S.mode;
+  b.style.minHeight=(m==='og'?Math.round(ogWidth()*S.ratio)+8:S.avgH)+'px'}
+async function loadSec(s){
+  if(s.dataset.ld)return;s.dataset.ld=1;
+  const n=+s.dataset.p,b=s.querySelector('.body'),m=s.dataset.m||S.mode;
+  try{if(m==='og')await renderOg(n,b);else await renderRf(n,b)}catch(e){b.innerHTML=`<div class="loading">这一页出错了：${esc(e.message)}</div>`}
+  b.style.minHeight='';
+  if(m==='rf'){const h=b.offsetHeight;if(h>200)S.avgH=Math.round(S.avgH*.8+h*.2)}}
+async function renderRf(n,b){
+  const ps=await pageParas(n);
+  if(!ps.length){
+    b.innerHTML=`<div class="rf"><p class="none">这一页没有可提取的文字（可能是扫描页或整页图片）。</p>
+      <div class="row" style="justify-content:center"><button class="btn sm ocr">用 AI 识别本页文字</button></div></div><div class="og"></div>`;
+    await renderOg(n,b.querySelector('.og'));
+    b.querySelector('.ocr').onclick=()=>ocrPage(n,b);return}
+  b.innerHTML='<div class="rf">'+ps.map(p=>`<p class="${p.h?'h':p.c?'c':''}">${esc(p.t)}</p>`).join('')+'</div>';
+  paintMarks(b,n)}
+async function renderOg(n,b){
+  const page=await S.pdf.getPage(n);const base=page.getViewport({scale:1});
+  const w=ogWidth(),scale=w/base.width,vp=page.getViewport({scale});
+  const dpr=Math.min(devicePixelRatio||1,2.5);
+  const wrap=document.createElement('div');wrap.className='cv';wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
+  const c=document.createElement('canvas');c.width=Math.floor(vp.width*dpr);c.height=Math.floor(vp.height*dpr);wrap.append(c);
+  const box=b.classList.contains('og')?b:Object.assign(document.createElement('div'),{className:'og'});
+  if(box!==b){b.innerHTML='';b.append(box)}box.innerHTML='';box.append(wrap);
+  await page.render({canvasContext:c.getContext('2d'),viewport:page.getViewport({scale:scale*dpr})}).promise;
+  const tl=document.createElement('div');tl.className='textLayer';tl.style.setProperty('--scale-factor',scale);wrap.append(tl);
+  try{await pdfjsLib.renderTextLayer({textContentSource:await page.getTextContent(),container:tl,viewport:vp}).promise}catch(e){}}
+async function ocrPage(n,b){
+  const btn=b.querySelector('.ocr');btn.disabled=true;btn.textContent='识别中…';
+  try{const page=await S.pdf.getPage(n);const v=page.getViewport({scale:1});const sc=1600/v.width;const vp=page.getViewport({scale:sc});
+    const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+    const data=c.toDataURL('image/jpeg',.85).split(',')[1];
+    const t=await claude({max:4000,system:'你是精确的文字识别工具。只输出页面上的正文文字，保持原文语言，不翻译、不总结、不加说明。段落之间空一行；标题前加 # ；跳过页眉页脚和页码。',
+      messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'识别这一页的文字。'}]}],
+      onText:x=>{btn.textContent='识别中… '+x.length+' 字'}});
+    await dput('ocr',t,S.doc.id+':'+n);S.paras.delete(n);await renderRf(n,b)}
+  catch(e){btn.disabled=false;btn.textContent='用 AI 识别本页文字';toast(e.message,5000)}}
+$('#view').addEventListener('click',e=>{
+  const f=e.target.closest('.flip');
+  if(f){const s=f.closest('.sec');const m=(s.dataset.m||S.mode)==='rf'?'og':'rf';s.dataset.m=m===S.mode?'':m;if(!s.dataset.m)delete s.dataset.m;
+    f.textContent=(s.dataset.m||S.mode)==='rf'?'看原页':'重排此页';delete s.dataset.ld;sizePh(s);loadSec(s);return}
+  const mk=e.target.closest('mark');if(mk&&!getSelection().toString()){const n=S.notes.find(x=>x.id===mk.dataset.id);if(n)noteSheet(n)}});
+
+/* ---------- 翻页与位置 ---------- */
+let jumpT=[];
+function goPage(n){n=Math.max(1,Math.min(S.doc.pages,n|0||1));const s=S.secs[n-1];if(!s)return;
+  S.cur=n;$('#pgIn').value=n;jumpT.forEach(clearTimeout);
+  const align=()=>{const y=s.getBoundingClientRect().top+scrollY-52;scrollTo(0,y)};
+  for(let k=n-2;k<=n+1;k++)if(S.secs[k-1])loadSec(S.secs[k-1]);
+  align();jumpT=[120,350,700,1200].map(t=>setTimeout(align,t));
+  ['touchstart','wheel'].forEach(ev=>addEventListener(ev,()=>jumpT.forEach(clearTimeout),{once:true,passive:true}))}
+let saveT,lastY=0,ticking=false;
+addEventListener('scroll',()=>{if(ticking||!S.pdf)return;ticking=true;requestAnimationFrame(()=>{ticking=false;
+  const y=scrollY;if(Math.abs(y-lastY)>30){document.body.classList.toggle('hidebars',y>lastY&&y>200&&!S.sel);lastY=y}
+  let lo=0,hi=S.secs.length-1;while(lo<hi){const mid=(lo+hi+1)>>1;if(S.secs[mid].getBoundingClientRect().top<=innerHeight*.35)lo=mid;else hi=mid-1}
+  const n=lo+1;if(n!==S.cur){S.cur=n;if(document.activeElement!==$('#pgIn'))$('#pgIn').value=n;
+    clearTimeout(saveT);saveT=setTimeout(()=>{S.doc.page=S.cur;dput('docs',S.doc)},800)}})},{passive:true});
+$('#view').addEventListener('click',e=>{if(e.target.closest('button,mark,a'))return;if(!getSelection().toString())document.body.classList.toggle('hidebars')});
+$('#pgIn').onchange=e=>goPage(+e.target.value,false);
+$('#pgIn').onfocus=e=>e.target.select();
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{if(S.mode===b.dataset.m)return;const n=S.cur;S.mode=b.dataset.m;S.doc.mode=S.mode;dput('docs',S.doc);build();goPage(n)});
+function rezoom(z){const n=S.cur;S.zoom=Math.max(.6,Math.min(3,z));S.doc.zoom=S.zoom;dput('docs',S.doc);build();goPage(n)}
+$('#zIn').onclick=()=>rezoom(S.zoom*1.25);$('#zOut').onclick=()=>rezoom(S.zoom/1.25);
+
+/* ---------- 字号 ---------- */
+function applyFs(){document.documentElement.style.setProperty('--fs',ls.get('fs',19)+'px')}applyFs();
+$('#bFont').onclick=()=>{sheet('阅读设置',`<div class="lbl">字号</div><div class="row"><button class="btn" id="f1">A－</button><span id="fsv" style="min-width:50px;text-align:center">${ls.get('fs',19)}</span><button class="btn" id="f2">A＋</button></div>
+  <div class="lbl">主题</div><div class="chips" id="thm">${[['','跟随系统'],['light','浅色'],['dark','深色']].map(([k,v])=>`<button class="chip ${ls.get('theme','')===k?'on':''}" data-k="${k}">${v}</button>`).join('')}</div>`);
+  const ch=d=>{const v=Math.max(14,Math.min(30,ls.get('fs',19)+d));ls.set('fs',v);$('#fsv').textContent=v;applyFs()};
+  $('#f1').onclick=()=>ch(-1);$('#f2').onclick=()=>ch(1);
+  $('#thm').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;ls.set('theme',b.dataset.k);applyTheme();$('#thm').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b))}};
+function applyTheme(){const t=ls.get('theme','');if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme}applyTheme();
+
+/* ---------- 选中 ---------- */
+function hideSel(){$('#selbar').classList.add('hide');S.sel=null}
+document.addEventListener('selectionchange',()=>{
+  if(!S.pdf)return;const s=getSelection();const t=s.toString().trim();
+  if(!t||s.rangeCount===0){setTimeout(()=>{if(!getSelection().toString().trim())hideSel()},250);return}
+  const a=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);const sec=a&&a.closest('.sec');if(!sec)return;
+  S.sel={text:t.replace(/\s*\n\s*/g,' ').slice(0,3000),page:+sec.dataset.p};
+  document.body.classList.remove('hidebars');$('#selbar').classList.remove('hide')});
+const keepSel=e=>e.preventDefault();
+['sMark','sNote','sAsk','sCopy'].forEach(id=>$('#'+id).addEventListener('mousedown',keepSel));
+$('#sCopy').onclick=async()=>{try{await navigator.clipboard.writeText(S.sel.text);toast('已复制')}catch(e){toast('复制失败')}getSelection().removeAllRanges();hideSel()};
+$('#sMark').onclick=async()=>{const n=await newNote('');getSelection().removeAllRanges();hideSel();toast('已划线 · p.'+n.page)};
+$('#sNote').onclick=async()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();noteSheet({id:null,docId:S.doc.id,page:sel.page,quote:sel.text,text:'',tag:'',ai:[]})};
+$('#sAsk').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();askSheet({id:null,docId:S.doc.id,page:sel.page,quote:sel.text,text:'',tag:'',ai:[]})};
+
+/* ---------- 笔记 ---------- */
+async function newNote(text,tag){const sel=S.sel;const n={id:uid(),docId:S.doc.id,page:sel.page,quote:sel.text,text:text||'',tag:tag||'',ai:[],at:Date.now()};
+  await saveNote(n);return n}
+async function saveNote(n){if(!n.id)n.id=uid();if(!n.at)n.at=Date.now();await dput('notes',n);
+  const i=S.notes.findIndex(x=>x.id===n.id);if(i>=0)S.notes[i]=n;else S.notes.push(n);refreshPage(n.page)}
+async function removeNote(n){await ddel('notes',n.id);S.notes=S.notes.filter(x=>x.id!==n.id);refreshPage(n.page)}
+function refreshPage(p){const s=S.secs[p-1];if(!s)return;const b=s.querySelector('.body');if(b.querySelector('.rf p:not(.none)')){b.querySelectorAll('mark').forEach(m=>m.replaceWith(...m.childNodes));b.normalize();paintMarks(b,p)}}
+function paintMarks(b,p){
+  const root=b.querySelector('.rf');if(!root)return;
+  for(const n of S.notes.filter(x=>x.page===p)){
+    const nodes=[];const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let t,all='';
+    while((t=w.nextNode())){nodes.push([t,all.length]);all+=t.data}
+    const q=n.quote.replace(/\s+/g,' ');let i=all.indexOf(q),len=q.length;
+    if(i<0){const h=q.slice(0,24);i=all.indexOf(h);len=Math.min(q.length,all.length-i)}
+    if(i<0)continue;const end=i+len;
+    for(const [node,off] of nodes){const a=Math.max(i,off),z=Math.min(end,off+node.data.length);if(a>=z)continue;
+      const r=document.createRange();r.setStart(node,a-off);r.setEnd(node,z-off);const m=document.createElement('mark');m.dataset.id=n.id;if(n.text||n.ai.length)m.className='n';
+      try{r.surroundContents(m)}catch(e){}}}}
+function noteSheet(n){
+  sheet(n.id?'笔记 · p.'+n.page:'写笔记 · p.'+n.page,`<div class="quote">${esc(n.quote)}</div>
+    <div class="chips" id="tg">${TAGS.map(([k,v])=>`<button class="chip ${k} ${n.tag===k?'on':''}" data-k="${k}">${v}</button>`).join('')}</div>
+    <textarea id="nt" placeholder="你的想法…">${esc(n.text)}</textarea>
+    ${n.ai&&n.ai.length?'<div class="lbl">AI 问答</div>'+n.ai.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join(''):''}
+    <div class="row"><button class="btn pri" id="nSave">保存</button><button class="btn" id="nAsk">问AI</button><div style="flex:1"></div>${n.id?'<button class="btn" id="nDel" style="color:var(--accent)">删除</button>':''}</div>`);
+  let tag=n.tag;
+  $('#tg').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;tag=tag===b.dataset.k?'':b.dataset.k;$('#tg').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.dataset.k===tag))};
+  $('#nSave').onclick=async()=>{n.text=$('#nt').value.trim();n.tag=tag;await saveNote(n);closeSheet();toast('已保存')};
+  $('#nAsk').onclick=()=>{n.text=$('#nt').value.trim();n.tag=tag;askSheet(n)};
+  if($('#nDel')){let armed=false;$('#nDel').onclick=async e=>{if(!armed){armed=true;e.target.textContent='确认删除';return}await removeNote(n);closeSheet();toast('已删除')}}
+  if(!n.id)setTimeout(()=>$('#nt').focus(),200)}
+function studyBlock(){const s=S.doc.study||{};return `研究问题：${s.q||'（还没设定）'}\n我的立场：${s.side||'（还没设定）'}${s.line?'\n工作线：'+s.line:''}`}
+async function askSheet(n){
+  sheet('问 AI · p.'+n.page,`<div class="quote">${esc(n.quote)}</div><div id="chat">${(n.ai||[]).map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
+    <div class="chips" id="qk">${['解释一下','翻译成中文','这段的论证有什么问题？','和我的研究问题有什么关系？','反方会怎么用这段？'].map(q=>`<button class="chip">${q}</button>`).join('')}</div>
+    <textarea id="qIn" placeholder="想问什么…" style="min-height:60px"></textarea>
+    <div class="row"><button class="btn pri" id="qGo">发送</button><div style="flex:1"></div><button class="btn" id="qNote">存为笔记</button></div>`);
+  const ctx=(await pageText(Math.max(1,n.page-1))).slice(-1500)+'\n'+(await pageText(n.page))+'\n'+(n.page<S.doc.pages?(await pageText(n.page+1)).slice(0,1200):'');
+  const sys=`你是一位牛津式阅读导师，陪用户读《${S.doc.name}》。\n${studyBlock()}\n回答要求：用中文，具体、简洁，先直接回答；如有关联，再用一两句点出这段和研究问题的关系；引用原文时标页码 p.N；原文里没有的不要编造，不确定就说不确定。`;
+  const send=async q=>{
+    if(!q.trim())return;const chat=$('#chat');
+    const first=!n.ai||!n.ai.length;n.ai=n.ai||[];
+    const userMsg=first?`【p.${n.page} 附近原文】\n${ctx.slice(0,9000)}\n\n【我选中的文字（p.${n.page}）】\n${n.quote}\n\n【问题】${q}`:q;
+    const hist=n.ai.map((m,i)=>({role:m.role,content:i===0&&m.full?m.full:m.content}));
+    n.ai.push({role:'user',content:q,full:first?userMsg:undefined});
+    chat.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div><div class="msg a">…</div>`);
+    const out=chat.lastElementChild;out.scrollIntoView({block:'nearest'});$('#qGo').disabled=true;
+    try{const a=await claude({system:sys,messages:[...hist,{role:'user',content:userMsg}],onText:t=>{out.innerHTML=fmt(t)}});
+      n.ai.push({role:'assistant',content:a});if(n.id)await saveNote(n)}
+    catch(e){out.className='msg e';out.textContent=e.message;n.ai.pop()}
+    $('#qGo').disabled=false};
+  $('#qk').onclick=e=>{const b=e.target.closest('.chip');if(b)send(b.textContent)};
+  $('#qGo').onclick=()=>{const q=$('#qIn').value;$('#qIn').value='';send(q)};
+  $('#qNote').onclick=()=>noteSheet(n)}
+$('#bNotes').onclick=()=>notesSheet();
+function notesSheet(){
+  const ns=[...S.notes].sort((a,b)=>a.page-b.page||a.at-b.at);
+  sheet(`笔记（${ns.length}）`,`<div class="row" style="margin:0 0 10px"><button class="btn sm" id="nExp">导出 Markdown</button></div>`+
+    (ns.length?ns.map(n=>`<div class="note" data-id="${n.id}"><div class="nq">${esc(n.quote.length>160?n.quote.slice(0,160)+'…':n.quote)}</div>${n.text?`<div class="nt">${esc(n.text)}</div>`:''}
+      <div class="nm"><span>p.${n.page}</span>${n.tag?`<span class="tag ${n.tag}">${tagName(n.tag)}</span>`:''}${n.ai&&n.ai.length?`<span class="tag">AI问答 ${n.ai.length/2|0}</span>`:''}<div style="flex:1"></div><button class="btn sm go">跳到这里</button></div></div>`).join('')
+    :'<p class="muted">还没有笔记。在正文里长按选中文字，就会出现划线、笔记、问AI。</p>'));
+  $('#nExp').onclick=()=>exportMd(S.doc.id);
+  $('#shB').querySelectorAll('.note').forEach(el=>el.onclick=e=>{const n=S.notes.find(x=>x.id===el.dataset.id);if(e.target.closest('.go')){closeSheet();goPage(n.page,false)}else noteSheet(n)})}
+
+/* ---------- 目录 ---------- */
+$('#bToc').onclick=async()=>{
+  sheet('目录','<div class="loading">读取中…</div>');
+  let ol=null;try{ol=await S.pdf.getOutline()}catch(e){}
+  if(!ol||!ol.length){$('#shB').innerHTML='<p class="muted">这个 PDF 没有自带目录。可以直接在底部输入页码跳转。</p>';return}
+  const items=[];const walk=async(arr,d)=>{for(const o of arr){let p=null;try{let dest=o.dest;if(typeof dest==='string')dest=await S.pdf.getDestination(dest);if(dest&&dest[0])p=await S.pdf.getPageIndex(dest[0])+1}catch(e){}
+    items.push({t:o.title,p,d});if(o.items&&o.items.length&&d<2)await walk(o.items,d+1)}};
+  await walk(ol,0);
+  $('#shB').innerHTML='<div class="toc">'+items.map(i=>`<a href="#" data-p="${i.p||''}" style="padding-left:${i.d*16}px;${i.p&&i.p<=S.cur&&false?'':''}">${esc(i.t)}${i.p?`<small>p.${i.p}</small>`:''}</a>`).join('')+'</div>';
+  const near=[...$('#shB').querySelectorAll('a')].filter(a=>+a.dataset.p&&+a.dataset.p<=S.cur).pop();if(near){near.style.color='var(--accent)';near.scrollIntoView({block:'center'})}
+  $('#shB').onclick=e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();if(a.dataset.p){closeSheet();goPage(+a.dataset.p,false)}}};
+
+/* ---------- 研究：立题、导读、对谈 ---------- */
+$('#bStudy').onclick=()=>studySheet();
+async function studySheet(){
+  const s=S.doc.study=S.doc.study||{q:'',side:'',line:''};const lines=await getLines();
+  sheet('研究',`<div class="lbl">研究问题</div><textarea id="sq" style="min-height:64px" placeholder="例：欧洲一体化的跨国框架，是国际主义能借用的基础设施，还是它的替代品？">${esc(s.q)}</textarea>
+    <div class="lbl">我的立场</div><textarea id="ss" style="min-height:52px" placeholder="选一边，写一两句理由">${esc(s.side)}</textarea>
+    <div class="lbl">归到工作线</div><div class="chips" id="sl">${lines.map(l=>`<button class="chip ${s.line===l?'on':''}">${esc(l)}</button>`).join('')}<button class="chip" id="slAdd">＋ 新工作线</button></div>
+    <div class="row"><button class="btn pri" id="sSave">保存</button></div>
+    <div class="lbl">导读</div><p class="muted" style="font-size:14px">从当前页往后读 8 页左右，AI 给出这一段的导读问题（不替你回答）。</p>
+    <div class="row"><button class="btn" id="sGuide">本节导读（p.${S.cur} 起）</button></div><div id="gOut" style="margin-top:10px"></div>
+    ${(S.doc.guides||[]).slice().reverse().map(g=>`<div class="guide"><b>p.${g.from}–${g.to}</b>\n${fmt(g.text)}</div>`).join('')}
+    <div class="lbl">导师对谈</div><p class="muted" style="font-size:14px">读完一段后向导师汇报你的论点。它会拿你的全部笔记来反驳、挑漏洞。</p>
+    <div class="row"><button class="btn pri" id="sTutor">向导师汇报</button></div>`);
+  let line=s.line;
+  $('#sl').onclick=async e=>{const b=e.target.closest('.chip');if(!b)return;
+    if(b.id==='slAdd'){const box=document.createElement('div');box.className='row';box.innerHTML='<input id="slNew" placeholder="新工作线名称"><button class="btn sm" id="slOk">添加</button>';b.parentElement.after(box);$('#slNew').focus();
+      $('#slOk').onclick=async()=>{const v=$('#slNew').value.trim();if(!v)return;const ls2=await getLines();if(!ls2.includes(v)){ls2.push(v);await dput('meta',ls2,'lines')}s.q=$('#sq').value.trim();s.side=$('#ss').value.trim();s.line=v;await dput('docs',S.doc);studySheet()};return}
+    line=line===b.textContent?'':b.textContent;$('#sl').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.textContent===line&&x.id!=='slAdd'))};
+  const save=async()=>{s.q=$('#sq').value.trim();s.side=$('#ss').value.trim();s.line=line;await dput('docs',S.doc)};
+  $('#sSave').onclick=async()=>{await save();toast('已保存')};
+  $('#sGuide').onclick=async()=>{await save();const btn=$('#sGuide');btn.disabled=true;const out=$('#gOut');out.className='guide';out.textContent='正在读…';
+    const from=S.cur;let txt='',to=from;for(let p=from;p<=S.doc.pages&&p<from+12&&txt.length<24000;p++){txt+=`\n[p.${p}]\n`+await pageText(p);to=p}
+    try{const t=await claude({max:1800,system:`你是牛津导师制里的导师，学生在读《${S.doc.name}》。\n${studyBlock()}\n用中文。`,
+      messages:[{role:'user',content:`下面是 p.${from}–${to} 的原文。请给我这一段的导读：\n1. 这一段在讲什么（2–3 句）；\n2. 它和我的研究问题、立场是什么关系，哪里可能帮我，哪里可能打我；\n3. 3–5 个导读问题，每个标出处页码；\n4. 阅读时要警惕的地方（论证跳跃、证据可疑、概念含糊等）。\n不要替我回答这些问题。\n\n${txt}`}],onText:x=>{out.innerHTML=fmt(x)}});
+      S.doc.guides=S.doc.guides||[];S.doc.guides.push({from,to,text:t,at:Date.now()});await dput('docs',S.doc)}
+    catch(e){out.className='msg e';out.textContent=e.message}btn.disabled=false};
+  $('#sTutor').onclick=async()=>{await save();tutorSheet()}}
+async function tutorSheet(){
+  const chat=(await dget('chats',S.doc.id))||[];
+  const ns=[...S.notes].sort((a,b)=>a.page-b.page);
+  const notesTxt=ns.length?ns.map(n=>`[p.${n.page}]「${n.quote.slice(0,400)}」${n.tag?'（'+tagName(n.tag)+'）':''}${n.text?' — 我的批注：'+n.text:''}`).join('\n'):'（还没有笔记）';
+  const sys=`你是牛津导师制里的导师（tutor），学生在读《${S.doc.name}》。\n${studyBlock()}\n\n学生会向你汇报他的论点。你的任务：认真听，然后反驳、挑漏洞——追问概念定义，要求证据和页码，提出反例和对方最强的论证，指出逻辑跳跃和只挑有利证据的地方。一次只集中打一到两个点，不要长篇大论，每次以一个具体的问题结尾。不要替他写论点，不要轻易认同；他的论证真正站住时，明确说哪一点站住了、为什么。如果他反复出现同一类问题（比如概念不清、只引支持自己的证据、把描述当论证），直接点出来。用中文。\n\n他目前的阅读笔记：\n${notesTxt.slice(0,30000)}`;
+  sheet('导师对谈',`<div id="tc">${chat.length?chat.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join(''):'<p class="muted" style="font-size:14px">先用几句话说出你目前的论点和最有力的证据，导师会开始反驳。</p>'}</div>
+    <div class="chips" id="tk"><button class="chip">总结这次对谈</button>${chat.length?'<button class="chip" id="tNew">开始新一轮</button>':''}</div>
+    <textarea id="tIn" placeholder="我的论点是…"></textarea><div class="row"><button class="btn pri" id="tGo">发送</button></div>`);
+  const box=$('#tc');box.lastElementChild&&box.lastElementChild.scrollIntoView({block:'end'});
+  const send=async q=>{if(!q.trim())return;if(!chat.length)box.innerHTML='';
+    chat.push({role:'user',content:q});box.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div><div class="msg a">…</div>`);
+    const out=box.lastElementChild;out.scrollIntoView({block:'nearest'});$('#tGo').disabled=true;
+    try{const a=await claude({system:sys,max:1500,messages:chat.map(m=>({role:m.role,content:m.content})),onText:t=>{out.innerHTML=fmt(t)}});chat.push({role:'assistant',content:a});await dput('chats',chat,S.doc.id)}
+    catch(e){chat.pop();out.className='msg e';out.textContent=e.message}$('#tGo').disabled=false};
+  $('#tGo').onclick=()=>{const q=$('#tIn').value;$('#tIn').value='';send(q)};
+  $('#tk').onclick=async e=>{const b=e.target.closest('.chip');if(!b)return;
+    if(b.id==='tNew'){if(chat.length){S.doc.tutorLog=S.doc.tutorLog||[];S.doc.tutorLog.push({at:Date.now(),chat:chat.slice()});await dput('docs',S.doc)}await dput('chats',[],S.doc.id);tutorSheet();return}
+    send('请总结这次对谈：1）我的论点现在的状态——哪些站住了，哪些被击中；2）我反复出现的弱点；3）下一步该读什么、补什么证据。')}}
+
+/* ---------- 导出与备份 ---------- */
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+async function exportMd(id){
+  const d=await dget('docs',id);const ns=(await notesOf(id)).sort((a,b)=>a.page-b.page);const chat=(await dget('chats',id))||[];const s=d.study||{};
+  let md=`# ${d.name}\n\n`;
+  if(s.q)md+=`**研究问题**：${s.q}\n\n`;if(s.side)md+=`**我的立场**：${s.side}\n\n`;if(s.line)md+=`**工作线**：${s.line}\n\n`;
+  md+=`## 笔记\n\n`+ns.map(n=>`- p.${n.page}${n.tag?' ['+tagName(n.tag)+']':''}\n  > ${n.quote.replace(/\n/g,' ')}\n${n.text?'\n  '+n.text.replace(/\n/g,'\n  ')+'\n':''}${(n.ai||[]).map(m=>`\n  ${m.role==='user'?'**问**':'**答**'}：${m.content.replace(/\n/g,'\n  ')}`).join('\n')}\n`).join('\n');
+  if((d.guides||[]).length)md+=`\n## 导读\n\n`+d.guides.map(g=>`### p.${g.from}–${g.to}\n\n${g.text}\n`).join('\n');
+  const logs=[...(d.tutorLog||[]).map(l=>l.chat),chat].filter(c=>c.length);
+  if(logs.length)md+=`\n## 导师对谈\n\n`+logs.map((c,i)=>`### 第 ${i+1} 轮\n\n`+c.map(m=>`**${m.role==='user'?'我':'导师'}**：${m.content}`).join('\n\n')).join('\n\n');
+  download(d.name.slice(0,40)+'-笔记.md',md,'text/markdown')}
+$('#bBackup').onclick=async()=>{
+  const docs=await dall('docs'),notes=await dall('notes');const chats={};for(const d of docs)chats[d.id]=(await dget('chats',d.id))||[];
+  download('阅读器备份-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({v:1,at:Date.now(),docs,notes,chats,lines:await getLines()}),'application/json');
+  toast('备份里只有笔记和研究记录，不含 PDF 文件',3500)};
+$('#restore').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{const j=JSON.parse(await f.text());let a=0,b=0;
+    for(const d of j.docs||[]){const old=await dget('docs',d.id);if(old){Object.assign(old,{study:d.study,guides:d.guides,tutorLog:d.tutorLog,page:Math.max(old.page||1,d.page||1)});await dput('docs',old);a++}}
+    for(const n of j.notes||[]){if(await dget('docs',n.docId)){await dput('notes',n);b++}}
+    for(const [id,c] of Object.entries(j.chats||{}))if(await dget('docs',id)&&c.length)await dput('chats',c,id);
+    if(j.lines)await dput('meta',j.lines,'lines');
+    toast(`已恢复 ${a} 本书的记录、${b} 条笔记。没在这台设备上的书，先添加同一个 PDF 再恢复。`,5000);renderLib()}
+  catch(err){toast('备份文件读不了：'+err.message,4000)}};
+
+/* ---------- 设置 ---------- */
+$('#bSet').onclick=()=>{
+  sheet('设置',`<div class="lbl">Claude API 密钥</div><input id="kIn" type="password" placeholder="sk-ant-…" value="${esc(ls.get('key',''))}" autocomplete="off">
+    <p class="muted" style="font-size:13px;margin-top:6px">密钥只保存在这台设备的浏览器里，不会上传到仓库。AI 请求从手机直接发给 Anthropic。</p>
+    <div class="lbl">模型</div><select id="mIn">${MODELS.map(([k,v])=>`<option value="${k}" ${ls.get('model',MODELS[0][0])===k?'selected':''}>${v}</option>`).join('')}</select>
+    <div class="row"><button class="btn pri" id="kSave">保存</button><button class="btn" id="kTest">测试连接</button></div><div id="kOut" class="msg"></div>`);
+  $('#kSave').onclick=()=>{ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);toast('已保存')};
+  $('#kTest').onclick=async()=>{ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);$('#kOut').textContent='连接中…';
+    try{await claude({max:30,messages:[{role:'user',content:'回复“连接正常”四个字。'}],onText:t=>{$('#kOut').textContent=t}})}catch(e){$('#kOut').textContent=e.message}}};
+
+/* ---------- 面板 ---------- */
+function sheet(t,html){$('#shT').textContent=t;$('#shB').innerHTML=html;$('#shB').onclick=null;$('#sheet').classList.remove('hide');$('#mask').classList.remove('hide');$('#shB').scrollTop=0}
+function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add('hide')}
+$('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
+
+/* ---------- 启动 ---------- */
+(async()=>{db=await openDB();renderLib();
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})})();
+</script>
+</body>
+</html>

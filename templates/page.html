@@ -271,6 +271,7 @@ footer details{border:0}
 </section>
 </main>
 <footer>
+  <p style="margin-bottom:8px"><a href="reader/" style="text-decoration:underline">📖 阅读器</a></p>
   <details><summary>来源状态：{{ ok_count }} 个正常，{{ fail_count }} 个失败</summary>
     {% for s in status if not s.ok %}<div>✕ {{ s.source }}：{{ s.error }}</div>{% endfor %}
   </details>
