@@ -44,7 +44,7 @@ SCHEMA = """输出格式（JSON）：
   "videos": [    // 给每个视频写一句中文看点（德语/英语视频尤其要写），最多25个
     {"item_id": "...", "hook": "一句话看点"}
   ],
-  "zh_titles": {  // 给带 "img":1 的条目各写一个中文标题（15字以内，像小红书标题一样抓人但不夸张、不歪曲原意），最多80个
+  "zh_titles": {  // 给带 "img":1 的条目各写一个中文标题（15字以内，像小红书标题一样抓人但不夸张、不歪曲原意），最多50个，优先精选和视频
     "item_id": "中文标题"
   },
   "german": [    // 从当天德语条目里挑5个实用词或表达
@@ -141,7 +141,7 @@ def edit(items: list[dict], cfg: dict, history: dict, date: str, mode: str = "fu
             + (SCHEMA if mode == "full" else SCHEMA + "\n\n" + UPDATE_SCHEMA))
     with client.messages.stream(
         model=MODEL,
-        max_tokens=32000,
+        max_tokens=48000,
         system=SYSTEM.format(profile=profile),
         messages=[{"role": "user", "content": user}],
     ) as stream:
