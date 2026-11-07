@@ -44,6 +44,9 @@ SCHEMA = """输出格式（JSON）：
   "videos": [    // 给每个视频写一句中文看点（德语/英语视频尤其要写），最多25个
     {"item_id": "...", "hook": "一句话看点"}
   ],
+  "zh_titles": {  // 给带 "img":1 的条目各写一个中文标题（15字以内，像小红书标题一样抓人但不夸张、不歪曲原意），最多80个
+    "item_id": "中文标题"
+  },
   "german": [    // 从当天德语条目里挑5个实用词或表达
     {"word": "", "meaning": "", "example": "德语例句"}
   ],
@@ -71,7 +74,7 @@ def _compact(items: list[dict]) -> str:
             continue
         lines.append(json.dumps({
             "id": it["id"], "src": it["source"], "sec": it["section"], "kind": it["kind"],
-            "t": it["title"], "s": it["summary"][:300],
+            "t": it["title"], "s": it["summary"][:300], **({"img": 1} if it.get("image") else {}),
         }, ensure_ascii=False))
     return "\n".join(lines)
 
@@ -104,7 +107,8 @@ UPDATE_SCHEMA = """这是午间增量更新：上午的日报已经发出，下�
   "threads": [ 同上午格式，只为有新进展的主线输出，update 只写新进展 ],
   "picks": [ 0到2篇，只有真正重要或和读者直接相关时才写，格式同上 ],
   "briefs": [ 10到25条简讯，格式同上 ],
-  "videos": [ 给新视频写一句中文看点，格式同上 ]
+  "videos": [ 给新视频写一句中文看点，格式同上 ],
+  "zh_titles": { 同上，给新条目里带 "img":1 的写中文标题 }
 }
 午间版不要输出 art、german、creative。"""
 

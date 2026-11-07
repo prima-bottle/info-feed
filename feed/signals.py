@@ -33,6 +33,8 @@ def load_signals() -> tuple[list[dict], list[str]]:
         if len(batch) < 100:
             break
 
+    owner = repo.split("/")[0].lower()
+    issues = [i for i in issues if (i.get("user") or {}).get("login", "").lower() == owner]
     tracked, likes = [], []
     for i in sorted(issues, key=lambda x: x["number"]):
         title = (i.get("title") or "").strip()

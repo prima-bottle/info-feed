@@ -110,6 +110,14 @@ footer details{border:0}
 .lock{display:flex;gap:8px;margin-top:10px}.lock input{flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .lock button{font:inherit;padding:8px 14px;border:0;border-radius:10px;background:var(--ink);color:var(--bg)}
 .wlog{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stalebar{display:none;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14.5px;align-items:center;justify-content:space-between;gap:10px}
+.stalebar button{font:inherit;font-size:14px;border:0;border-radius:999px;padding:6px 12px;background:var(--accent);color:#fff;white-space:nowrap}
+.flow{column-count:2;column-gap:8px}
+.tile{display:block;break-inside:avoid;margin-bottom:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile img{display:block;width:100%;height:auto;min-height:80px;background:var(--chip)}
+.tile .play{position:relative}.tile .play::after{content:"▶";position:absolute;right:8px;bottom:8px;font-size:12px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:3px 7px}
+.tile .tt{font-size:14px;line-height:1.4;padding:8px 9px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tile .ts{font-size:12px;color:var(--muted);padding:2px 9px 9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .runs{font-size:12.5px;color:var(--muted);margin-top:4px}
 .new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
 [data-key].read{opacity:.55}
@@ -122,12 +130,13 @@ footer details{border:0}
 </head>
 <body data-latest="{{ latest_ts }}" data-date="{{ date }}">
 <header>
-  <div class="topline"><div class="date">{{ date_label }}</div><span><button class="theme" id="reload">↻ 刷新</button> <button class="theme" id="theme">自动</button></span></div>
+  <div class="topline"><div class="date">{{ date_label }}</div><span><button class="theme" id="reload">↻ 刷新</button> <button class="theme" id="fetchNow">⤓ 抓取</button> <button class="theme" id="theme">自动</button></span></div>
   <div class="headline">{{ m.headline }}</div>
   <div class="runs">{{ run_label }}</div>
 </header>
 <nav><div class="tabs" id="tabs">
   <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="discover">发现</button>
   <button class="tab" data-p="work">工作</button>
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
@@ -136,6 +145,7 @@ footer details{border:0}
   <button class="tab" data-p="de">德语·创作</button>
 </div></nav>
 <main>
+<div class="stalebar" id="stalebar"><span id="staletext">这是旧的一期，今天的还没生成</span><button class="fetchbtn">⤓ 现在抓取</button></div>
 
 {% macro sources(ids) -%}
 <div class="srcs">{% for i in ids if i in items %}<a class="src" href="{{ items[i].link }}" target="_blank" rel="noopener">{{ items[i].source }} ↗</a>{% endfor %}</div>
@@ -193,6 +203,19 @@ footer details{border:0}
   </article>
   {% endfor %}
   <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
+</section>
+
+<section class="panel" id="discover">
+  <div class="flow">
+  {% for v in discover %}
+  <a class="tile" href="{{ v.link }}" target="_blank" rel="noopener" data-key="d{{ v.id }}" data-ts="{{ v.ts }}">
+    <div class="{{ 'play' if v.kind in ('video','bili','short') else '' }}"><img src="{{ v.image }}" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">{{ v.zh }}</div>
+    <div class="ts">{{ v.source }}{% if v.sub %} · {{ v.sub }}{% endif %}</div>
+  </a>
+  {% endfor %}
+  </div>
+  {% if not discover %}<div class="end">今天还没有带图的内容</div>{% else %}<div class="end"><span class="dot">·</span>刷到底了</div>{% endif %}
 </section>
 
 <section class="panel" id="work"><div id="workBody"><div class="end">先在「推荐」页最上面输入密码</div></div></section>
@@ -360,6 +383,15 @@ if(saved)unlock(saved,true);
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check(false)});
  window.addEventListener('pageshow',e=>{if(e.persisted)check(false)});
  check(false)})();
+/* 抓取：开一个预填好的 Issue，点"Submit"后约 3 分钟出新内容 */
+(()=>{const go=()=>{const t=new Date();const stamp=t.getMonth()+1+'/'+t.getDate()+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+  window.open('https://github.com/prima-bottle/info-feed/issues/new?title='+encodeURIComponent('抓取 '+stamp)+'&body='+encodeURIComponent('点 Submit 后大约 3 分钟出新内容，回到信息台点 ↻ 刷新。'),'_blank')};
+ document.getElementById('fetchNow').onclick=go;document.querySelectorAll('.fetchbtn').forEach(b=>b.onclick=go);
+ const d=new Date(),today=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const pageDate=document.body.dataset.date;
+ if(pageDate&&pageDate<today&&d.getHours()>=5){const bar=document.getElementById('stalebar');bar.style.display='flex';
+  const[,m,dd]=pageDate.split('-');document.getElementById('staletext').textContent='这还是'+(+m)+'月'+(+dd)+'日的内容，今天的还没生成'}
+})();
 /* 夜间模式：自动 → 夜间 → 日间 */
 (()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
  let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
