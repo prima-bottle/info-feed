@@ -110,6 +110,14 @@ footer details{border:0}
 .lock{display:flex;gap:8px;margin-top:10px}.lock input{flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .lock button{font:inherit;padding:8px 14px;border:0;border-radius:10px;background:var(--ink);color:var(--bg)}
 .wlog{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stalebar{display:none;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14.5px;align-items:center;justify-content:space-between;gap:10px}
+.stalebar button{font:inherit;font-size:14px;border:0;border-radius:999px;padding:6px 12px;background:var(--accent);color:#fff;white-space:nowrap}
+.flow{column-count:2;column-gap:8px}
+.tile{display:block;break-inside:avoid;margin-bottom:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile img{display:block;width:100%;height:auto;min-height:80px;background:var(--chip)}
+.tile .play{position:relative}.tile .play::after{content:"▶";position:absolute;right:8px;bottom:8px;font-size:12px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:3px 7px}
+.tile .tt{font-size:14px;line-height:1.4;padding:8px 9px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tile .ts{font-size:12px;color:var(--muted);padding:2px 9px 9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .runs{font-size:12.5px;color:var(--muted);margin-top:4px}
 .new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
 [data-key].read{opacity:.55}
@@ -122,12 +130,13 @@ footer details{border:0}
 </head>
 <body data-latest="1793961263" data-date="2026-11-06">
 <header>
-  <div class="topline"><div class="date">11月6日 周五</div><span><button class="theme" id="reload">↻ 刷新</button> <button class="theme" id="theme">自动</button></span></div>
+  <div class="topline"><div class="date">11月6日 周五</div><span><button class="theme" id="reload">↻ 刷新</button> <button class="theme" id="fetchNow">⤓ 抓取</button> <button class="theme" id="theme">自动</button></span></div>
   <div class="headline">科技股抛售从华尔街蔓延到全球：首尔一度暂停交易，DAX 跌破 26000 点。多家媒体把原因指向民主党赢下中期选举后对 AI 监管的担忧。</div>
   <div class="runs">早间 05:20 · 更新 06:58 · 更新 11:31</div>
 </header>
 <nav><div class="tabs" id="tabs">
   <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="discover">发现</button>
   <button class="tab" data-p="work">工作</button>
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
@@ -136,6 +145,7 @@ footer details{border:0}
   <button class="tab" data-p="de">德语·创作</button>
 </div></nav>
 <main>
+<div class="stalebar" id="stalebar"><span id="staletext">这是旧的一期，今天的还没生成</span><button class="fetchbtn">⤓ 现在抓取</button></div>
 
 
 
@@ -282,6 +292,493 @@ footer details{border:0}
   </article>
   
   <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
+</section>
+
+<section class="panel" id="discover">
+  <div class="flow">
+  
+  <a class="tile" href="https://www.humanite.fr/monde/donald-trump/la-rougeole-fait-un-sixieme-mort-aux-etats-unis-la-fuite-en-avant-de-trump-et-de-son-ministre-de-la-sante" target="_blank" rel="noopener" data-key="d3437164b42" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/11/rougeole-usa.jpg?w=1200" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">La rougeole fait un sixième mort aux États-Unis : la fuite en avant de Trump et de son ministre de la Santé</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/wissenschaft/oktober-war-der-weltweit-waermste-seit-beginn-der-aufzeichnungen-a-62b5e4f0-3b24-486c-92ba-6050a48e5101#ref=rss" target="_blank" rel="noopener" data-key="dfa9145ea70" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/53c73ed3-bc08-464f-a9de-8f22b2e8c9e4_w520_r2.08_fpx33.34_fpy50.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Copernicus 数据显示，10月是有记录以来全球最热的10月，2026年几乎肯定会突破1.5度阈值。</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/kultur/musik/dolly-parton-manager-laesst-klage-gegen-neffen-der-saengerin-fallen-a-135acc63-dd54-4677-96eb-de04df0b5e02#ref=rss" target="_blank" rel="noopener" data-key="db429d5b968" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/e4e7c630-4207-4ec8-b385-3e62d8c07cf2_w520_r2.08_fpx58.45_fpy49.99.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Dolly Parton: Manager lässt Klage gegen Neffen der Sängerin fallen</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Britischer-Schauspieler-und-Comedian/!6228166/" target="_blank" rel="noopener" data-key="dd395f7447e" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8849150/948/42490020.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Britischer Schauspieler und Comedian: Russell Brand wegen Vergewaltigung schuldig gesprochen</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://meduza.io/en/news/2026/11/06/russia-s-state-duma-and-federation-council-reportedly-to-cut-administrative-staff-by-15" target="_blank" rel="noopener" data-key="d7af4872225" data-ts="1793961263">
+    <div class=""><img src="https://meduza.io/imgly/share/1793960671/en/news/2026/11/06/russia-s-state-duma-and-federation-council-reportedly-to-cut-administrative-staff-by-15" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Russia’s State Duma and Federation Council reportedly to cut administrative staff by 15%</div>
+    <div class="ts">Meduza</div>
+  </a>
+  
+  <a class="tile" href="https://www.humanite.fr/en-debat/capitalisme/face-aux-mouvements-sociaux-comment-le-capitalisme-en-crise-genere-t-il-la-violence-et-sen-sert-il" target="_blank" rel="noopener" data-key="d8657406307" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/11/agora1_HD1Autr-edited.jpg?w=1200" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Face aux mouvements sociaux, comment le capitalisme en crise génère-t-il la violence et s’en sert-il ?</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Tagebuch-aus-der-Ukraine/!6225353/" target="_blank" rel="noopener" data-key="df5d4946c70" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8827061/948/imago0152619796h.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Tagebuch aus der Ukraine: Ein Krieg, in dem Cafés geöffnet und Medikamente knapp sind</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://www.bbc.co.uk/news/articles/cmly00l4p3lwo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener" data-key="d1dbcb0594a" data-ts="1793961263">
+    <div class=""><img src="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/5740/live/92c81290-d9cb-11f1-bb8e-efaa31738708.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Two dead after bus crashes in France, officials say</div>
+    <div class="ts">BBC World</div>
+  </a>
+  
+  <a class="tile" href="https://www.scmp.com/news/china/military/article/3373567/china-puts-df-missiles-display-flight-bans-fuel-speculation-about-icbm-test" target="_blank" rel="noopener" data-key="df93b7a27df" data-ts="1793961263">
+    <div class=""><img src="https://cdn.i-scmp.com/sites/default/files/styles/1280x720/public/d8/images/canvas/2026/11/06/306e5de1-78a3-4e8f-8f9e-0a6dc2aa0c11_8fae8124.jpg?itok=mVFfVKxU&amp;v=1793960305" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">SCMP：中国国家媒体展示东风系列导弹，包括 DF-61 洲际导弹，同时有社交媒体称出现航空禁飞，引发洲际导弹试射的猜测，尚无确认。</div>
+    <div class="ts">SCMP China</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/news/2026-11/06/hoffenheims-gewinnertypen-muessen-leiden" target="_blank" rel="noopener" data-key="d72b410d506" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/news/2026-11/06/hoffenheims-gewinnertypen-muessen-leiden-image-group/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Nächster Rückschlag: Hoffenheims «Gewinnertypen» müssen leiden</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/news/2026-11/06/suedkoreas-boerse-bricht-wegen-sorgen-um-ki-und-oelpreise-ein" target="_blank" rel="noopener" data-key="dab7afcc06b" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/news/2026-11/06/suedkoreas-boerse-bricht-wegen-sorgen-um-ki-und-oelpreise-ein-image-group/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">选后“AI 血洗”：科技股暴跌为什么和民主党获胜挂钩</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/news/2026-11/06/berlins-volleyballer-shoji-ueber-coming-out-an-der-zeit" target="_blank" rel="noopener" data-key="d921b610b60" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/news/2026-11/06/berlins-volleyballer-shoji-ueber-coming-out-an-der-zeit-image-group/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Queerer Sportler: Berlins Volleyballer Shoji über Coming-out: «An der Zeit»</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://hongkongfp.com/2026/11/06/joshua-wong-sentencing-local-govt-police-officials-hail-10-year-jail-term-amid-condemnation-from-foreign-govts-ngos/" target="_blank" rel="noopener" data-key="d93641a3a0f" data-ts="1793961263">
+    <div class=""><img src="https://hongkongfp.com/wp-content/uploads/2026/11/joshua-wong-1-1024x576.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">港澳国安案连续宣判：黄之锋10年、区锦新12年半</div>
+    <div class="ts">Hong Kong Free Press</div>
+  </a>
+  
+  <a class="tile" href="https://meduza.io/en/news/2026/11/06/russia-moves-to-let-airlines-keep-flying-foreign-leased-planes-they-never-returned-after-the-full-scale-invasion-of-ukraine" target="_blank" rel="noopener" data-key="daa80c80c22" data-ts="1793961263">
+    <div class=""><img src="https://meduza.io/imgly/share/1793960381/en/news/2026/11/06/russia-moves-to-let-airlines-keep-flying-foreign-leased-planes-they-never-returned-after-the-full-scale-invasion-of-ukraine" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Russia moves to let airlines keep flying foreign-leased planes they never returned after the full-scale invasion of Ukraine</div>
+    <div class="ts">Meduza</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/panorama/justiz/urteil-in-potsdam-lebenslange-haft-fuer-mord-an-dementem-schwiegervater-a-53bfccc2-c904-4c47-8457-a039bbe39bbd#ref=rss" target="_blank" rel="noopener" data-key="d11b233e605" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/b27064cb-6779-4e94-bd84-ed859ffa1f3f_w520_r2.08_fpx55.33_fpy45.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Urteil in Potsdam: Lebenslange Haft für Mord an dementem Schwiegervater</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/wirtschaft/2026-11/industrieproduktion-deutschland-wirtschaft-auto-pharma-gxe" target="_blank" rel="noopener" data-key="d6eeb34f505" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/wirtschaft/2026-11/industrieproduktion-deutschland-wirtschaft-auto-pharma-gxe-foto-1/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Zeit 称，德国工业9月产量意外增长，此前预测因干旱和战争偏悲观。</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/economie/article/2026/11/06/moscou-accelere-la-saisie-d-actifs-russes-de-groupes-occidentaux_6807766_3234.html" target="_blank" rel="noopener" data-key="d356a75cf81" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/11/06/462/0/8256/4128/644/322/60/0/2cbc09c_upload-1-6kddhhoflhqq-000-97249ke.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Le Monde 报道，莫斯科加快把西方企业在俄资产“交由临时管理”，这与克里姆林宫代表要求西方企业回俄做生意的表态矛盾。</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Staatskrise-in-Paraguay/!6228141/" target="_blank" rel="noopener" data-key="de7ae56bed6" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8848930/948/42493999.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Staatskrise in Paraguay: Wenn der politische Ziehvater sich gegen den Präsidenten stellt</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/news/2026-11/06/millionenschaden-nach-wohnungsbrand-haus-unbewohnbar" target="_blank" rel="noopener" data-key="d8628aacab6" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/news/2026-11/06/millionenschaden-nach-wohnungsbrand-haus-unbewohnbar-image-group/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Feuer in Wohnung: Millionenschaden nach Wohnungsbrand: Haus unbewohnbar</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/wirtschaft/service/boerse-beben-an-der-wall-street-ist-das-jetzt-der-ki-crash-a-0317ec61-e5b3-4fcc-8613-ec7f576866ae#ref=rss" target="_blank" rel="noopener" data-key="d49ae7a20f3" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/2a2435b8-1006-48ba-8a4a-c2e22a3a6b5c_w520_r2.08_fpx33.35_fpy50.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">选后“AI 血洗”：科技股暴跌为什么和民主党获胜挂钩</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://www.bbc.co.uk/news/articles/ckp8g4pm0y4lo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener" data-key="da3c55c34d0" data-ts="1793961263">
+    <div class=""><img src="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/c804/live/6a70d320-d8e7-11f1-8a29-751f921d505b.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Tanzanian opposition leader found guilty of incitement</div>
+    <div class="ts">BBC World</div>
+  </a>
+  
+  <a class="tile" href="https://www.humanite.fr/societe-2/accidents-de-la-route/deux-enfants-morts-de-nombreuses-victimes-ce-que-lon-sait-de-laccident-de-car-dans-lain" target="_blank" rel="noopener" data-key="d6fdf601904" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/11/accident.jpg?w=1200" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Deux enfants morts, 16 blessés dont trois graves… Ce que l’on sait de l’accident de car dans l’Ain</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/news/2026-11/06/gysi-ueber-emde-ich-hoffe-dass-wir-sie-ausschliessen" target="_blank" rel="noopener" data-key="d86c9186dc5" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/news/2026-11/06/gysi-ueber-emde-ich-hoffe-dass-wir-sie-ausschliessen-image-group/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Linke-Urgestein verärgert: Gysi über Emde: «Ich hoffe, dass wir sie ausschließen»</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/news/2026-11/06/bayern-coach-kompany-auf-dem-weg-zur-kompletten-erholung" target="_blank" rel="noopener" data-key="d979b2318c3" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/news/2026-11/06/bayern-coach-kompany-auf-dem-weg-zur-kompletten-erholung-image-group/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Fußball-Bundesliga: Bayern-Coach Kompany auf dem Weg zur «kompletten Erholung»</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://www.zeit.de/news/2026-11/06/lola-weippert-tumor-in-der-brust-ist-gewachsen" target="_blank" rel="noopener" data-key="da7b4eb1d1d" data-ts="1793961263">
+    <div class=""><img src="https://img.zeit.de/news/2026-11/06/lola-weippert-tumor-in-der-brust-ist-gewachsen-image-group/original__640x360" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Nach Ultraschall: Lola Weippert: Tumor in der Brust ist gewachsen</div>
+    <div class="ts">Zeit Online</div>
+  </a>
+  
+  <a class="tile" href="https://meduza.io/en/news/2026/11/06/zelensky-says-russian-strikes-have-damaged-every-power-plant-in-ukraine" target="_blank" rel="noopener" data-key="d2277fcf7ea" data-ts="1793961263">
+    <div class=""><img src="https://meduza.io/imgly/share/1793959459/en/news/2026/11/06/zelensky-says-russian-strikes-have-damaged-every-power-plant-in-ukraine" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Zelensky says Russian strikes have damaged every power plant in Ukraine</div>
+    <div class="ts">Meduza</div>
+  </a>
+  
+  <a class="tile" href="https://www.youtube.com/watch?v=JLwf3FsvAt8" target="_blank" rel="noopener" data-key="dae31b8b627" data-ts="1793961263">
+    <div class="play"><img src="https://i3.ytimg.com/vi/JLwf3FsvAt8/hqdefault.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">🥰💸HAMMERJAM &amp; COACHING mit PAPAPLATTE! - BRUTAL rein GEBUTTERT in Clash of Clans!</div>
+    <div class="ts">Trymacs · Trymacs 玩《部落冲突》，带广告，是德国游戏圈内容，对你的帖子素材价值有限。</div>
+  </a>
+  
+  <a class="tile" href="https://www.humanite.fr/feminisme/metoocinema/pour-la-premiere-fois-dans-lhistoire-de-hollywood-il-y-avait-des-preuves-materielles-la-journalise-lisa-monin-raconte-laffaire-blake-lively-dans-la-fa" target="_blank" rel="noopener" data-key="dbe642744a5" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/10/tv-ouv-LA-FABRIQUE-DU-MENSONGE-H.jpg?w=1200" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">« Pour la première fois dans l’histoire de Hollywood, il y avait des preuves matérielles » : la journalise Lisa Monin raconte l’affaire Blake Lively dans la Fabrique du mensonge</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://www.humanite.fr/societe/associations/face-a-la-precarite-alimentaire-lassociation-altrimenti-transforme-les-produits-gaspilles-en-solidarite" target="_blank" rel="noopener" data-key="df86f95a979" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/11/SOPHIABERGER-7940.jpg?w=1200" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Face à la précarité alimentaire, l’association Altrimenti transforme les produits gaspillés en solidarité</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://www.humanite.fr/sciences/biodiversite/comment-des-peintures-du-xviie-ont-permis-la-decouverte-dun-mollusque-en-mediterranee" target="_blank" rel="noopener" data-key="dc6016fd3f0" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/10/science-image-1.jpg?w=1200" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Comment des peintures du XVIIe ont permis la découverte d’un mollusque en Méditerranée ?</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://www.bbc.co.uk/news/articles/cq1j33w7d232o?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener" data-key="daf31ad6378" data-ts="1793961263">
+    <div class=""><img src="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/1994/live/ff7af2d0-d9bd-11f1-a00c-673f8daaffd9.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Musk 似乎暗示 Cybertruck 将停产，腾出产能给无人驾驶出租车 Cybercab（BBC）。</div>
+    <div class="ts">BBC World</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/ausland/demokrat-adam-hamilton-ein-pastor-aus-kansas-zieht-in-den-us-senat-a-083b5102-9f84-4a7c-8e88-ea5dcacf3d7d#ref=rss" target="_blank" rel="noopener" data-key="d4ad401bc99" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/17361ba1-f60d-451b-a97d-5d3703187882_w520_r2.08_fpx33.34_fpy50.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Demokrat Adam Hamilton: Ein Pastor aus Kansas zieht in den US-Senat</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://www.theguardian.com/environment/2026/nov/06/new-york-boston-us-weather-tracker" target="_blank" rel="noopener" data-key="d2f6f276918" data-ts="1793961263">
+    <div class=""><img src="https://i.guim.co.uk/img/media/a7dcae1881b9409544c10f165f1a48f73083ff87/0_0_3563_2850/master/3563.jpg?width=140&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=431971dd5b5626d882054c175b9843a5" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Low pressure in US midwest brings unseasonable heat to New York and Boston</div>
+    <div class="ts">Guardian World</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/panorama/gesellschaft/oberlausitz-buergermeister-suche-in-cunewalde-was-wenn-niemand-regieren-will-a-d3952b31-d3a8-4f26-9b06-a564910d8102#ref=rss" target="_blank" rel="noopener" data-key="d175430752f" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/0a05798d-1fe4-4f5a-9105-a4d2ed339e7d_w520_r2.08_fpx52.14_fpy54.99.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Oberlausitz: Bürgermeister-Suche in Cunewalde - Was, wenn niemand regieren will?</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://www.faz.net/aktuell/wirtschaft/arm-und-reich/friedrich-merz-und-die-flat-tax-waere-das-echte-steuerreform-accg-201634130.html" target="_blank" rel="noopener" data-key="d600dee3abd" data-ts="1793961263">
+    <div class=""><img src="https://media0.faz.net/image/b9cb8d3ebc64/w2694h1515x0y142/202610/7f958e3e-d856-4304-aeaf-9baa3288469f/lang-her-friedrich-merz.webp" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Welche Steuerreform?: Friedrich Merz sollte eine alte Idee wiederbeleben</div>
+    <div class="ts">FAZ</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/sport/golf/golf-liv-serie-stellt-spielbetrieb-ein-rueckkehr-abgewanderter-profis-zu-etablierten-touren-offen-a-19c61150-0b58-4395-a18d-fb7b5d3f8b6e#ref=rss" target="_blank" rel="noopener" data-key="d1081a4111d" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/cf7ec43b-706f-4b4d-a249-0d47b9ed512b_w520_r2.08_fpx53.33_fpy50.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Golf: LIV-Serie stellt Spielbetrieb ein – Rückkehr abgewanderter Profis zu etablierten Touren offen</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://www.humanite.fr/en-debat/colonies-israeliennes/la-liberte-de-la-presse-attaquee-un-symptome-de-lerosion-de-la-democratie-israelienne" target="_blank" rel="noopener" data-key="dad2a453230" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/10/Vignette_2024_tribune_97bbf4_a249ac.webp?w=1023" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">La liberté de la presse attaquée, un symptôme de l’érosion de la démocratie israélienne</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://meduza.io/en/news/2026/11/06/everyone-is-just-going-to-be-thrilled-trump-promises-big-beautiful-agreement-to-end-war-in-ukraine" target="_blank" rel="noopener" data-key="d38b1ab5bea" data-ts="1793961263">
+    <div class=""><img src="https://meduza.io/imgly/share/1793958279/en/news/2026/11/06/everyone-is-just-going-to-be-thrilled-trump-promises-big-beautiful-agreement-to-end-war-in-ukraine" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">‘Everyone is just going to be thrilled’: Trump promises ‘big, beautiful agreement’ to end war in Ukraine</div>
+    <div class="ts">Meduza</div>
+  </a>
+  
+  <a class="tile" href="https://www.spiegel.de/geschichte/musik-und-misogynie-wie-maenner-karrieren-von-komponistinnen-verhinderten-a-1b058892-de2f-4590-955d-ec7a7e86b8c9#ref=rss" target="_blank" rel="noopener" data-key="d8392744e80" data-ts="1793961263">
+    <div class=""><img src="https://cdn.prod.www.spiegel.de/images/531e71da-d1b8-47b2-a290-417fb9dd95cd_w520_r2.08_fpx44.6_fpy44.99.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Musik und Misogynie: Wie Männer Karrieren von Komponistinnen verhinderten</div>
+    <div class="ts">Spiegel</div>
+  </a>
+  
+  <a class="tile" href="https://www.humanite.fr/en-debat/mobilisation-du-17-octobre/heroisation-des-forces-policieres-un-outil-de-controle-social" target="_blank" rel="noopener" data-key="d6fe068d725" data-ts="1793961263">
+    <div class=""><img src="https://www.humanite.fr/wp-content/uploads/2026/10/Vignette_2024_tribune_97bbf4_59bda4.webp?w=1023" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Héroïsation des forces policières, un outil de contrôle social</div>
+    <div class="ts">L&#39;Humanité</div>
+  </a>
+  
+  <a class="tile" href="https://www.faz.net/aktuell/wirtschaft/mehr-wirtschaft/donald-trumps-zoelle-wie-ein-verliererthema-den-freihandel-neu-belebt-201654859.html" target="_blank" rel="noopener" data-key="d73acdf0382" data-ts="1793961263">
+    <div class=""><img src="https://media0.faz.net/image/04d55fa8575c/w4290h2413x0y123/202609/43601.0.2572473875/ausser-donald-trump-ist-in-der.webp" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Midterms: Zölle sind ein Verliererthema</div>
+    <div class="ts">FAZ</div>
+  </a>
+  
+  <a class="tile" href="https://meduza.io/en/news/2026/11/06/ukraine-attacks-afipsky-oil-refinery-in-southern-russia" target="_blank" rel="noopener" data-key="d39208f2d24" data-ts="1793961263">
+    <div class=""><img src="https://meduza.io/imgly/share/1793957435/en/news/2026/11/06/ukraine-attacks-afipsky-oil-refinery-in-southern-russia" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Ukraine attacks Afipsky oil refinery in southern Russia</div>
+    <div class="ts">Meduza</div>
+  </a>
+  
+  <a class="tile" href="https://www.sueddeutsche.de/politik/bundesregierung-deutschland-newsblog-k-o-tropfen-bundestag-gesetz-li.3568524" target="_blank" rel="noopener" data-key="d44db66ae78" data-ts="1793961263">
+    <div class=""><img src="https://www.sueddeutsche.de/2026/11/06/1b399847-acb0-408d-a6cb-17a7663d0c22.jpg?rect=575%2C0%2C2896%2C2172&amp;amp;width=1000&amp;amp;fm=jpg&amp;amp;q=60" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">联邦议院通过法案：以 K.O. 药水（K.-o.-Tropfen）实施强奸或抢劫，最低刑期由3年提高到5年。</div>
+    <div class="ts">Süddeutsche</div>
+  </a>
+  
+  <a class="tile" href="https://elpais.com/america/2026-11-06/militantes-bolsonaristas-ante-la-huida-de-flavio-bolsonaro-a-florida-hizo-lo-correcto-si-no-iria-preso.html" target="_blank" rel="noopener" data-key="dfee16c844e" data-ts="1793961263">
+    <div class=""><img src="https://imagenes.elpais.com/resizer/v2/674RUZU37ZLI5NBKNRFGSJNA6Y.jpg?auth=79851b9a4f02271a0832cced55fc0485c185febf48abd6e635047cc385fb261a" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Militantes bolsonaristas ante la huida de Flávio Bolsonaro a Florida: “Hizo lo correcto. Si no, iría preso”</div>
+    <div class="ts">El País América</div>
+  </a>
+  
+  <a class="tile" href="https://elpais.com/us/2026-11-06/los-hombres-menores-de-30-anos-lideraron-el-cambio-de-partido-a-favor-de-los-democratas-en-las-midterms.html" target="_blank" rel="noopener" data-key="d741c277a4f" data-ts="1793961263">
+    <div class=""><img src="https://imagenes.elpais.com/resizer/v2/YVOSSXYFRVEIDMJVLP7YEHYII4.JPG?auth=08194c2721f3e69e840198982fd096c6b85d4be17a692dfddc9f3957dfc20786" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Los hombres menores de 30 años lideraron el cambio de partido a favor de los demócratas en las ‘midterms’</div>
+    <div class="ts">El País América</div>
+  </a>
+  
+  <a class="tile" href="https://elpais.com/us/2026-11-06/las-nuevas-congresistas-gobernadoras-y-alcaldesas-que-pintan-el-mapa-de-estados-unidos-de-azul-como-una-apisonadora.html" target="_blank" rel="noopener" data-key="de2e55368da" data-ts="1793961263">
+    <div class=""><img src="https://imagenes.elpais.com/resizer/v2/R4ILRGS3PFAPZPUKLRN36RUJ6U.jpg?auth=8d0fcd45e85e74c2c1d21187d8b7552ea2fc8c7b1f1779328c16610bdb46fcf4" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Las nuevas congresistas, gobernadoras y alcaldesas que pintan el mapa de Estados Unidos de azul “como una apisonadora”</div>
+    <div class="ts">El País América</div>
+  </a>
+  
+  <a class="tile" href="https://elpais.com/us/2026-11-06/gano-la-ola-azul-que-sigue-para-los-migrantes-la-lucha-por-la-legalizacion-tras-el-reves-electoral-de-trump.html" target="_blank" rel="noopener" data-key="d12c3a87132" data-ts="1793961263">
+    <div class=""><img src="https://imagenes.elpais.com/resizer/v2/7JS5DOXH2RFFBNT7SZMOCWBGTA.jpg?auth=6e8d3742d6026c202eeb73c62c54541e5feae5697579c6204f1cbf30c060d3e2" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">“Ganó la ola azul, ¿qué sigue para los migrantes?”: la lucha por la legalización tras el revés electoral de Trump</div>
+    <div class="ts">El País América</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Gehaltsangaben-in-Stellenanzeigen/!6228142/" target="_blank" rel="noopener" data-key="dd589106dc2" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8848940/948/Gehaltstransparenz-Grossbritannien.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">英国将强制招聘广告公开薪资（HN 热门；taz 也报道）。德国目前没有同类规定，求职者可留意。</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/international/article/2026/11/06/guerre-en-ukraine-le-rn-isole-au-senat-sur-sa-volonte-de-reduction-de-l-aide-a-kiev-lfi-absente-du-debat_6807755_3210.html" target="_blank" rel="noopener" data-key="df88e2b59ff" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/10/21/341/0/6000/3000/644/322/60/0/9b8af35_upload-1-r0jlcr5gwt9h-cbi1349055.JPG" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Guerre en Ukraine : le RN isolé au Sénat sur sa volonté de réduction de l’aide à Kiev, LFI absente du débat</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://www.faz.net/aktuell/wissen/computer-mathematik/cyberangriffe-auf-supermaerkte-warum-sie-so-leicht-gelingen-accg-201650886.html" target="_blank" rel="noopener" data-key="d1a7af2046c" data-ts="1793961263">
+    <div class=""><img src="https://media0.faz.net/image/afd96239e976/w7680h4320x0y221/202611/ab30c425-2e58-429a-9ed2-753d3c8a42f0/zweiter-angriff-in-kurzer-zeit.webp" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Schutzlose Infrastruktur: Warum Kühltruhen und Blutbanken so leicht angreifbar sind</div>
+    <div class="ts">FAZ</div>
+  </a>
+  
+  <a class="tile" href="https://www.faz.net/podcasts/nico-lange/bombendrohungen-gegen-passagierflugzeuge-nico-lange-klaert-auf-accg-201657882.html" target="_blank" rel="noopener" data-key="dc6ffaee9c6" data-ts="1793961263">
+    <div class=""><img src="https://media0.faz.net/image/64c523f6fd14/w6144h3456x0y320/202611/7d5af3ac-a070-4722-b946-6300d24ea863/7-zvibwqdmtj.webp" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Geopolitik-Briefing: Wer steckt hinter den Bombendrohungen gegen europäische Passagierflugzeuge?</div>
+    <div class="ts">FAZ</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/economie/article/2026/11/06/au-mexique-le-queretaro-concentre-les-data-centers-et-les-inquietudes-sur-leurs-consequences-environnementales_6807753_3234.html" target="_blank" rel="noopener" data-key="dba4782ef58" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/11/06/484/0/3532/1766/644/322/60/0/ac07b1b_upload-1-wh1wrjkh3tza-000-c3ma9nu.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Au Mexique, la concentration des data centers suscite l’inquiétude des habitants de l’Etat du Querétaro</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/international/article/2026/11/06/la-suede-invoque-la-menace-russe-pour-prolonger-les-controles-a-ses-frontieres_6807752_3210.html" target="_blank" rel="noopener" data-key="df50089afec" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/10/15/418/0/5017/2508/644/322/60/0/5b95ab4_ftp-1-k1zqch7i1g9r-ef61e99fe0b84322a622dc2b0193418e-0-4bbc0747907743c8b5cb10cdea40019e.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">La Suède invoque la menace russe pour prolonger les contrôles à ses frontières</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/m-le-mag/article/2026/11/06/novaia-gazeta-dans-le-monde-trente-ans-de-journalisme-de-combat-face-aux-pouvoirs-russes_6807750_4500055.html" target="_blank" rel="noopener" data-key="d6de12b41d8" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/11/03/864/0/5184/2592/644/322/60/0/c205286_upload-1-a370rgukjbcn-maxbestof203751.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">« Novaïa Gazeta » dans « Le Monde », trente ans de journalisme de combat face aux pouvoirs russes</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/planete/article/2026/11/06/les-importations-d-animaux-vers-vantara-gigantesque-sanctuaire-indien-restent-sous-surveillance-malgre-la-volonte-du-centre-de-redorer-son-image_6807749_3244.html" target="_blank" rel="noopener" data-key="db5d9beac03" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/11/05/500/0/6000/3000/644/322/60/0/31e5d33_upload-1-by5d6bfau8zt-000-d2994ew.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Les importations d’animaux vers Vantara, gigantesque sanctuaire indien, restent sous surveillance malgré la volonté du centre de redorer son image</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://www.theguardian.com/business/2026/nov/06/global-stocks-plunge-amid-ai-slowdown-fears-after-democrats-midterm-triumph" target="_blank" rel="noopener" data-key="dcd3e75a722" data-ts="1793961263">
+    <div class=""><img src="https://i.guim.co.uk/img/media/133fcf307a659f484d60938a125776efe501ba4e/407_0_3025_2422/master/3025.jpg?width=140&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=89a44d686b06b49ef9bf9404d834f126" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">选后“AI 血洗”：科技股暴跌为什么和民主党获胜挂钩</div>
+    <div class="ts">Guardian World</div>
+  </a>
+  
+  <a class="tile" href="https://jacobin.de/afd-ddr-ostalgie-hoecke-siegmund/" target="_blank" rel="noopener" data-key="d625ae5a438" data-ts="1793961263">
+    <div class=""><img src="https://storage.ghost.io/c/1b/9d/1b9d5475-fc8b-4167-bce4-6d6bd12ae6ab/content/images/2026/11/imago0867482197h.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Warum die AfD plötzlich ihre Liebe zur DDR entdeckt</div>
+    <div class="ts">Jacobin DE</div>
+  </a>
+  
+  <a class="tile" href="https://hongkongfp.com/2026/11/06/security-chief-chris-tang-says-govt-will-facilitate-wang-fuk-court-fire-anniversary-events-if-lawful/" target="_blank" rel="noopener" data-key="d4d03ebb945" data-ts="1793961263">
+    <div class=""><img src="https://hongkongfp.com/wp-content/uploads/2026/11/Tai-Po-fire_-Authorities-will-assist-fire-anniversary-commemorations-if-actions-‘lawful-security-chief-says-1024x576.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">HKFP：保安局局长邓炳强称，宏福苑（Wang Fuk Court）火灾周年悼念活动，只要“合法”政府会提供协助。“合法”的界限没有说明。</div>
+    <div class="ts">Hong Kong Free Press</div>
+  </a>
+  
+  <a class="tile" href="https://www.sueddeutsche.de/politik/ki-newsblog-usa-rechenzentren-wasser-greenpeace-trockenheit-li.3566658" target="_blank" rel="noopener" data-key="db0e074a26b" data-ts="1793961263">
+    <div class=""><img src="https://www.sueddeutsche.de/2026/11/06/f9bc3a4b-1d50-4c69-9263-febe8c494802.jpg?rect=327%2C0%2C3347%2C2510&amp;amp;width=1000&amp;amp;fm=jpg&amp;amp;q=60" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">SZ 报道：Greenpeace 指出德国数据中心耗水约130亿升，运营商没有遵守用水申报义务，需要更省饮用水的冷却系统。</div>
+    <div class="ts">Süddeutsche</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/les-decodeurs/article/2026/11/06/donner-moins-d-argent-a-l-europe-la-proposition-de-marine-le-pen-est-elle-realiste_6807742_4355770.html" target="_blank" rel="noopener" data-key="db3aabc55b3" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/10/06/891/0/5341/2670/644/322/60/0/543a1a0_upload-1-yksz73fyk8op-cbi1340046.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Donner moins d’argent à l’Europe : la proposition de Marine Le Pen est-elle réaliste ?</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Nach-der-Wahl-in-Israel/!6228139/" target="_blank" rel="noopener" data-key="d32a8a4b1f3" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8848879/948/42416448.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Nach der Wahl in Israel: Bekommt Eisenkot das Mandat, eine Koalition zu bilden?</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Gen-Z-Proteste/!6227856/" target="_blank" rel="noopener" data-key="d88f12aa981" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8846651/948/42448280.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Gen-Z-Proteste: Halbstarke in Turnschuhen</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://www.bbc.co.uk/news/articles/c977ppnezep6o?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener" data-key="d3bf7ce20ac" data-ts="1793961263">
+    <div class=""><img src="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/679b/live/77438af0-d9b1-11f1-bbc7-9574ed12e2df.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Somalia&#39;s top court rejects president&#39;s term extension amid political crisis</div>
+    <div class="ts">BBC World</div>
+  </a>
+  
+  <a class="tile" href="https://www.lemonde.fr/international/live/2026/11/06/en-direct-guerre-en-ukraine-la-russie-a-attaque-des-infrastructures-energetiques-dans-les-regions-de-kiev-et-de-kirovohrad-selon-les-autorites-ukrainiennes_6803934_3210.html" target="_blank" rel="noopener" data-key="d913f890138" data-ts="1793961263">
+    <div class=""><img src="https://img.lemde.fr/2026/11/05/504/0/6048/3024/644/322/60/0/2737df6_ftp-1-6baqmaqibsno-04c17bc2916b4d13956b7db927f04944-0-32a42466ccfb47cfaab5efef7ea590ec.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">EN DIRECT, guerre en Ukraine : la Russie a attaqué des infrastructures énergétiques dans les régions de Kiev et de Kirovohrad, selon les autorités ukrainiennes</div>
+    <div class="ts">Le Monde</div>
+  </a>
+  
+  <a class="tile" href="https://www.scmp.com/news/china/science/article/3373486/chinese-space-firm-builds-wooden-rocket-nose-cone-cheaper-frequent-launches" target="_blank" rel="noopener" data-key="dfbce6061e5" data-ts="1793961263">
+    <div class=""><img src="https://cdn.i-scmp.com/sites/default/files/styles/1280x720/public/d8/images/canvas/2026/11/06/665c4e85-5c9e-49a1-82fe-eee80aa4e238_3486d4ed.jpg?itok=aY4s-Z6T&amp;v=1793935772" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Chinese space firm builds wooden rocket nose cone for cheaper, frequent launches</div>
+    <div class="ts">SCMP China</div>
+  </a>
+  
+  <a class="tile" href="https://www.nd-aktuell.de/artikel/1203704.kuba-usa-verhaengen-neue-sanktionen-gegen-havanna.html" target="_blank" rel="noopener" data-key="dfb1e1fbf11" data-ts="1793961263">
+    <div class=""><img src="https://www.nd-aktuell.de/img/jpeg/2400/326884" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">nd：美国对古巴新增制裁，把电子行业也列入，同时有两家中国企业进入制裁名单。</div>
+    <div class="ts">nd</div>
+  </a>
+  
+  <a class="tile" href="https://hongkongfp.com/2026/11/06/6-years-in-jail-has-reshaped-my-view-of-life-joshua-wong-sought-leniency-to-be-freed-in-his-30s-mitigation-letter-reveals/" target="_blank" rel="noopener" data-key="de5feb4f508" data-ts="1793961263">
+    <div class=""><img src="https://hongkongfp.com/wp-content/uploads/2026/11/rename-1024x576.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">港澳国安案连续宣判：黄之锋10年、区锦新12年半</div>
+    <div class="ts">Hong Kong Free Press</div>
+  </a>
+  
+  <a class="tile" href="https://www.bbc.co.uk/news/articles/ckjrwx1r2d5ro?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener" data-key="d3a7b00a964" data-ts="1793961263">
+    <div class=""><img src="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/5589/live/461d3e00-d879-11f1-b441-2b33b063138f.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Major construction ongoing near Iran missile bases, satellite images suggest</div>
+    <div class="ts">BBC World</div>
+  </a>
+  
+  <a class="tile" href="https://www.youtube.com/watch?v=XgC1QTs6A2U" target="_blank" rel="noopener" data-key="d7a7f412202" data-ts="1793961263">
+    <div class="play"><img src="https://i1.ytimg.com/vi/XgC1QTs6A2U/hqdefault.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">The Future of AI Is Absolutely Incredible (Spencer Huang)</div>
+    <div class="ts">Two Minute Papers · Two Minute Papers 请到 Spencer Huang 谈 AI 的未来，赞助商是 GPU 云平台，适合看看当下 AI 与图形算力的展望。</div>
+  </a>
+  
+  <a class="tile" href="https://www.nd-aktuell.de/artikel/1203703.bundeswehr-sexuelles-fehlverhalten-hunderte-faelle-der-justiz-uebergeben.html" target="_blank" rel="noopener" data-key="d868c10b0ba" data-ts="1793961263">
+    <div class=""><img src="https://www.nd-aktuell.de/img/jpeg/2400/326883" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Bundeswehr | Sexuelles Fehlverhalten: Hunderte Fälle der Justiz übergeben</div>
+    <div class="ts">nd</div>
+  </a>
+  
+  <a class="tile" href="https://www.sueddeutsche.de/meinung/alexander-schweitzer-bundesagentur-fuer-arbeit-arbeitslosengeld-aeltere-kommentar-li.3574771" target="_blank" rel="noopener" data-key="d0f29d45e22" data-ts="1793961263">
+    <div class=""><img src="https://www.sueddeutsche.de/2026/11/05/b2cc6fb8-c885-447a-8995-c5ac0529332f.jpg?rect=866%2C87%2C2096%2C1572&amp;amp;width=1000&amp;amp;fm=jpg&amp;amp;q=60" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Sozialstaat: Die Regierung muss überlegen, das Arbeitslosengeld bei Älteren zu kürzen</div>
+    <div class="ts">Süddeutsche</div>
+  </a>
+  
+  <a class="tile" href="https://www.faz.net/aktuell/rhein-main/frankfurt/frankfurter-ausschreitungen-wann-hoert-man-auf-migrant-zu-sein-accg-201654906.html" target="_blank" rel="noopener" data-key="dc4bccacd39" data-ts="1793961263">
+    <div class=""><img src="https://media0.faz.net/image/2606e3dc9e1f/w7402h4164x0y386/5e2628c2-cbc6-43e9-974d-4fde048eb61e-_1VL7016.jpg/pluenderungen-und.webp" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Krawalle in Frankfurt: „Ich frage mich, geht dieses Labeling als Migrant jemals weg?“</div>
+    <div class="ts">FAZ</div>
+  </a>
+  
+  <a class="tile" href="https://www.scmp.com/news/china/politics/article/3373519/new-anti-corruption-law-arms-beijing-expansive-global-enforcement-powers" target="_blank" rel="noopener" data-key="d0646f8faf3" data-ts="1793961263">
+    <div class=""><img src="https://cdn.i-scmp.com/sites/default/files/styles/1280x720/public/d8/images/canvas/2026/11/06/54dfc62e-faaf-496f-9d9b-52972c7ce890_54e63b2b.jpg?itok=Sn7gC7MQ&amp;v=1793948232" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">SCMP 报道，全国人大常委会通过《反跨境腐败法》，给北京追查境外资产的新手段，同时对抗外国对中国的调查。条目只有摘要，具体条款未见。</div>
+    <div class="ts">SCMP China</div>
+  </a>
+  
+  <a class="tile" href="https://www.sueddeutsche.de/politik/usa-news-liveblog-midterms-trump-oval-office-denkmal-li.3573278" target="_blank" rel="noopener" data-key="d19d69dd743" data-ts="1793961263">
+    <div class=""><img src="https://www.sueddeutsche.de/2026/11/06/b30ffd52-29f1-473d-8344-0b596e562ffa.jpg?rect=90%2C0%2C3556%2C2667&amp;amp;width=1000&amp;amp;fm=jpg&amp;amp;q=60" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Midterms 2026: Trump will Oval Office als nationales Denkmal schützen lassen</div>
+    <div class="ts">Süddeutsche</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Tote-Obdachlose-in-Hamburg/!6227557/" target="_blank" rel="noopener" data-key="d430a212b7e" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8845565/948/Obdachlose-Bruecke-dpa-Christian-Charisius.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">taz：汉堡红绿政府今后只统计公共空间死亡的无家可归者，在医院或救助设施去世的人不再计入。</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://hongkongfp.com/2026/11/06/au-kam-san-the-teacher-turned-lawmaker-who-called-bluntly-for-democracy-in-macau/" target="_blank" rel="noopener" data-key="d46e8fd2264" data-ts="1793961263">
+    <div class=""><img src="https://hongkongfp.com/wp-content/uploads/2026/11/auprofile-1024x576.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">港澳国安案连续宣判：黄之锋10年、区锦新12年半</div>
+    <div class="ts">Hong Kong Free Press</div>
+  </a>
+  
+  <a class="tile" href="https://taz.de/Warnungen-auf-der-Schulleiterkonferenz/!6227984/" target="_blank" rel="noopener" data-key="de9c60d61b7" data-ts="1793961263">
+    <div class=""><img src="https://taz.de/picture/8847216/948/35550962.jpeg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Warnungen auf der Schulleiterkonferenz: „Omas gegen Rechts“ an Schulen unerwünscht</div>
+    <div class="ts">taz</div>
+  </a>
+  
+  <a class="tile" href="https://www.sueddeutsche.de/politik/midterms-mississippi-auszaehlung-senat-li.3575195" target="_blank" rel="noopener" data-key="d6cb2a5f6f2" data-ts="1793961263">
+    <div class=""><img src="https://www.sueddeutsche.de/2026/11/06/5c11a992-96fb-4014-a322-3db4f88d31f4.jpg?rect=444%2C0%2C3556%2C2667&amp;amp;width=1000&amp;amp;fm=jpg&amp;amp;q=60" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Midterms in den USA: Warum in Mississippi noch immer ausgezählt wird</div>
+    <div class="ts">Süddeutsche</div>
+  </a>
+  
+  <a class="tile" href="https://www.sueddeutsche.de/wirtschaft/boerse-usa-nasdaq-tech-nvidia-tesla-musk-aktien-crash-li.3575124" target="_blank" rel="noopener" data-key="da5f6e60a10" data-ts="1793961263">
+    <div class=""><img src="https://www.sueddeutsche.de/2026/11/06/fb5239f5-9321-41ae-b84b-5ba38ffdd1fa.jpg?rect=299%2C0%2C3401%2C2551&amp;amp;width=1000&amp;amp;fm=jpg&amp;amp;q=60" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">选后“AI 血洗”：科技股暴跌为什么和民主党获胜挂钩</div>
+    <div class="ts">Süddeutsche</div>
+  </a>
+  
+  <a class="tile" href="https://www.youtube.com/shorts/fyJ7b12_oEQ" target="_blank" rel="noopener" data-key="dcd82c44145" data-ts="1793961263">
+    <div class="play"><img src="https://i3.ytimg.com/vi/fyJ7b12_oEQ/hqdefault.jpg" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
+    <div class="tt">Goldkrümel als Notreserve</div>
+    <div class="ts">Short videos · 加纳一个23岁矿工为给生病的母亲筹钱，明知危险仍留在非法金矿，还把金屑存起来当应急钱。短片看非正规经济如何逼人冒险。</div>
+  </a>
+  
+  </div>
+  <div class="end"><span class="dot">·</span>刷到底了</div>
 </section>
 
 <section class="panel" id="work"><div id="workBody"><div class="end">先在「推荐」页最上面输入密码</div></div></section>
@@ -1559,6 +2056,15 @@ if(saved)unlock(saved,true);
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check(false)});
  window.addEventListener('pageshow',e=>{if(e.persisted)check(false)});
  check(false)})();
+/* 抓取：开一个预填好的 Issue，点"Submit"后约 3 分钟出新内容 */
+(()=>{const go=()=>{const t=new Date();const stamp=t.getMonth()+1+'/'+t.getDate()+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+  window.open('https://github.com/prima-bottle/info-feed/issues/new?title='+encodeURIComponent('抓取 '+stamp)+'&body='+encodeURIComponent('点 Submit 后大约 3 分钟出新内容，回到信息台点 ↻ 刷新。'),'_blank')};
+ document.getElementById('fetchNow').onclick=go;document.querySelectorAll('.fetchbtn').forEach(b=>b.onclick=go);
+ const d=new Date(),today=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const pageDate=document.body.dataset.date;
+ if(pageDate&&pageDate<today&&d.getHours()>=5){const bar=document.getElementById('stalebar');bar.style.display='flex';
+  const[,m,dd]=pageDate.split('-');document.getElementById('staletext').textContent='这还是'+(+m)+'月'+(+dd)+'日的内容，今天的还没生成'}
+})();
 /* 夜间模式：自动 → 夜间 → 日间 */
 (()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
  let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
