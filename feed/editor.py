@@ -98,7 +98,13 @@ def _parse_json(text: str) -> dict:
     text = text.strip()
     text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text)
     start, end = text.find("{"), text.rfind("}")
-    return json.loads(text[start:end + 1])
+    body = text[start:end + 1]
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError:
+        # 模型偶尔会在中文里写没转义的引号，用 json_repair 修一下
+        from json_repair import repair_json
+        return json.loads(repair_json(body))
 
 
 UPDATE_SCHEMA = """这是午间增量更新：上午的日报已经发出，下面只有上午之后的新条目。输出格式（JSON）：

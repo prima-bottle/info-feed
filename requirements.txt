@@ -3,3 +3,4 @@ requests>=2.31
 PyYAML>=6.0
 Jinja2>=3.1
 anthropic>=0.40
+json-repair>=0.30
