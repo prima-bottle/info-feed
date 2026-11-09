@@ -9,7 +9,7 @@ settings:
   max_items_per_source: 8      # 每个来源最多取几条
   max_age_hours: 36            # 只要最近多少小时内的内容
   videos_per_channel: 5        # 每个 YouTube 频道最多取几个视频
-  video_age_days: 10           # 视频只要最近多少天的
+  video_age_days: 1            # 订阅的账号只要当天（最近24小时）更新的视频
   timezone: Europe/Berlin
 
 # ---------- 长期跟踪的主线（推特串形式，会累积时间线） ----------
@@ -162,6 +162,29 @@ youtube:
   - {handle: "@AndreasSpiess", section: AI与技术, note: "物联网与电子"}
   - {handle: "@JeffGeerling", section: AI与技术, note: "树莓派与本地 AI"}
 shorts_from: [德国创作者, 德国青年文化]   # 这些分组的频道额外抓 Shorts
+
+# ---------- 推荐视频：按兴趣条线用 YouTube 搜索找最近的好视频 ----------
+# 每次抓取每条线取 per_line 个，总数不超过 max_total；queries 每次轮换用一个，省配额。
+video_recommend:
+  per_line: 6
+  max_total: 30
+  recent_days: 7
+  lines:
+    - name: AI 动手
+      lang: zh
+      queries: ["本地大模型 部署 教程", "AI agent 实操", "local LLM homelab", "KI Workflow Automatisierung"]
+    - name: 德国政治与左翼
+      lang: de
+      queries: ["Die Linke Analyse", "Gewerkschaft Streik Doku", "Mietenwahnsinn Doku", "Antifaschismus Recherche"]
+    - name: 中国政治与社会
+      lang: zh
+      queries: ["中国 政治 分析 2026", "中国 经济 社会 观察", "珠三角 工厂 打工", "中国 楼市 年轻人"]
+    - name: 劳工与社会运动史
+      lang: de
+      queries: ["Arbeiterbewegung Geschichte Doku", "Gastarbeiter Geschichte", "Ruhrgebiet Stahl Geschichte", "labor history documentary"]
+    - name: 海报与视觉设计
+      lang: en
+      queries: ["poster design process", "political poster history", "graphic design breakdown", "typography poster tutorial"]
 
 # ---------- B 站（第二版启用，需要 UID） ----------
 # 读取账号"关注动态"，需要在 GitHub 密钥里设置 BILI_SESSDATA。

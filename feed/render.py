@@ -76,11 +76,13 @@ def render(edition: dict, cfg: dict, history: dict, root: Path, archive: list[st
     folded = set("B站·" + g for g in cfg.get("bilibili", {}).get("folded_groups", []))
     hooks = m["hooks"]
     vids = [it for it in items.values() if it["kind"] in ("video", "bili")]
+    # 推荐视频里，AI 认为是标题党、没写看点的不显示
+    vids = [v for v in vids if not v["section"].startswith("推荐·") or v["id"] in hooks]
     vids.sort(key=lambda x: (-x["ts"], x["id"] not in hooks, -x["published"]))
     groups: dict[str, list] = {}
     for v in vids:
         groups.setdefault(v["section"], []).append(v)
-    order = sorted(groups, key=lambda g: (g in folded, g.startswith("B站·其他")))
+    order = sorted(groups, key=lambda g: (g in folded, g.startswith("推荐·"), g.startswith("B站·其他")))
     video_groups = [(g, groups[g], g in folded) for g in order]
     shorts = sorted([it for it in items.values() if it["kind"] == "short"], key=lambda x: -x["published"])
 

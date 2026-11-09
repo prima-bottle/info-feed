@@ -249,6 +249,16 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
             status.append({"source": label, "ok": False, "error": str(ex)[:120]})
     cache_file.write_text(json.dumps(cache, ensure_ascii=False, indent=1))
 
+    rec = cfg.get("video_recommend") or {}
+    ykey = os.environ.get("YOUTUBE_API_KEY", "").strip()
+    if rec.get("lines") and ykey:
+        try:
+            got = youtube_recommend(rec, ykey, set(cache.values()))
+            items += got
+            status.append({"source": "YouTube 推荐", "ok": True, "count": len(got)})
+        except Exception as ex:  # noqa: BLE001
+            status.append({"source": "YouTube 推荐", "ok": False, "error": str(ex)[:160]})
+
     b = cfg.get("bilibili", {})
     sess = os.environ.get("BILI_SESSDATA", "").strip()
     if b.get("enabled") and sess:
@@ -304,5 +314,44 @@ def fetch_bilibili(b: dict, sessdata: str, age_days: int) -> list[dict]:
             })
         offset = data.get("offset", "")
         if stop or not data.get("has_more"):
+            break
+    return out
+
+
+def youtube_recommend(rec: dict, key: str, subscribed: set[str]) -> list[dict]:
+    """按兴趣条线搜索最近的视频。每条线每次用一个关键词（按小时轮换），跳过已订阅的频道。"""
+    import datetime as _dt
+    per_line, max_total = rec.get("per_line", 6), rec.get("max_total", 30)
+    after = (_dt.datetime.utcnow() - _dt.timedelta(days=rec.get("recent_days", 7))).strftime("%Y-%m-%dT%H:%M:%SZ")
+    slot = int(time.time() // 3600)
+    out = []
+    for n, line in enumerate(rec["lines"]):
+        qs = line.get("queries") or [line["name"]]
+        q = qs[(slot + n) % len(qs)]
+        r = requests.get("https://www.googleapis.com/youtube/v3/search", timeout=TIMEOUT, params={
+            "part": "snippet", "type": "video", "q": q, "maxResults": per_line * 2, "order": "relevance",
+            "publishedAfter": after, "relevanceLanguage": line.get("lang", "de"), "safeSearch": "moderate",
+            "videoDuration": "medium", "key": key})
+        r.raise_for_status()
+        got = 0
+        for it in r.json().get("items", []):
+            sn, vid = it.get("snippet", {}), (it.get("id") or {}).get("videoId")
+            if not vid or sn.get("channelId") in subscribed:
+                continue
+            link = f"https://www.youtube.com/watch?v={vid}"
+            try:
+                ts = calendar.timegm(time.strptime(sn.get("publishedAt", "")[:19], "%Y-%m-%dT%H:%M:%S"))
+            except ValueError:
+                ts = time.time()
+            thumbs = sn.get("thumbnails", {})
+            out.append({"id": hashlib.sha1(link.encode()).hexdigest()[:10], "kind": "video",
+                        "source": html.unescape(sn.get("channelTitle", "")), "section": "推荐·" + line["name"],
+                        "stance": f"按关键词「{q}」搜索到的推荐", "title": _clean(sn.get("title", ""), 200),
+                        "summary": _clean(sn.get("description", ""), 300), "link": link,
+                        "image": (thumbs.get("high") or thumbs.get("medium") or {}).get("url", ""), "published": ts})
+            got += 1
+            if got >= per_line or len(out) >= max_total:
+                break
+        if len(out) >= max_total:
             break
     return out
