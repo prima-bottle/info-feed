@@ -283,7 +283,7 @@ def fetch_bilibili(b: dict, sessdata: str, age_days: int) -> list[dict]:
         for it in data.get("items", []):
             mod = it.get("modules", {})
             author = mod.get("module_author", {})
-            ts = author.get("pub_ts") or 0
+            ts = int(author.get("pub_ts") or 0)
             if ts and ts < cutoff:
                 stop = True
                 continue
