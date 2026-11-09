@@ -117,6 +117,22 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 .toc a{display:block;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px;color:inherit;text-decoration:none}
 .toc a small{color:var(--muted);float:right}
 .guide{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14.5px;white-space:pre-wrap}
+.arc h4{font-size:16px;margin:18px 0 6px;padding-top:10px;border-top:1px solid var(--line)}
+.arc h4:first-child{border-top:0;margin-top:0;padding-top:0}
+.arc h5{font-size:14.5px;margin:12px 0 4px;color:var(--muted)}
+.arc p{font-size:15px;line-height:1.75;margin:6px 0;white-space:pre-wrap}
+.arc ul,.arc ol{padding-left:1.3em;font-size:15px;line-height:1.7;margin:4px 0}
+.arc blockquote{border-left:3px solid var(--line);padding-left:10px;color:var(--muted);margin:6px 0;font-size:14.5px}
+.arc .who{font-weight:700;font-size:13px;margin-top:10px}
+.arc .who.t{color:var(--accent)}.arc .who.m{color:var(--blue)}
+.arc .tbox{background:var(--accent-soft);border-radius:10px;padding:2px 12px;margin:4px 0}
+.arc .mbox{background:var(--blue-soft);border-radius:10px;padding:2px 12px;margin:4px 0}
+.arc .toc2{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+a.pl{color:var(--blue);font-weight:600;text-decoration:none;border-bottom:1px dotted var(--blue);padding:0 1px}
+a.pl.flash{background:var(--mark);border-radius:3px}
+.ph .arcb{margin-left:8px;color:var(--accent);font-weight:600}
+#arcBack{position:fixed;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));z-index:30;background:var(--accent);color:#fff;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:600;box-shadow:0 3px 12px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center}
+#arcBack button{color:#fff;font-size:14px}
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:60;max-width:90vw}
 </style>
 </head>
@@ -161,6 +177,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
   <button id="sCopy">复制</button>
 </div>
 
+<div id="arcBack" class="hide"><button id="abGo">← 回到档案</button><button id="abX">✕</button></div>
 <div id="mask" class="hide"></div>
 <div id="sheet" class="hide"><div class="sh"><h3 id="shT"></h3><button class="ib" id="shX">✕</button></div><div class="sb" id="shB"></div></div>
 
@@ -312,13 +329,13 @@ async function openDoc(id){
   S.pdf=await pdfjsLib.getDocument({data:await blob.arrayBuffer(),...PDFOPT}).promise;
   const p1=await S.pdf.getPage(1);const v=p1.getViewport({scale:1});S.ratio=v.height/v.width;
   await learnBoiler();
-  S.notes=await notesOf(id);
+  S.notes=await notesOf(id);S.arcRefs=arcRefs(doc);
   doc.opened=Date.now();dput('docs',doc);
   history.pushState({r:1},'');
   build();goPage(S.cur,false)}
 function closeDoc(){
   if(S.io)S.io.disconnect();if(S.pdf)S.pdf.destroy();S.pdf=null;
-  $('#view').innerHTML='';$('#rd').classList.add('hide');$('#lib').classList.remove('hide');hideSel();renderLib()}
+  $('#view').innerHTML='';$('#rd').classList.add('hide');$('#lib').classList.remove('hide');hideSel();$('#arcBack').classList.add('hide');renderLib()}
 $('#bBack').onclick=()=>history.back();
 addEventListener('popstate',()=>{if(!$('#sheet').classList.contains('hide')){closeSheet(true);history.pushState({r:1},'');return}if(S.pdf)closeDoc()});
 
@@ -332,7 +349,7 @@ function build(){
   const frag=document.createDocumentFragment();
   for(let n=1;n<=S.doc.pages;n++){
     const s=document.createElement('div');s.className='sec';s.dataset.p=n;
-    s.innerHTML=`<div class="ph"><span>p.${n}</span><button class="flip">${S.mode==='rf'?'看原页':'重排此页'}</button></div><div class="body"></div>`;
+    s.innerHTML=`<div class="ph"><span>p.${n}${S.arcRefs&&S.arcRefs.has(n)?`<button class="arcb" data-p="${n}">◆ 档案 ${S.arcRefs.get(n).length}</button>`:''}</span><button class="flip">${S.mode==='rf'?'看原页':'重排此页'}</button></div><div class="body"></div>`;
     sizePh(s);frag.append(s);S.secs.push(s)}
   v.append(frag);S.secs.forEach(s=>S.io.observe(s))}
 function ogWidth(){return Math.min(innerWidth,900)*S.zoom}
@@ -378,6 +395,7 @@ $('#view').addEventListener('click',e=>{
   const f=e.target.closest('.flip');
   if(f){const s=f.closest('.sec');const m=(s.dataset.m||S.mode)==='rf'?'og':'rf';s.dataset.m=m===S.mode?'':m;if(!s.dataset.m)delete s.dataset.m;
     f.textContent=(s.dataset.m||S.mode)==='rf'?'看原页':'重排此页';delete s.dataset.ld;sizePh(s);loadSec(s);return}
+  const ab=e.target.closest('.arcb');if(ab){const r=S.arcRefs.get(+ab.dataset.p)||[];if(r.length)openArchive(r[0],+ab.dataset.p);return}
   const mk=e.target.closest('mark');if(mk&&!getSelection().toString()){const n=S.notes.find(x=>x.id===mk.dataset.id);if(n)noteSheet(n)}});
 
 /* ---------- 翻页与位置 ---------- */
@@ -508,12 +526,16 @@ async function studySheet(){
     <div class="lbl">我的立场</div><textarea id="ss" style="min-height:52px" placeholder="选一边，写一两句理由">${esc(s.side)}</textarea>
     <div class="lbl">归到工作线</div><div class="chips" id="sl">${lines.map(l=>`<button class="chip ${s.line===l?'on':''}">${esc(l)}</button>`).join('')}<button class="chip" id="slAdd">＋ 新工作线</button></div>
     <div class="row"><button class="btn pri" id="sSave">保存</button></div>
+    <div class="lbl">对谈档案</div>${(S.doc.archives||[]).length?S.doc.archives.map(a=>`<div class="note"><b style="font-size:15px">${esc(a.title)}</b><div class="nm"><span>${new Date(a.at).toLocaleDateString('zh-CN')}</span>${a.line?`<span class="tag t3">${esc(a.line)}</span>`:''}<div style="flex:1"></div><button class="btn sm" data-arc="${a.id}">查看</button></div></div>`).join(''):'<p class="muted" style="font-size:14px">还没有档案。</p>'}
+    <div class="row"><label class="btn sm">导入档案文件<input type="file" id="arcIn" accept=".json,application/json" hidden></label></div>
     <div class="lbl">导读</div><p class="muted" style="font-size:14px">从当前页往后读 8 页左右，AI 给出这一段的导读问题（不替你回答）。</p>
     <div class="row"><button class="btn" id="sGuide">本节导读（p.${S.cur} 起）</button></div><div id="gOut" style="margin-top:10px"></div>
     ${(S.doc.guides||[]).slice().reverse().map(g=>`<div class="guide"><b>p.${g.from}–${g.to}</b>\n${fmt(g.text)}</div>`).join('')}
     <div class="lbl">导师对谈</div><p class="muted" style="font-size:14px">读完一段后向导师汇报你的论点。它会拿你的全部笔记来反驳、挑漏洞。</p>
     <div class="row"><button class="btn pri" id="sTutor">向导师汇报</button></div>`);
   let line=s.line;
+  $('#shB').querySelectorAll('[data-arc]').forEach(b=>b.onclick=()=>openArchive(b.dataset.arc));
+  $('#arcIn').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(f)await importArchive(f)};
   $('#sl').onclick=async e=>{const b=e.target.closest('.chip');if(!b)return;
     if(b.id==='slAdd'){const box=document.createElement('div');box.className='row';box.innerHTML='<input id="slNew" placeholder="新工作线名称"><button class="btn sm" id="slOk">添加</button>';b.parentElement.after(box);$('#slNew').focus();
       $('#slOk').onclick=async()=>{const v=$('#slNew').value.trim();if(!v)return;const ls2=await getLines();if(!ls2.includes(v)){ls2.push(v);await dput('meta',ls2,'lines')}s.q=$('#sq').value.trim();s.side=$('#ss').value.trim();s.line=v;await dput('docs',S.doc);studySheet()};return}
@@ -555,6 +577,7 @@ async function exportMd(id){
   md+=`## 笔记\n\n`+ns.map(n=>`- p.${n.page}${n.tag?' ['+tagName(n.tag)+']':''}\n  > ${n.quote.replace(/\n/g,' ')}\n${n.text?'\n  '+n.text.replace(/\n/g,'\n  ')+'\n':''}${(n.ai||[]).map(m=>`\n  ${m.role==='user'?'**问**':'**答**'}：${m.content.replace(/\n/g,'\n  ')}`).join('\n')}\n`).join('\n');
   if((d.guides||[]).length)md+=`\n## 导读\n\n`+d.guides.map(g=>`### p.${g.from}–${g.to}\n\n${g.text}\n`).join('\n');
   const logs=[...(d.tutorLog||[]).map(l=>l.chat),chat].filter(c=>c.length);
+  for(const a of d.archives||[])md+=`\n## 档案：${a.title}\n\n`+a.blocks.map(b=>`### ${b.h}\n\n${b.md}`).join('\n\n')+'\n';
   if(logs.length)md+=`\n## 导师对谈\n\n`+logs.map((c,i)=>`### 第 ${i+1} 轮\n\n`+c.map(m=>`**${m.role==='user'?'我':'导师'}**：${m.content}`).join('\n\n')).join('\n\n');
   download(d.name.slice(0,40)+'-笔记.md',md,'text/markdown')}
 $('#bBackup').onclick=async()=>{
@@ -563,7 +586,7 @@ $('#bBackup').onclick=async()=>{
   toast('备份里只有笔记和研究记录，不含 PDF 文件',3500)};
 $('#restore').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const j=JSON.parse(await f.text());let a=0,b=0;
-    for(const d of j.docs||[]){const old=await dget('docs',d.id);if(old){Object.assign(old,{study:d.study,guides:d.guides,tutorLog:d.tutorLog,page:Math.max(old.page||1,d.page||1)});await dput('docs',old);a++}}
+    for(const d of j.docs||[]){const old=await dget('docs',d.id);if(old){const ar=[...(old.archives||[])];for(const x of d.archives||[])if(!ar.some(y=>y.id===x.id))ar.push(x);Object.assign(old,{study:d.study,guides:d.guides,tutorLog:d.tutorLog,archives:ar,page:Math.max(old.page||1,d.page||1)});await dput('docs',old);a++}}
     for(const n of j.notes||[]){if(await dget('docs',n.docId)){await dput('notes',n);b++}}
     for(const [id,c] of Object.entries(j.chats||{}))if(await dget('docs',id)&&c.length)await dput('chats',c,id);
     if(j.lines)await dput('meta',j.lines,'lines');
@@ -580,8 +603,48 @@ $('#bSet').onclick=()=>{
   $('#kTest').onclick=async()=>{ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);$('#kOut').textContent='连接中…';
     try{await claude({max:30,messages:[{role:'user',content:'回复“连接正常”四个字。'}],onText:t=>{$('#kOut').textContent=t}})}catch(e){$('#kOut').textContent=e.message}}};
 
+/* ---------- 对谈档案 ---------- */
+function mdInline(t){return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/p\.(\d{1,4})/g,(m,n)=>+n<=S.doc.pages?`<a class="pl" href="#" data-p="${n}">p.${n}</a>`:m)}
+function mdBlock(md){
+  const out=[];let list=null;
+  const close=()=>{if(list){out.push(`</${list}>`);list=null}};
+  for(const raw of md.split('\n')){const l=raw.trimEnd();
+    if(!l.trim()){close();continue}
+    let m;
+    if((m=l.match(/^#{1,6}\s+(.*)/))){close();out.push(`<h5>${mdInline(m[1])}</h5>`)}
+    else if((m=l.match(/^\s*[-*]\s+(.*)/))){if(list!=='ul'){close();out.push('<ul>');list='ul'}out.push(`<li>${mdInline(m[1])}</li>`)}
+    else if((m=l.match(/^\s*\d+[.、]\s+(.*)/))){if(list!=='ol'){close();out.push('<ol>');list='ol'}out.push(`<li>${mdInline(m[1])}</li>`)}
+    else if((m=l.match(/^>\s?(.*)/))){close();out.push(`<blockquote>${mdInline(m[1])}</blockquote>`)}
+    else{close();out.push(`<p>${mdInline(l)}</p>`)}}
+  close();return out.join('')}
+function arcRefs(doc){const m=new Map();for(const a of doc.archives||[]){const txt=JSON.stringify(a.blocks);for(const x of txt.matchAll(/p\.(\d{1,4})/g)){const n=+x[1];if(!m.has(n))m.set(n,[]);if(!m.get(n).includes(a.id))m.get(n).push(a.id)}}return m}
+let arcReturn=null;
+function openArchive(id,focusP,scroll){
+  const a=(S.doc.archives||[]).find(x=>x.id===id);if(!a)return;
+  $('#arcBack').classList.add('hide');
+  sheet(a.title,`<div class="arc"><div class="toc2">${a.blocks.map((b,i)=>`<button class="chip" data-j="${i}">${esc(b.short||b.h)}</button>`).join('')}</div>`+
+    a.blocks.map((b,i)=>`<section id="ab${i}"><h4>${esc(b.h)}</h4>${b.tutor!==undefined?`<div class="who t">导师</div><div class="tbox">${mdBlock(b.tutor)}</div>${b.me?`<div class="who m">我</div><div class="mbox">${mdBlock(b.me)}</div>`:''}`:mdBlock(b.md||'')}</section>`).join('')+'</div>');
+  const sb=$('#shB');
+  sb.onclick=e=>{const j=e.target.closest('[data-j]');if(j){$('#ab'+j.dataset.j).scrollIntoView({block:'start'});return}
+    const pl=e.target.closest('a.pl');if(!pl)return;e.preventDefault();
+    arcReturn={id,top:sb.scrollTop};closeSheet();goPage(+pl.dataset.p);
+    $('#arcBack').classList.remove('hide')};
+  if(scroll!=null)sb.scrollTop=scroll;
+  else if(focusP){const t=sb.querySelector(`a.pl[data-p="${focusP}"]`);if(t){t.scrollIntoView({block:'center'});t.classList.add('flash');setTimeout(()=>t.classList.remove('flash'),2500)}}}
+$('#abGo').onclick=()=>{if(arcReturn)openArchive(arcReturn.id,null,arcReturn.top)};
+$('#abX').onclick=()=>$('#arcBack').classList.add('hide');
+async function importArchive(f){
+  try{const j=JSON.parse(await f.text());if(j.type!=='reader-archive'||!Array.isArray(j.blocks))throw new Error('这不是阅读器的档案文件');
+    S.doc.archives=S.doc.archives||[];
+    const i=S.doc.archives.findIndex(x=>x.id===j.id);const a={id:j.id||uid(),title:j.title,at:j.at||Date.now(),line:j.line||'',blocks:j.blocks};
+    if(i>=0)S.doc.archives[i]=a;else S.doc.archives.push(a);
+    const st2=S.doc.study=S.doc.study||{};if(j.study){if(!st2.q)st2.q=j.study.q||'';if(!st2.side)st2.side=j.study.side||'';if(!st2.line)st2.line=j.study.line||''}
+    await dput('docs',S.doc);S.arcRefs=arcRefs(S.doc);
+    const n=S.cur;build();goPage(n);toast(i>=0?'档案已更新':'档案已导入');openArchive(a.id)}
+  catch(e){toast('导入失败：'+e.message,4000)}}
+
 /* ---------- 面板 ---------- */
-function sheet(t,html){$('#shT').textContent=t;$('#shB').innerHTML=html;$('#shB').onclick=null;$('#sheet').classList.remove('hide');$('#mask').classList.remove('hide');$('#shB').scrollTop=0}
+function sheet(t,html){if(t&&!(S.doc&&(S.doc.archives||[]).some(a=>a.title===t)))$('#arcBack').classList.add('hide');$('#shT').textContent=t;$('#shB').innerHTML=html;$('#shB').onclick=null;$('#sheet').classList.remove('hide');$('#mask').classList.remove('hide');$('#shB').scrollTop=0}
 function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add('hide')}
 $('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
 
