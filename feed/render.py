@@ -85,29 +85,10 @@ def render(edition: dict, cfg: dict, history: dict, root: Path, archive: list[st
     shorts = sorted([it for it in items.values() if it["kind"] == "short"], key=lambda x: -x["published"])
 
     runs = sorted(edition["runs"], key=lambda r: r["ts"])
-    # 发现：所有带图的内容，做成两列瀑布流；有中文简讯或看点的用中文标题
-    zh = {}
-    for r in sorted(edition["runs"], key=lambda r: -r["ts"]):
-        for k, v in (r["digest"].get("zh_titles") or {}).items():
-            zh.setdefault(k, v)
-    for b in m["briefs"]:
-        zh.setdefault(b.get("item_id"), b.get("text", ""))
-    for p_ in m["picks"]:
-        for i in p_.get("item_ids") or []:
-            zh.setdefault(i, p_.get("title", ""))
-    discover = []
-    for it in items.values():
-        if not it.get("image") or it["section"] in folded:
-            continue
-        discover.append({**it, "zh": zh.get(it["id"]) or it["title"],
-                         "sub": hooks.get(it["id"], "")})
-    discover.sort(key=lambda x: (-x["ts"], -x["published"]))
-
     d = dt.date.fromisoformat(edition["date"])
     run_label = " · ".join(("早间 " if r["mode"] == "full" else "更新 ") + r["label"] for r in runs)
     status = m["status"]
     return env.get_template("page.html").render(
-        discover=discover[:80],
         m=m, date=edition["date"], date_label=f"{d.month}月{d.day}日 周{WEEKDAYS[d.weekday()]}",
         run_label=run_label, latest_ts=runs[-1]["ts"] if runs else 0,
         items=items, threads=m["threads"], brief_sections=sections,

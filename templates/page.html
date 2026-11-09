@@ -136,7 +136,6 @@ footer details{border:0}
 </header>
 <nav><div class="tabs" id="tabs">
   <button class="tab on" data-p="rec">推荐</button>
-  <button class="tab" data-p="discover">发现</button>
   <button class="tab" data-p="work">工作</button>
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
@@ -203,19 +202,6 @@ footer details{border:0}
   </article>
   {% endfor %}
   <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
-</section>
-
-<section class="panel" id="discover">
-  <div class="flow">
-  {% for v in discover %}
-  <a class="tile" href="{{ v.link }}" target="_blank" rel="noopener" data-key="d{{ v.id }}" data-ts="{{ v.ts }}">
-    <div class="{{ 'play' if v.kind in ('video','bili','short') else '' }}"><img src="{{ v.image }}" alt="" loading="lazy" onerror="this.closest('.tile').remove()"></div>
-    <div class="tt">{{ v.zh }}</div>
-    <div class="ts">{{ v.source }}{% if v.sub %} · {{ v.sub }}{% endif %}</div>
-  </a>
-  {% endfor %}
-  </div>
-  {% if not discover %}<div class="end">今天还没有带图的内容</div>{% else %}<div class="end"><span class="dot">·</span>刷到底了</div>{% endif %}
 </section>
 
 <section class="panel" id="work"><div id="workBody"><div class="end">先在「推荐」页最上面输入密码</div></div></section>
