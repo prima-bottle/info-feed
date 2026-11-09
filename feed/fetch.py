@@ -329,7 +329,7 @@ def youtube_recommend(rec: dict, key: str, subscribed: set[str]) -> list[dict]:
         qs = line.get("queries") or [line["name"]]
         q = qs[(slot + n) % len(qs)]
         r = requests.get("https://www.googleapis.com/youtube/v3/search", timeout=TIMEOUT, params={
-            "part": "snippet", "type": "video", "q": q, "maxResults": per_line * 2, "order": "relevance",
+            "part": "snippet", "type": "video", "q": q, "maxResults": 25, "order": "relevance",
             "publishedAfter": after, "relevanceLanguage": line.get("lang", "de"), "safeSearch": "moderate",
             "videoDuration": "medium", "key": key})
         r.raise_for_status()
