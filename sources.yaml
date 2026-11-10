@@ -166,7 +166,7 @@ shorts_from: [德国创作者, 德国青年文化]   # 这些分组的频道额�
 # ---------- 推荐视频：按兴趣条线用 YouTube 搜索找最近的好视频 ----------
 # 每次抓取每条线取 per_line 个，总数不超过 max_total；queries 每次轮换用一个，省配额。
 video_recommend:
-  per_line: 6
+  per_line: 5
   max_total: 30
   recent_days: 7
   lines:
