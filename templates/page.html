@@ -322,12 +322,14 @@ function todo(list,inLine){return '<ul class="todo">'+list.map(([l,i])=>{const k
   return '<li class="'+(d?'done':'')+'"><input type="checkbox" data-k="'+esc(k)+'"'+(d?' checked':'')+'><span>'+esc(i.text)+(inLine?'':'<span class="tag">'+esc(l.title)+'</span>')+tag+'</span></li>'}).join('')+'</ul>'}
 function render(plan){
  const all=[];plan.lines.forEach(l=>(l.items||[]).forEach(i=>all.push([l,i])));
- const today=all.filter(([l,i])=>i.date===todayStr&&i.kind!=='deadline');
- const overdue=all.filter(([l,i])=>i.date&&i.date<todayStr&&!done[kid(l,i)]&&i.kind!=='deadline');
+ const today=all.filter(([l,i])=>i.date===todayStr&&i.kind!=='deadline'&&i.kind!=='read');
+ const overdue=all.filter(([l,i])=>i.date&&i.date<todayStr&&!done[kid(l,i)]&&i.kind!=='deadline'&&i.kind!=='read');
  const order=plan.today_order||[];
  today.sort((a,b)=>{const ia=order.findIndex(o=>a[1].text.includes(o.slice(-4))),ib=order.findIndex(o=>b[1].text.includes(o.slice(-4)));return (ia<0?99:ia)-(ib<0?99:ib)});
- const soon=all.filter(([l,i])=>i.date&&i.date>todayStr&&days(i.date)<=14).sort((a,b)=>a[1].date<b[1].date?-1:1);
+ const soon=all.filter(([l,i])=>i.date&&i.date>todayStr&&days(i.date)<=14&&i.kind!=='read').sort((a,b)=>a[1].date<b[1].date?-1:1);
  let h='';
+ const reads=all.filter(([l,i])=>i.kind==='read'&&i.date&&i.date>=todayStr&&days(i.date)<=6);
+ if(reads.length){const left=reads.filter(([l,i])=>!done[kid(l,i)]);h+='<p class="wnote">本周阅读还剩 '+left.length+' / '+reads.length+' 项'+(left[0]?'，下一项：'+esc(left[0][1].text.replace(/^第.周 · .：/,'')):'')+'</p>'}
  if(order.length)h+='<p class="wnote">今天的顺序：'+order.map(esc).join(' → ')+'</p>';
  h+=today.length||overdue.length?todo([...overdue,...today]):'<p class="wstat">今天没有排定的事。</p>';
  if(soon.length)h+='<h3 class="sub" style="margin:14px 0 4px">接下来两周</h3>'+soon.map(([l,i])=>'<div class="due'+(i.kind==='key'||i.kind==='deadline'?' key':'')+'"><span>'+md(i.date)+' · '+esc(i.text)+'</span><b>'+(days(i.date)===1?'明天':days(i.date)+' 天后')+'</b></div>').join('');
