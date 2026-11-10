@@ -63,7 +63,7 @@ def parse_feed(url: str, source: dict, kind: str, max_items: int, max_age_h: flo
             pub = (e.get("source") or {}).get("title", "")
             if pub and title.endswith(" - " + pub):
                 title = title[: -len(pub) - 3]
-            if pub and (source.get("section", "").startswith("地方") or source["name"] in ("中国劳动与民生", "珠三角动态", "长三角动态")):
+            if pub and (source.get("section", "").startswith("地方") or source["name"] in ("中国劳动与民生", "珠三角动态", "长三角动态", "追踪搜索")):
                 src_name = pub
         out.append({
             "id": hashlib.sha1((link or e.get("title", "")).encode()).hexdigest()[:10],
@@ -249,7 +249,29 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
             status.append({"source": label, "ok": False, "error": str(ex)[:120]})
     cache_file.write_text(json.dumps(cache, ensure_ascii=False, indent=1))
 
-    rec = cfg.get("video_recommend") or {}
+    # 追踪的主线：按搜索词专门去找后续报道
+    from urllib.parse import quote_plus
+    ed = {"de": "hl=de&gl=DE&ceid=DE:de", "en": "hl=en-US&gl=US&ceid=US:en", "zh": "hl=zh-CN&gl=CN&ceid=CN:zh-Hans"}
+    sq = cfg.get("signal_queries") or {}
+    n_track = 0
+    for q in sq.get("news", []):
+        src = {"name": "追踪搜索", "section": "追踪·" + q["title"][:16], "stance": "按你追踪的主线专门搜到的报道，来源各异"}
+        url = ("https://news.google.com/rss/search?q=" + quote_plus(q["q"] + " when:3d") + "&"
+               + ed.get(q.get("lang"), ed["de"]))
+        try:
+            got = parse_feed(url, src, "article", 3, 72)
+            for g in got:
+                g["thread"] = q["thread"]
+            items += got
+            n_track += len(got)
+        except Exception:  # noqa: BLE001
+            pass
+    if sq.get("news"):
+        status.append({"source": "追踪搜索", "ok": True, "count": n_track})
+
+    rec = dict(cfg.get("video_recommend") or {})
+    if sq.get("videos") and rec.get("lines"):
+        rec["lines"] = [{"name": "你追踪和赞过的", "queries": sq["videos"]}] + list(rec["lines"])
     ykey = os.environ.get("YOUTUBE_API_KEY", "").strip()
     if rec.get("lines") and ykey:
         try:
@@ -328,9 +350,12 @@ def youtube_recommend(rec: dict, key: str, subscribed: set[str]) -> list[dict]:
     for n, line in enumerate(rec["lines"]):
         qs = line.get("queries") or [line["name"]]
         q = qs[(slot + n) % len(qs)]
+        lang = line.get("lang", "de")
+        if isinstance(q, dict):
+            q, lang = q.get("q", ""), q.get("lang", lang)
         r = requests.get("https://www.googleapis.com/youtube/v3/search", timeout=TIMEOUT, params={
             "part": "snippet", "type": "video", "q": q, "maxResults": 25, "order": "relevance",
-            "publishedAfter": after, "relevanceLanguage": line.get("lang", "de"), "safeSearch": "moderate",
+            "publishedAfter": after, "relevanceLanguage": lang, "safeSearch": "moderate",
             "videoDuration": "medium", "key": key})
         r.raise_for_status()
         got = 0

@@ -94,6 +94,12 @@ def main() -> int:
         print(f"你追踪的主线 {len(tracked)} 条，赞过 {len(likes)} 条")
         cfg["threads"] = cfg.get("threads", []) + tracked
         (DATA / "user_threads.json").write_text(json.dumps(tracked, ensure_ascii=False, indent=1))
+        try:
+            from feed.signals import ensure_queries
+            cfg["signal_queries"] = ensure_queries(tracked, likes, DATA)
+            print(f"按追踪找新闻的搜索词 {len(cfg['signal_queries']['news'])} 个，按追踪和赞找视频的 {len(cfg['signal_queries']['videos'])} 个")
+        except Exception as ex:  # noqa: BLE001
+            print(f"生成追踪搜索词失败：{ex}")
 
         items, status = fetch_all(cfg, DATA)
         for st in status:

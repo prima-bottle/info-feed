@@ -23,6 +23,7 @@ SYSTEM = """你是一份私人中文信息台的编辑。读者情况：
 - 「中国·社会」：优先劳动者、住房、教育、青年就业、社会事件，写清楚事件本身和背后的结构性问题；官方媒体和独立媒体的说法不同时并列给出。
 - 「香港」：同一件事尽量对照建制（大公文汇、RTHK）和独立或境外（HKFP、法广）的说法；关注立法与政治案件、经济民生、社会运动空间的变化。
 - 「珠三角」「长三角」：关注地方政策（产业、楼市、就业、外贸）、工厂与劳工、地方人事变动；讲清楚是哪个城市、哪个层级出台、对普通打工者和中小企业意味着什么。两地有可比的政策时可以放在一起对照。各最多5条简讯。
+- 带 "thread" 字段的条目是专门为读者追踪的主线搜来的后续报道：只要和主线有关，就一定要写进那条主线的 update；确实无关的忽略。读者追踪的主线有新进展时，优先放进精选。
 - 只能引用下面给出的条目，item_ids 必须是真实存在的 id。
 - 只输出 JSON，不要任何其它文字。"""
 
@@ -70,7 +71,7 @@ def _compact(items: list[dict]) -> str:
         if it["kind"] == "bili" and it["section"] in ("B站·影视娱乐", "B站·组织动态"):
             continue
         lines.append(json.dumps({
-            "id": it["id"], "src": it["source"], "sec": it["section"], "kind": it["kind"],
+            "id": it["id"], "src": it["source"], **({"thread": it["thread"]} if it.get("thread") else {}), "sec": it["section"], "kind": it["kind"],
             "t": it["title"], "s": it["summary"][:300], **({"img": 1} if it.get("image") else {}),
         }, ensure_ascii=False))
     return "\n".join(lines)
