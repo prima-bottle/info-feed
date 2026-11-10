@@ -89,7 +89,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 /* 选中工具条 */
 #selbar{position:fixed;left:8px;right:8px;bottom:max(10px,env(safe-area-inset-bottom));z-index:40;background:var(--ink);color:var(--bg);border-radius:14px;display:flex;justify-content:space-around;padding:4px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
-#selbar button{color:var(--bg);padding:10px 8px;font-size:15px;font-weight:600;flex:1}
+#selbar button{color:var(--bg);padding:10px 2px;font-size:14px;font-weight:600;flex:1}
 
 /* 底部面板 */
 #mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50}
@@ -133,6 +133,31 @@ a.pl.flash{background:var(--mark);border-radius:3px}
 .ph .arcb{margin-left:8px;color:var(--accent);font-weight:600}
 #arcBack{position:fixed;right:12px;bottom:calc(64px + env(safe-area-inset-bottom));z-index:30;background:var(--accent);color:#fff;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:600;box-shadow:0 3px 12px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center}
 #arcBack button{color:#fff;font-size:14px}
+.rf.ep p{text-indent:0;margin:.7em 0;text-align:left;hyphens:auto;-webkit-hyphens:auto}
+.rf.ep p.h{font-size:1.1em;margin:1.3em 0 .4em}
+.rf.ep h1,.rf.ep h2,.rf.ep h3,.rf.ep h4{font-size:1.12em;line-height:1.5;margin:1.2em 0 .5em}
+.rf.ep blockquote{margin:.6em 0 .6em .6em;padding-left:.8em;border-left:3px solid var(--line);color:var(--muted)}
+.rf.ep ul,.rf.ep ol{padding-left:1.4em}
+.rf.ep table{font-size:.82em;border-collapse:collapse;display:block;overflow-x:auto;margin:.8em 0}
+.rf.ep td,.rf.ep th{border:1px solid var(--line);padding:3px 6px}
+.rf img{max-width:100%;height:auto;display:block;margin:12px auto}
+.pbm{display:inline-block;font:11px/1.5 sans-serif;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 4px;margin:0 4px;vertical-align:middle;text-indent:0;user-select:none;-webkit-user-select:none}
+.pbm.ar{color:var(--accent);border-color:var(--accent);cursor:pointer}
+.rf a.xl{color:var(--blue);text-decoration:none;border-bottom:1px dotted var(--blue)}
+.rf a.fn{color:var(--blue);text-decoration:none;font:600 .7em sans-serif;vertical-align:super;padding:0 2px}
+abbr.gl{text-decoration:underline dotted var(--blue);text-decoration-thickness:2px;text-underline-offset:4px;cursor:help}
+.tabs{display:flex;gap:6px;margin:0 0 10px;flex-wrap:wrap}
+.qhead{background:var(--blue-soft);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14.5px;line-height:1.6}
+.qhead b{color:var(--blue)}
+.qg{font-size:13px;color:var(--muted);font-weight:700;margin:14px 0 4px}
+.qi{display:flex;gap:8px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:15px;line-height:1.6}
+.qi .qt{flex:1;white-space:pre-wrap}
+.qi.done .qt{opacity:.5;text-decoration:line-through}
+.qi button{font-size:16px;padding:0 2px;color:var(--muted)}
+.qi .kind{font-size:11px;padding:1px 6px;border-radius:5px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.cref{font-size:13px;color:var(--muted);margin-top:4px}
+.zh{font-size:14.5px;margin-top:6px;padding:6px 10px;background:var(--blue-soft);border-radius:8px;white-space:pre-wrap}
+details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);font-weight:700;cursor:pointer}
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:60;max-width:90vw}
 </style>
 </head>
@@ -144,7 +169,7 @@ a.pl.flash{background:var(--mark);border-radius:3px}
     <a class="btn sm" href="../">← 信息台</a>
     <button class="ib" id="bSet" title="设置">⚙︎</button>
   </header>
-  <label class="drop" id="drop"><input type="file" id="file" accept="application/pdf,.pdf" multiple hidden>＋ 添加 PDF<br><small>文件只存在这台设备上</small></label>
+  <label class="drop" id="drop"><input type="file" id="file" accept="application/pdf,.pdf,application/epub+zip,.epub" multiple hidden>＋ 添加 PDF 或 EPUB<br><small>文件只存在这台设备上</small></label>
   <div id="docs"></div>
   <div class="row" style="justify-content:center;margin-top:24px;flex-wrap:wrap">
     <button class="btn sm" id="bBackup">备份笔记</button>
@@ -165,6 +190,7 @@ a.pl.flash{background:var(--mark);border-radius:3px}
   <div class="bot">
     <div class="pg">p.<input id="pgIn" inputmode="numeric"> / <span id="pgN"></span></div>
     <div style="flex:1"></div>
+    <button class="btn sm" id="bQ">导读</button>
     <div class="zoom hide" id="zoom"><button class="ib" id="zOut">－</button><button class="ib" id="zIn">＋</button></div>
     <div class="seg"><button data-m="og">原版</button><button data-m="rf">重排</button></div>
   </div>
@@ -174,14 +200,17 @@ a.pl.flash{background:var(--mark);border-radius:3px}
   <button id="sMark">划线</button>
   <button id="sNote">笔记</button>
   <button id="sAsk">问AI</button>
+  <button id="sTerm">术语</button>
+  <button id="sCite">引用</button>
   <button id="sCopy">复制</button>
 </div>
 
-<div id="arcBack" class="hide"><button id="abGo">← 回到档案</button><button id="abX">✕</button></div>
+<div id="arcBack" class="hide"><button id="abGo">← 返回</button><button id="abX">✕</button></div>
 <div id="mask" class="hide"></div>
 <div id="sheet" class="hide"><div class="sh"><h3 id="shT"></h3><button class="ib" id="shX">✕</button></div><div class="sb" id="shB"></div></div>
 
 <script src="lib/pdf.min.js"></script>
+<script src="lib/jszip.min.js"></script>
 <script>
 'use strict';
 pdfjsLib.GlobalWorkerOptions.workerSrc='lib/pdf.worker.min.js';
@@ -276,7 +305,7 @@ async function pageParas(n){
     else cur.t=joinLine(cur.t,l.t);
     prev=l}
   S.paras.set(n,out);return out}
-async function pageText(n){const p=await pageParas(n);return p.map(x=>x.t).join('\n')}
+async function pageText(n){if(isEp())return epPageText(n);const p=await pageParas(n);return p.map(x=>x.t).join('\n')}
 
 /* ---------- 状态 ---------- */
 const S={doc:null,pdf:null,mode:'rf',zoom:1,paras:new Map(),boiler:new Set(),secs:[],cur:1,notes:[],sel:null,avgH:1800,ratio:1.3,io:null,ioFar:null};
@@ -287,7 +316,7 @@ async function renderLib(){
   const el=$('#docs');
   if(!docs.length){el.innerHTML='<div class="empty">还没有书。点上面添加一份 PDF。</div>';return}
   el.innerHTML=docs.map(d=>`<div class="doc" data-id="${d.id}"><div class="main"><h2>${esc(d.name)}</h2>
-    <div class="meta">${d.pages} 页 · 读到 p.${d.page||1}${d.study&&d.study.line?' · '+esc(d.study.line):''}</div>
+    <div class="meta">${d.kind==='epub'?'EPUB · ':''}${d.pages} 页 · 读到 p.${d.page||1}${d.study&&d.study.line?' · '+esc(d.study.line):''}</div>
     ${d.study&&d.study.q?`<div class="q">${esc(d.study.q)}</div>`:''}
     <div class="bar"><i style="width:${Math.round((d.page||1)/d.pages*100)}%"></i></div></div>
     <button class="ib del" data-id="${d.id}" title="删除">⋯</button></div>`).join('');
@@ -304,14 +333,21 @@ async function docMenu(id){
     await ddel('files',id);await ddel('docs',id);await ddel('chats',id);closeSheet();renderLib();toast('已删除')}}
 async function addFiles(files){
   for(const f of files){
-    if(!/pdf$/i.test(f.type)&&!/\.pdf$/i.test(f.name))continue;
+    const isE=/epub/i.test(f.type)||/\.epub$/i.test(f.name);
+    if(!isE&&!/pdf$/i.test(f.type)&&!/\.pdf$/i.test(f.name))continue;
     const id='d'+f.size.toString(36)+'_'+[...f.name].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7).toString(36);
     if(await dget('docs',id)){toast('已经在书库里：'+f.name);continue}
     toast('正在添加：'+f.name,4000);
+    if(isE){try{const E=await epubOpen(f);const X=await epubSections(E);
+        await dput('files',new Blob([await f.arrayBuffer()],{type:'application/epub+zip'}),id);
+        await dput('docs',{id,kind:'epub',name:E.title||f.name.replace(/\.epub$/i,''),file:f.name,pages:X.pages,added:Date.now(),page:X.paged?(X.firstPg||1):1,study:{q:'',side:'',line:''},guides:[],
+          biblio:{author:E.author,year:(E.date||'').slice(0,4),title:E.title,publisher:E.publisher,place:''}})}
+      catch(e){toast('打不开这个 EPUB：'+e.message,4000)}continue}
     try{const buf=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf.slice(0),...PDFOPT}).promise;
       let name=f.name.replace(/\.pdf$/i,'');try{const m=await pdf.getMetadata();const t=m&&m.info&&m.info.Title;if(t&&t.trim().length>1&&!/^untitled|^microsoft/i.test(t))name=t.trim()}catch(e){}
       await dput('files',new Blob([buf],{type:'application/pdf'}),id);
-      await dput('docs',{id,name,file:f.name,pages:pdf.numPages,added:Date.now(),page:1,mode:'rf',study:{q:'',side:'',line:''},guides:[]});
+      let au='';try{const m=await pdf.getMetadata();au=(m&&m.info&&m.info.Author)||''}catch(e){}
+      await dput('docs',{id,kind:'pdf',name,file:f.name,pages:pdf.numPages,added:Date.now(),page:1,mode:'rf',study:{q:'',side:'',line:''},guides:[],biblio:{author:au,year:'',title:name,publisher:'',place:''}});
       pdf.destroy()}catch(e){toast('打不开这个 PDF：'+e.message,4000)}}
   try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
   renderLib()}
@@ -325,22 +361,29 @@ async function openDoc(id){
   $('#lib').classList.add('hide');$('#rd').classList.remove('hide');
   $('#title').textContent=doc.name;$('#pgN').textContent=doc.pages;
   $('#view').innerHTML='<div class="loading">正在打开…</div>';
-  Object.assign(S,{doc,mode:doc.mode||'rf',zoom:doc.zoom||1,paras:new Map(),boiler:new Set(),cur:doc.page||1,sel:null});
+  Object.assign(S,{doc,mode:doc.mode||'rf',zoom:doc.zoom||1,paras:new Map(),boiler:new Set(),cur:doc.page||1,sel:null,open:true,ep:null,pdf:null});
+  if(doc.kind==='epub'){
+    try{const E=await epubOpen(blob);const X=await epubSections(E);S.ep={...E,...X,urls:[]};if(doc.pages!==X.pages){doc.pages=X.pages}}
+    catch(e){toast('EPUB 读取失败：'+e.message,5000);S.open=false;closeDoc();return}
+  }else{
   S.pdf=await pdfjsLib.getDocument({data:await blob.arrayBuffer(),...PDFOPT}).promise;
   const p1=await S.pdf.getPage(1);const v=p1.getViewport({scale:1});S.ratio=v.height/v.width;
-  await learnBoiler();
+  await learnBoiler();}
+  $('#pgN').textContent=doc.pages;document.querySelector('.seg').classList.toggle('hide',doc.kind==='epub');
   S.notes=await notesOf(id);S.arcRefs=arcRefs(doc);
   doc.opened=Date.now();dput('docs',doc);
   history.pushState({r:1},'');
   build();goPage(S.cur,false)}
 function closeDoc(){
-  if(S.io)S.io.disconnect();if(S.pdf)S.pdf.destroy();S.pdf=null;
+  if(S.io)S.io.disconnect();if(S.pdf)S.pdf.destroy();S.pdf=null;S.open=false;
+  if(S.ep){(S.ep.urls||[]).forEach(u=>URL.revokeObjectURL(u));S.ep=null}
   $('#view').innerHTML='';$('#rd').classList.add('hide');$('#lib').classList.remove('hide');hideSel();$('#arcBack').classList.add('hide');renderLib()}
 $('#bBack').onclick=()=>history.back();
-addEventListener('popstate',()=>{if(!$('#sheet').classList.contains('hide')){closeSheet(true);history.pushState({r:1},'');return}if(S.pdf)closeDoc()});
+addEventListener('popstate',()=>{if(!$('#sheet').classList.contains('hide')){closeSheet(true);history.pushState({r:1},'');return}if(S.open)closeDoc()});
 
 /* ---------- 构建页面 ---------- */
 function build(){
+  if(isEp())return buildEp();
   const v=$('#view');v.innerHTML='';S.secs=[];
   document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
   $('#zoom').classList.toggle('hide',S.mode!=='og');
@@ -357,6 +400,7 @@ function sizePh(s){const b=s.querySelector('.body');const m=s.dataset.m||S.mode;
   b.style.minHeight=(m==='og'?Math.round(ogWidth()*S.ratio)+8:S.avgH)+'px'}
 async function loadSec(s){
   if(s.dataset.ld)return;s.dataset.ld=1;
+  if(isEp()){const b=s.querySelector('.body');try{renderEp(+s.dataset.s,b)}catch(e){b.innerHTML=`<div class="loading">这一章出错了：${esc(e.message)}</div>`}b.style.minHeight='';return}
   const n=+s.dataset.p,b=s.querySelector('.body'),m=s.dataset.m||S.mode;
   try{if(m==='og')await renderOg(n,b);else await renderRf(n,b)}catch(e){b.innerHTML=`<div class="loading">这一页出错了：${esc(e.message)}</div>`}
   b.style.minHeight='';
@@ -369,7 +413,7 @@ async function renderRf(n,b){
     await renderOg(n,b.querySelector('.og'));
     b.querySelector('.ocr').onclick=()=>ocrPage(n,b);return}
   b.innerHTML='<div class="rf">'+ps.map(p=>`<p class="${p.h?'h':p.c?'c':''}">${esc(p.t)}</p>`).join('')+'</div>';
-  paintMarks(b,n)}
+  applyGloss(b.querySelector('.rf'));paintMarks(b,n)}
 async function renderOg(n,b){
   const page=await S.pdf.getPage(n);const base=page.getViewport({scale:1});
   const w=ogWidth(),scale=w/base.width,vp=page.getViewport({scale});
@@ -395,24 +439,30 @@ $('#view').addEventListener('click',e=>{
   const f=e.target.closest('.flip');
   if(f){const s=f.closest('.sec');const m=(s.dataset.m||S.mode)==='rf'?'og':'rf';s.dataset.m=m===S.mode?'':m;if(!s.dataset.m)delete s.dataset.m;
     f.textContent=(s.dataset.m||S.mode)==='rf'?'看原页':'重排此页';delete s.dataset.ld;sizePh(s);loadSec(s);return}
+  const fnA=e.target.closest('a.fn');if(fnA){e.preventDefault();showFn(fnA.dataset.href);return}
+  const xl=e.target.closest('a.xl');if(xl){e.preventDefault();const [f,fr]=xl.dataset.href.split('#');const k=S.ep?S.ep.spine.indexOf(f):-1;if(k>=0){const y=scrollY;goEl(k,fr?'#'+CSS.escape('e'+k+'-'+fr):null,(fr&&S.ep.idPage.get(f+'#'+fr))||S.ep.secs[k].startPg||k+1);setBack('← 返回',()=>{scrollTo(0,y);$('#arcBack').classList.add('hide')})}return}
+  const gl=e.target.closest('abbr.gl');if(gl&&!getSelection().toString()){glossPop(gl.dataset.g);return}
+  const pb=e.target.closest('.pbm.ar');if(pb){const r=S.arcRefs.get(+pb.dataset.pg)||[];if(r.length)openArchive(r[0],+pb.dataset.pg);return}
   const ab=e.target.closest('.arcb');if(ab){const r=S.arcRefs.get(+ab.dataset.p)||[];if(r.length)openArchive(r[0],+ab.dataset.p);return}
   const mk=e.target.closest('mark');if(mk&&!getSelection().toString()){const n=S.notes.find(x=>x.id===mk.dataset.id);if(n)noteSheet(n)}});
 
 /* ---------- 翻页与位置 ---------- */
 let jumpT=[];
-function goPage(n){n=Math.max(1,Math.min(S.doc.pages,n|0||1));const s=S.secs[n-1];if(!s)return;
-  S.cur=n;$('#pgIn').value=n;jumpT.forEach(clearTimeout);
+function goPage(n){S.noHide=Date.now()+1600;document.body.classList.remove('hidebars');if(isEp())return goPageEp(n);n=Math.max(1,Math.min(S.doc.pages,n|0||1));const s=S.secs[n-1];if(!s)return;
+  S.cur=n;$('#pgIn').value=n;savePos();jumpT.forEach(clearTimeout);
   const align=()=>{const y=s.getBoundingClientRect().top+scrollY-52;scrollTo(0,y)};
   for(let k=n-2;k<=n+1;k++)if(S.secs[k-1])loadSec(S.secs[k-1]);
   align();jumpT=[120,350,700,1200].map(t=>setTimeout(align,t));
   ['touchstart','wheel'].forEach(ev=>addEventListener(ev,()=>jumpT.forEach(clearTimeout),{once:true,passive:true}))}
 let saveT,lastY=0,ticking=false;
-addEventListener('scroll',()=>{if(ticking||!S.pdf)return;ticking=true;requestAnimationFrame(()=>{ticking=false;
-  const y=scrollY;if(Math.abs(y-lastY)>30){document.body.classList.toggle('hidebars',y>lastY&&y>200&&!S.sel);lastY=y}
+function savePos(){clearTimeout(saveT);saveT=setTimeout(()=>{if(S.doc&&S.open){S.doc.page=S.cur;dput('docs',S.doc)}},800)}
+addEventListener('scroll',()=>{if(ticking||!S.open)return;ticking=true;requestAnimationFrame(()=>{ticking=false;
+  const y=scrollY;if(Math.abs(y-lastY)>30){if(Date.now()>(S.noHide||0))document.body.classList.toggle('hidebars',y>lastY&&y>200&&!S.sel);lastY=y}
+  let n;if(isEp())n=curPageEp();else{
   let lo=0,hi=S.secs.length-1;while(lo<hi){const mid=(lo+hi+1)>>1;if(S.secs[mid].getBoundingClientRect().top<=innerHeight*.35)lo=mid;else hi=mid-1}
-  const n=lo+1;if(n!==S.cur){S.cur=n;if(document.activeElement!==$('#pgIn'))$('#pgIn').value=n;
+  n=lo+1}if(n!==S.cur){S.cur=n;if(document.activeElement!==$('#pgIn'))$('#pgIn').value=n;
     clearTimeout(saveT);saveT=setTimeout(()=>{S.doc.page=S.cur;dput('docs',S.doc)},800)}})},{passive:true});
-$('#view').addEventListener('click',e=>{if(e.target.closest('button,mark,a'))return;if(!getSelection().toString())document.body.classList.toggle('hidebars')});
+$('#view').addEventListener('click',e=>{if(e.target.closest('button,mark,a,abbr,.pbm'))return;if(!getSelection().toString())document.body.classList.toggle('hidebars')});
 $('#pgIn').onchange=e=>goPage(+e.target.value,false);
 $('#pgIn').onfocus=e=>e.target.select();
 document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{if(S.mode===b.dataset.m)return;const n=S.cur;S.mode=b.dataset.m;S.doc.mode=S.mode;dput('docs',S.doc);build();goPage(n)});
@@ -431,28 +481,34 @@ function applyTheme(){const t=ls.get('theme','');if(t)document.documentElement.d
 /* ---------- 选中 ---------- */
 function hideSel(){$('#selbar').classList.add('hide');S.sel=null}
 document.addEventListener('selectionchange',()=>{
-  if(!S.pdf)return;const s=getSelection();const t=s.toString().trim();
+  if(!S.open)return;const s=getSelection();const t=s.toString().trim();
   if(!t||s.rangeCount===0){setTimeout(()=>{if(!getSelection().toString().trim())hideSel()},250);return}
   const a=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);const sec=a&&a.closest('.sec');if(!sec)return;
-  S.sel={text:t.replace(/\s*\n\s*/g,' ').slice(0,3000),page:+sec.dataset.p};
+  const text=t.replace(/\s*\n\s*/g,' ').slice(0,3000);
+  if(isEp()){const k=+sec.dataset.s;const blk=a.closest('[data-i]');S.sel={text,page:pageAtNode(a,sec,k),sec:k,i:blk?+blk.dataset.i:0,ctx:blk?blk.textContent.replace(/\s+/g,' ').trim():''}}
+  else{const pp=a.closest('p');S.sel={text,page:+sec.dataset.p,ctx:pp?pp.textContent:''}}
   document.body.classList.remove('hidebars');$('#selbar').classList.remove('hide')});
 const keepSel=e=>e.preventDefault();
-['sMark','sNote','sAsk','sCopy'].forEach(id=>$('#'+id).addEventListener('mousedown',keepSel));
+['sMark','sNote','sAsk','sTerm','sCite','sCopy'].forEach(id=>$('#'+id).addEventListener('mousedown',keepSel));
 $('#sCopy').onclick=async()=>{try{await navigator.clipboard.writeText(S.sel.text);toast('已复制')}catch(e){toast('复制失败')}getSelection().removeAllRanges();hideSel()};
 $('#sMark').onclick=async()=>{const n=await newNote('');getSelection().removeAllRanges();hideSel();toast('已划线 · p.'+n.page)};
-$('#sNote').onclick=async()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();noteSheet({id:null,docId:S.doc.id,page:sel.page,quote:sel.text,text:'',tag:'',ai:[]})};
-$('#sAsk').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();askSheet({id:null,docId:S.doc.id,page:sel.page,quote:sel.text,text:'',tag:'',ai:[]})};
+const selNote=sel=>({id:null,docId:S.doc.id,page:sel.page,sec:sel.sec,i:sel.i,quote:sel.text,text:'',tag:'',ai:[]});
+$('#sNote').onclick=async()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();noteSheet(selNote(sel))};
+$('#sAsk').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();askSheet(selNote(sel))};
+$('#sTerm').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();termSheet({term:sel.text.slice(0,80),def:'',ctx:sel.ctx||'',page:sel.page,sec:sel.sec,i:sel.i})};
+$('#sCite').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();citeSheet({quote:sel.text,page:sel.page,sec:sel.sec,i:sel.i,use:'',zh:'',note:'',ctx:sel.ctx||''})};
 
 /* ---------- 笔记 ---------- */
-async function newNote(text,tag){const sel=S.sel;const n={id:uid(),docId:S.doc.id,page:sel.page,quote:sel.text,text:text||'',tag:tag||'',ai:[],at:Date.now()};
+async function newNote(text,tag){const sel=S.sel;const n={...selNote(sel),id:uid(),text:text||'',tag:tag||'',at:Date.now()};
   await saveNote(n);return n}
 async function saveNote(n){if(!n.id)n.id=uid();if(!n.at)n.at=Date.now();await dput('notes',n);
-  const i=S.notes.findIndex(x=>x.id===n.id);if(i>=0)S.notes[i]=n;else S.notes.push(n);refreshPage(n.page)}
-async function removeNote(n){await ddel('notes',n.id);S.notes=S.notes.filter(x=>x.id!==n.id);refreshPage(n.page)}
+  const i=S.notes.findIndex(x=>x.id===n.id);if(i>=0)S.notes[i]=n;else S.notes.push(n);refreshFor(n)}
+async function removeNote(n){await ddel('notes',n.id);S.notes=S.notes.filter(x=>x.id!==n.id);refreshFor(n)}
+function refreshFor(n){if(isEp()){const s=S.secs[n.sec];if(!s)return;const b=s.querySelector('.body');if(!b.querySelector('.rf'))return;b.querySelectorAll('mark').forEach(m=>m.replaceWith(...m.childNodes));b.normalize();paintMarks(b,n.sec);return}refreshPage(n.page)}
 function refreshPage(p){const s=S.secs[p-1];if(!s)return;const b=s.querySelector('.body');if(b.querySelector('.rf p:not(.none)')){b.querySelectorAll('mark').forEach(m=>m.replaceWith(...m.childNodes));b.normalize();paintMarks(b,p)}}
 function paintMarks(b,p){
   const root=b.querySelector('.rf');if(!root)return;
-  for(const n of S.notes.filter(x=>x.page===p)){
+  for(const n of S.notes.filter(x=>isEp()?x.sec===p:x.page===p)){
     const nodes=[];const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let t,all='';
     while((t=w.nextNode())){nodes.push([t,all.length]);all+=t.data}
     const q=n.quote.replace(/\s+/g,' ');let i=all.indexOf(q),len=q.length;
@@ -462,7 +518,7 @@ function paintMarks(b,p){
       const r=document.createRange();r.setStart(node,a-off);r.setEnd(node,z-off);const m=document.createElement('mark');m.dataset.id=n.id;if(n.text||n.ai.length)m.className='n';
       try{r.surroundContents(m)}catch(e){}}}}
 function noteSheet(n){
-  sheet(n.id?'笔记 · p.'+n.page:'写笔记 · p.'+n.page,`<div class="quote">${esc(n.quote)}</div>
+  sheet((n.id?'笔记 · ':'写笔记 · ')+locLabel(n),`<div class="quote">${esc(n.quote)}</div>
     <div class="chips" id="tg">${TAGS.map(([k,v])=>`<button class="chip ${k} ${n.tag===k?'on':''}" data-k="${k}">${v}</button>`).join('')}</div>
     <textarea id="nt" placeholder="你的想法…">${esc(n.text)}</textarea>
     ${n.ai&&n.ai.length?'<div class="lbl">AI 问答</div>'+n.ai.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join(''):''}
@@ -473,18 +529,18 @@ function noteSheet(n){
   $('#nAsk').onclick=()=>{n.text=$('#nt').value.trim();n.tag=tag;askSheet(n)};
   if($('#nDel')){let armed=false;$('#nDel').onclick=async e=>{if(!armed){armed=true;e.target.textContent='确认删除';return}await removeNote(n);closeSheet();toast('已删除')}}
   if(!n.id)setTimeout(()=>$('#nt').focus(),200)}
-function studyBlock(){const s=S.doc.study||{};return `研究问题：${s.q||'（还没设定）'}\n我的立场：${s.side||'（还没设定）'}${s.line?'\n工作线：'+s.line:''}`}
+function studyBlock(){const s=S.doc.study||{};return `${s.big?`大问题：${s.big}\n大问题上的立场：${s.bigSide||'（未定）'}\n`:''}当前研究问题：${s.q||'（还没设定）'}\n我的立场：${s.side||'（还没设定）'}${s.line?'\n工作线：'+s.line:''}`}
 async function askSheet(n){
-  sheet('问 AI · p.'+n.page,`<div class="quote">${esc(n.quote)}</div><div id="chat">${(n.ai||[]).map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
+  sheet('问 AI · '+locLabel(n),`<div class="quote">${esc(n.quote)}</div><div id="chat">${(n.ai||[]).map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
     <div class="chips" id="qk">${['解释一下','翻译成中文','这段的论证有什么问题？','和我的研究问题有什么关系？','反方会怎么用这段？'].map(q=>`<button class="chip">${q}</button>`).join('')}</div>
     <textarea id="qIn" placeholder="想问什么…" style="min-height:60px"></textarea>
     <div class="row"><button class="btn pri" id="qGo">发送</button><div style="flex:1"></div><button class="btn" id="qNote">存为笔记</button></div>`);
-  const ctx=(await pageText(Math.max(1,n.page-1))).slice(-1500)+'\n'+(await pageText(n.page))+'\n'+(n.page<S.doc.pages?(await pageText(n.page+1)).slice(0,1200):'');
+  const ctx=isEp()?ctxEp(n.sec,n.i):(await pageText(Math.max(1,n.page-1))).slice(-1500)+'\n'+(await pageText(n.page))+'\n'+(n.page<S.doc.pages?(await pageText(n.page+1)).slice(0,1200):'');
   const sys=`你是一位牛津式阅读导师，陪用户读《${S.doc.name}》。\n${studyBlock()}\n回答要求：用中文，具体、简洁，先直接回答；如有关联，再用一两句点出这段和研究问题的关系；引用原文时标页码 p.N；原文里没有的不要编造，不确定就说不确定。`;
   const send=async q=>{
     if(!q.trim())return;const chat=$('#chat');
     const first=!n.ai||!n.ai.length;n.ai=n.ai||[];
-    const userMsg=first?`【p.${n.page} 附近原文】\n${ctx.slice(0,9000)}\n\n【我选中的文字（p.${n.page}）】\n${n.quote}\n\n【问题】${q}`:q;
+    const userMsg=first?`【${locLabel(n)} 附近原文】\n${ctx.slice(0,9000)}\n\n【我选中的文字（${locLabel(n)}）】\n${n.quote}\n\n【问题】${q}`:q;
     const hist=n.ai.map((m,i)=>({role:m.role,content:i===0&&m.full?m.full:m.content}));
     n.ai.push({role:'user',content:q,full:first?userMsg:undefined});
     chat.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div><div class="msg a">…</div>`);
@@ -497,18 +553,45 @@ async function askSheet(n){
   $('#qGo').onclick=()=>{const q=$('#qIn').value;$('#qIn').value='';send(q)};
   $('#qNote').onclick=()=>noteSheet(n)}
 $('#bNotes').onclick=()=>notesSheet();
-function notesSheet(){
-  const ns=[...S.notes].sort((a,b)=>a.page-b.page||a.at-b.at);
-  sheet(`笔记（${ns.length}）`,`<div class="row" style="margin:0 0 10px"><button class="btn sm" id="nExp">导出 Markdown</button></div>`+
-    (ns.length?ns.map(n=>`<div class="note" data-id="${n.id}"><div class="nq">${esc(n.quote.length>160?n.quote.slice(0,160)+'…':n.quote)}</div>${n.text?`<div class="nt">${esc(n.text)}</div>`:''}
-      <div class="nm"><span>p.${n.page}</span>${n.tag?`<span class="tag ${n.tag}">${tagName(n.tag)}</span>`:''}${n.ai&&n.ai.length?`<span class="tag">AI问答 ${n.ai.length/2|0}</span>`:''}<div style="flex:1"></div><button class="btn sm go">跳到这里</button></div></div>`).join('')
-    :'<p class="muted">还没有笔记。在正文里长按选中文字，就会出现划线、笔记、问AI。</p>'));
+const sortKey=n=>isEp()?((n.sec||0)*1e6+(n.i||0)):((n.page||0)*1e6);
+function goNote(n){if(isEp()&&n.sec!=null)goEl(n.sec,`[data-i="${n.i||0}"]`,n.page||n.sec+1);else goPage(n.page)}
+function notesSheet(tab){
+  tab=tab||'n';const gl=S.doc.glossary||[],cs=S.doc.cites||[];
+  const tabs=`<div class="tabs" id="nTabs"><button class="chip ${tab==='n'?'on':''}" data-t="n">笔记 ${S.notes.length}</button><button class="chip ${tab==='g'?'on':''}" data-t="g">术语表 ${gl.length}</button><button class="chip ${tab==='c'?'on':''}" data-t="c">引用库 ${cs.length}</button><div style="flex:1"></div><button class="btn sm" id="nExp">导出</button></div>`;
+  let body='';
+  if(tab==='n'){const ns=[...S.notes].sort((a,b)=>sortKey(a)-sortKey(b)||a.at-b.at);
+    body=ns.length?ns.map(n=>`<div class="note" data-id="${n.id}"><div class="nq">${esc(n.quote.length>160?n.quote.slice(0,160)+'…':n.quote)}</div>${n.text?`<div class="nt">${esc(n.text)}</div>`:''}
+      <div class="nm"><span>${locLabel(n)}</span>${n.tag?`<span class="tag ${n.tag}">${tagName(n.tag)}</span>`:''}${n.ai&&n.ai.length?`<span class="tag">AI问答 ${n.ai.length/2|0}</span>`:''}<div style="flex:1"></div><button class="btn sm go">跳到这里</button></div></div>`).join('')
+    :'<p class="muted">还没有笔记。在正文里长按选中文字，就会出现划线、笔记、问AI。</p>'}
+  else if(tab==='g'){const g2=[...gl].sort((a,b)=>a.term.localeCompare(b.term,'de'));
+    body=(g2.length?g2.map(g=>`<div class="note" data-g="${g.id}"><b style="font-size:15.5px">${esc(g.term)}</b>${g.def?`<div class="nt">${esc(g.def)}</div>`:''}<div class="nm"><span>${locLabel(g)}</span><div style="flex:1"></div>${g.sec!=null||g.page?'<button class="btn sm go">原文</button>':''}</div></div>`).join('')
+      :'<p class="muted">还没有术语。在正文里选中一个词，点“术语”。加入术语表的词会在正文里加上蓝色虚线，点一下就能看释义。</p>')+
+      '<div class="row"><button class="btn sm" id="gAdd">＋ 手动添加</button><button class="btn sm" id="gCsv">导出 CSV（可导入 Anki）</button></div>'}
+  else{const b=S.doc.biblio=S.doc.biblio||{};
+    body=`<details ${b.author?'':'open'}><summary class="lbl" style="cursor:pointer">书目信息 · ${esc(bibLine())}</summary>
+      <div class="row"><input id="bA" placeholder="作者（姓, 名）" value="${esc(b.author)}"><input id="bY" placeholder="年份" style="max-width:90px" value="${esc(b.year)}"></div>
+      <div class="row"><input id="bT" placeholder="书名" value="${esc(b.title)}"></div>
+      <div class="row"><input id="bP" placeholder="出版地" value="${esc(b.place)}"><input id="bV" placeholder="出版社" value="${esc(b.publisher)}"></div>
+      <div class="row"><button class="btn sm" id="bSave">保存书目</button><button class="btn sm" id="bCopy">复制参考文献</button></div></details>`+
+      ([...cs].sort((a,b)=>sortKey(a)-sortKey(b)).map(c=>`<div class="note" data-c="${c.id}"><div class="nq">${esc(c.quote.length>220?c.quote.slice(0,220)+'…':c.quote)}</div><div class="cref">${esc(citeRef(c))}${c.use?` · <span class="tag t3">${esc(c.use)}</span>`:''}</div>${c.zh?`<div class="zh">${esc(c.zh)}</div>`:''}
+        <div class="nm"><div style="flex:1"></div><button class="btn sm cp">复制引文</button><button class="btn sm go">原文</button></div></div>`).join('')||'<p class="muted" style="margin-top:10px">还没有引用。在正文里选中一段，点“引用”。</p>')}
+  sheet('笔记',tabs+body);
+  $('#nTabs').onclick=e=>{const b=e.target.closest('[data-t]');if(b)notesSheet(b.dataset.t)};
   $('#nExp').onclick=()=>exportMd(S.doc.id);
-  $('#shB').querySelectorAll('.note').forEach(el=>el.onclick=e=>{const n=S.notes.find(x=>x.id===el.dataset.id);if(e.target.closest('.go')){closeSheet();goPage(n.page,false)}else noteSheet(n)})}
+  const sb=$('#shB');
+  sb.querySelectorAll('.note[data-id]').forEach(el=>el.onclick=e=>{const n=S.notes.find(x=>x.id===el.dataset.id);if(e.target.closest('.go')){closeSheet();goNote(n)}else noteSheet(n)});
+  sb.querySelectorAll('.note[data-g]').forEach(el=>el.onclick=e=>{const g=gl.find(x=>x.id===el.dataset.g);if(e.target.closest('.go')){closeSheet();goNote(g)}else termSheet(g)});
+  sb.querySelectorAll('.note[data-c]').forEach(el=>el.onclick=async e=>{const c=cs.find(x=>x.id===el.dataset.c);
+    if(e.target.closest('.cp')){await copyText(citeText(c));return}if(e.target.closest('.go')){closeSheet();goNote(c)}else citeSheet(c)});
+  if($('#gAdd'))$('#gAdd').onclick=()=>termSheet({term:'',def:'',ctx:'',page:0});
+  if($('#gCsv'))$('#gCsv').onclick=()=>download((S.doc.name.slice(0,30))+'-术语表.csv','\ufeff'+gl.map(g=>[g.term,g.def,g.ctx].map(x=>'"'+String(x||'').replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');
+  if($('#bSave')){const save=async()=>{Object.assign(S.doc.biblio,{author:$('#bA').value.trim(),year:$('#bY').value.trim(),title:$('#bT').value.trim(),place:$('#bP').value.trim(),publisher:$('#bV').value.trim()});await dput('docs',S.doc)};
+    $('#bSave').onclick=async()=>{await save();notesSheet('c');toast('已保存')};$('#bCopy').onclick=async()=>{await save();copyText(bibLine())}}}
 
 /* ---------- 目录 ---------- */
 $('#bToc').onclick=async()=>{
   sheet('目录','<div class="loading">读取中…</div>');
+  if(isEp())return tocEp();
   let ol=null;try{ol=await S.pdf.getOutline()}catch(e){}
   if(!ol||!ol.length){$('#shB').innerHTML='<p class="muted">这个 PDF 没有自带目录。可以直接在底部输入页码跳转。</p>';return}
   const items=[];const walk=async(arr,d)=>{for(const o of arr){let p=null;try{let dest=o.dest;if(typeof dest==='string')dest=await S.pdf.getDestination(dest);if(dest&&dest[0])p=await S.pdf.getPageIndex(dest[0])+1}catch(e){}
@@ -522,12 +605,14 @@ $('#bToc').onclick=async()=>{
 $('#bStudy').onclick=()=>studySheet();
 async function studySheet(){
   const s=S.doc.study=S.doc.study||{q:'',side:'',line:''};const lines=await getLines();
-  sheet('研究',`<div class="lbl">研究问题</div><textarea id="sq" style="min-height:64px" placeholder="例：欧洲一体化的跨国框架，是国际主义能借用的基础设施，还是它的替代品？">${esc(s.q)}</textarea>
+  sheet('研究',`<div class="lbl">大问题（整个项目最后要回答的）</div><textarea id="sb" style="min-height:56px" placeholder="例：梅德里希钢厂的关闭和改造，是转型的样板，还是把成本和冲突转移、遮蔽了？">${esc(s.big||'')}</textarea>
+    <div class="lbl">大问题 · 我目前的立场</div><textarea id="sbs" style="min-height:44px" placeholder="可以随时改，改动本身就是学习记录">${esc(s.bigSide||'')}</textarea>
+    <div class="lbl">本周问题 / 当前研究问题</div><textarea id="sq" style="min-height:64px" placeholder="例：欧洲一体化的跨国框架，是国际主义能借用的基础设施，还是它的替代品？">${esc(s.q)}</textarea>
     <div class="lbl">我的立场</div><textarea id="ss" style="min-height:52px" placeholder="选一边，写一两句理由">${esc(s.side)}</textarea>
     <div class="lbl">归到工作线</div><div class="chips" id="sl">${lines.map(l=>`<button class="chip ${s.line===l?'on':''}">${esc(l)}</button>`).join('')}<button class="chip" id="slAdd">＋ 新工作线</button></div>
     <div class="row"><button class="btn pri" id="sSave">保存</button></div>
     <div class="lbl">对谈档案</div>${(S.doc.archives||[]).length?S.doc.archives.map(a=>`<div class="note"><b style="font-size:15px">${esc(a.title)}</b><div class="nm"><span>${new Date(a.at).toLocaleDateString('zh-CN')}</span>${a.line?`<span class="tag t3">${esc(a.line)}</span>`:''}<div style="flex:1"></div><button class="btn sm" data-arc="${a.id}">查看</button></div></div>`).join(''):'<p class="muted" style="font-size:14px">还没有档案。</p>'}
-    <div class="row"><label class="btn sm">导入档案文件<input type="file" id="arcIn" accept=".json,application/json" hidden></label></div>
+    <div class="row"><label class="btn sm">导入档案或学习包<input type="file" id="arcIn" accept=".json,application/json" hidden></label></div>
     <div class="lbl">导读</div><p class="muted" style="font-size:14px">从当前页往后读 8 页左右，AI 给出这一段的导读问题（不替你回答）。</p>
     <div class="row"><button class="btn" id="sGuide">本节导读（p.${S.cur} 起）</button></div><div id="gOut" style="margin-top:10px"></div>
     ${(S.doc.guides||[]).slice().reverse().map(g=>`<div class="guide"><b>p.${g.from}–${g.to}</b>\n${fmt(g.text)}</div>`).join('')}
@@ -540,7 +625,7 @@ async function studySheet(){
     if(b.id==='slAdd'){const box=document.createElement('div');box.className='row';box.innerHTML='<input id="slNew" placeholder="新工作线名称"><button class="btn sm" id="slOk">添加</button>';b.parentElement.after(box);$('#slNew').focus();
       $('#slOk').onclick=async()=>{const v=$('#slNew').value.trim();if(!v)return;const ls2=await getLines();if(!ls2.includes(v)){ls2.push(v);await dput('meta',ls2,'lines')}s.q=$('#sq').value.trim();s.side=$('#ss').value.trim();s.line=v;await dput('docs',S.doc);studySheet()};return}
     line=line===b.textContent?'':b.textContent;$('#sl').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.textContent===line&&x.id!=='slAdd'))};
-  const save=async()=>{s.q=$('#sq').value.trim();s.side=$('#ss').value.trim();s.line=line;await dput('docs',S.doc)};
+  const save=async()=>{s.q=$('#sq').value.trim();s.side=$('#ss').value.trim();s.big=$('#sb').value.trim();s.bigSide=$('#sbs').value.trim();s.line=line;await dput('docs',S.doc)};
   $('#sSave').onclick=async()=>{await save();toast('已保存')};
   $('#sGuide').onclick=async()=>{await save();const btn=$('#sGuide');btn.disabled=true;const out=$('#gOut');out.className='guide';out.textContent='正在读…';
     const from=S.cur;let txt='',to=from;for(let p=from;p<=S.doc.pages&&p<from+12&&txt.length<24000;p++){txt+=`\n[p.${p}]\n`+await pageText(p);to=p}
@@ -551,8 +636,8 @@ async function studySheet(){
   $('#sTutor').onclick=async()=>{await save();tutorSheet()}}
 async function tutorSheet(){
   const chat=(await dget('chats',S.doc.id))||[];
-  const ns=[...S.notes].sort((a,b)=>a.page-b.page);
-  const notesTxt=ns.length?ns.map(n=>`[p.${n.page}]「${n.quote.slice(0,400)}」${n.tag?'（'+tagName(n.tag)+'）':''}${n.text?' — 我的批注：'+n.text:''}`).join('\n'):'（还没有笔记）';
+  const ns=[...S.notes].sort((a,b)=>sortKey(a)-sortKey(b));
+  const notesTxt=ns.length?ns.map(n=>`[${locLabel(n)}]「${n.quote.slice(0,400)}」${n.tag?'（'+tagName(n.tag)+'）':''}${n.text?' — 我的批注：'+n.text:''}`).join('\n'):'（还没有笔记）';
   const sys=`你是牛津导师制里的导师（tutor），学生在读《${S.doc.name}》。\n${studyBlock()}\n\n学生会向你汇报他的论点。你的任务：认真听，然后反驳、挑漏洞——追问概念定义，要求证据和页码，提出反例和对方最强的论证，指出逻辑跳跃和只挑有利证据的地方。一次只集中打一到两个点，不要长篇大论，每次以一个具体的问题结尾。不要替他写论点，不要轻易认同；他的论证真正站住时，明确说哪一点站住了、为什么。如果他反复出现同一类问题（比如概念不清、只引支持自己的证据、把描述当论证），直接点出来。用中文。\n\n他目前的阅读笔记：\n${notesTxt.slice(0,30000)}`;
   sheet('导师对谈',`<div id="tc">${chat.length?chat.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join(''):'<p class="muted" style="font-size:14px">先用几句话说出你目前的论点和最有力的证据，导师会开始反驳。</p>'}</div>
     <div class="chips" id="tk"><button class="chip">总结这次对谈</button>${chat.length?'<button class="chip" id="tNew">开始新一轮</button>':''}</div>
@@ -571,10 +656,15 @@ async function tutorSheet(){
 /* ---------- 导出与备份 ---------- */
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
 async function exportMd(id){
-  const d=await dget('docs',id);const ns=(await notesOf(id)).sort((a,b)=>a.page-b.page);const chat=(await dget('chats',id))||[];const s=d.study||{};
+  const d=await dget('docs',id);const ns=(await notesOf(id)).sort((a,b)=>(a.sec||0)-(b.sec||0)||(a.i||0)-(b.i||0)||a.page-b.page);
+  const lab=n=>n.page?'p.'+n.page:(n.sec!=null?`第${n.sec+1}部分 §${(n.i||0)+1}`:'');const chat=(await dget('chats',id))||[];const s=d.study||{};
   let md=`# ${d.name}\n\n`;
+  if(s.big)md+=`**大问题**：${s.big}\n\n`;if(s.bigSide)md+=`**大问题立场**：${s.bigSide}\n\n`;
   if(s.q)md+=`**研究问题**：${s.q}\n\n`;if(s.side)md+=`**我的立场**：${s.side}\n\n`;if(s.line)md+=`**工作线**：${s.line}\n\n`;
-  md+=`## 笔记\n\n`+ns.map(n=>`- p.${n.page}${n.tag?' ['+tagName(n.tag)+']':''}\n  > ${n.quote.replace(/\n/g,' ')}\n${n.text?'\n  '+n.text.replace(/\n/g,'\n  ')+'\n':''}${(n.ai||[]).map(m=>`\n  ${m.role==='user'?'**问**':'**答**'}：${m.content.replace(/\n/g,'\n  ')}`).join('\n')}\n`).join('\n');
+  if((d.questions||[]).length)md+=`## 导读问题\n\n`+d.questions.map(q=>`- [${q.done?'x':' '}] ${q.group?'（'+q.group+'）':''}${q.text}`).join('\n')+'\n\n';
+  md+=`## 笔记\n\n`+ns.map(n=>`- ${lab(n)}${n.tag?' ['+tagName(n.tag)+']':''}\n  > ${n.quote.replace(/\n/g,' ')}\n${n.text?'\n  '+n.text.replace(/\n/g,'\n  ')+'\n':''}${(n.ai||[]).map(m=>`\n  ${m.role==='user'?'**问**':'**答**'}：${m.content.replace(/\n/g,'\n  ')}`).join('\n')}\n`).join('\n');
+  if((d.glossary||[]).length)md+=`\n## 术语表\n\n`+[...d.glossary].sort((a,b)=>a.term.localeCompare(b.term,'de')).map(g=>`- **${g.term}**${g.page?'（p.'+g.page+'）':''}：${(g.def||'').replace(/\n/g,' ')}`).join('\n')+'\n';
+  if((d.cites||[]).length){const b=d.biblio||{};const au=(b.author||'').split(',')[0].split(' ').pop();md+=`\n## 引用库\n\n${[b.author,b.year&&'('+b.year+')',b.title].filter(Boolean).join(' ')}\n\n`+d.cites.map(c=>`> „${c.quote}“ (${au} ${b.year||''}${c.page?', S. '+c.page:''})${c.use?' ['+c.use+']':''}${c.zh?'\n>\n> 译：'+c.zh.replace(/\n/g,' '):''}`).join('\n\n')+'\n'}
   if((d.guides||[]).length)md+=`\n## 导读\n\n`+d.guides.map(g=>`### p.${g.from}–${g.to}\n\n${g.text}\n`).join('\n');
   const logs=[...(d.tutorLog||[]).map(l=>l.chat),chat].filter(c=>c.length);
   for(const a of d.archives||[])md+=`\n## 档案：${a.title}\n\n`+a.blocks.map(b=>`### ${b.h}\n\n${b.md}`).join('\n\n')+'\n';
@@ -586,7 +676,8 @@ $('#bBackup').onclick=async()=>{
   toast('备份里只有笔记和研究记录，不含 PDF 文件',3500)};
 $('#restore').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const j=JSON.parse(await f.text());let a=0,b=0;
-    for(const d of j.docs||[]){const old=await dget('docs',d.id);if(old){const ar=[...(old.archives||[])];for(const x of d.archives||[])if(!ar.some(y=>y.id===x.id))ar.push(x);Object.assign(old,{study:d.study,guides:d.guides,tutorLog:d.tutorLog,archives:ar,page:Math.max(old.page||1,d.page||1)});await dput('docs',old);a++}}
+    for(const d of j.docs||[]){const old=await dget('docs',d.id);if(old){const ar=[...(old.archives||[])];for(const x of d.archives||[])if(!ar.some(y=>y.id===x.id))ar.push(x);const mg=(a,b,k)=>{const r=[...(a||[])];for(const x of b||[])if(!r.some(y=>y[k]===x[k]))r.push(x);return r};
+          Object.assign(old,{study:d.study,guides:d.guides,tutorLog:d.tutorLog,archives:ar,glossary:mg(old.glossary,d.glossary,'id'),cites:mg(old.cites,d.cites,'id'),questions:mg(old.questions,d.questions,'id'),biblio:{...(d.biblio||{}),...Object.fromEntries(Object.entries(old.biblio||{}).filter(([k,v])=>v))},page:Math.max(old.page||1,d.page||1)});await dput('docs',old);a++}}
     for(const n of j.notes||[]){if(await dget('docs',n.docId)){await dput('notes',n);b++}}
     for(const [id,c] of Object.entries(j.chats||{}))if(await dget('docs',id)&&c.length)await dput('chats',c,id);
     if(j.lines)await dput('meta',j.lines,'lines');
@@ -627,14 +718,15 @@ function openArchive(id,focusP,scroll){
   const sb=$('#shB');
   sb.onclick=e=>{const j=e.target.closest('[data-j]');if(j){$('#ab'+j.dataset.j).scrollIntoView({block:'start'});return}
     const pl=e.target.closest('a.pl');if(!pl)return;e.preventDefault();
-    arcReturn={id,top:sb.scrollTop};closeSheet();goPage(+pl.dataset.p);
-    $('#arcBack').classList.remove('hide')};
+    const top=sb.scrollTop;closeSheet();goPage(+pl.dataset.p);setBack('← 回到档案',()=>openArchive(id,null,top))};
   if(scroll!=null)sb.scrollTop=scroll;
   else if(focusP){const t=sb.querySelector(`a.pl[data-p="${focusP}"]`);if(t){t.scrollIntoView({block:'center'});t.classList.add('flash');setTimeout(()=>t.classList.remove('flash'),2500)}}}
-$('#abGo').onclick=()=>{if(arcReturn)openArchive(arcReturn.id,null,arcReturn.top)};
+let backFn=null;function setBack(label,fn){backFn=fn;$('#abGo').textContent=label;$('#arcBack').classList.remove('hide')}
+$('#abGo').onclick=()=>{if(backFn)backFn()};
 $('#abX').onclick=()=>$('#arcBack').classList.add('hide');
 async function importArchive(f){
-  try{const j=JSON.parse(await f.text());if(j.type!=='reader-archive'||!Array.isArray(j.blocks))throw new Error('这不是阅读器的档案文件');
+  try{const j=JSON.parse(await f.text());if(j.type==='reader-pack')return importPack(j);
+    if(j.type!=='reader-archive'||!Array.isArray(j.blocks))throw new Error('这不是阅读器的档案文件');
     S.doc.archives=S.doc.archives||[];
     const i=S.doc.archives.findIndex(x=>x.id===j.id);const a={id:j.id||uid(),title:j.title,at:j.at||Date.now(),line:j.line||'',blocks:j.blocks};
     if(i>=0)S.doc.archives[i]=a;else S.doc.archives.push(a);
@@ -643,8 +735,238 @@ async function importArchive(f){
     const n=S.cur;build();goPage(n);toast(i>=0?'档案已更新':'档案已导入');openArchive(a.id)}
   catch(e){toast('导入失败：'+e.message,4000)}}
 
+/* ---------- EPUB ---------- */
+const isEp=()=>!!(S.doc&&S.doc.kind==='epub');
+function locLabel(n){if(!n)return '';if(n.page)return 'p.'+n.page;if(n.sec!=null)return `第${n.sec+1}部分 §${(n.i||0)+1}`;return ''}
+function rpath(base,rel){if(/^[a-z]+:/i.test(rel))return rel;const out=[];for(const x of (base+rel).split('/')){if(x==='..')out.pop();else if(x&&x!=='.')out.push(x)}return out.join('/')}
+const dirOf=p=>p.includes('/')?p.slice(0,p.lastIndexOf('/')+1):'';
+async function epubOpen(blob){
+  const zip=await JSZip.loadAsync(blob);
+  const file=p=>zip.file(p)||zip.file(decodeURIComponent(p));
+  const txt=async p=>{const f=file(p);return f?f.async('string'):null};
+  const xml=t=>new DOMParser().parseFromString(t||'','application/xml');
+  const cont=xml(await txt('META-INF/container.xml'));const rf=cont.getElementsByTagNameNS('*','rootfile')[0];
+  if(!rf)throw new Error('找不到 container.xml');
+  const opfPath=rf.getAttribute('full-path'),od=dirOf(opfPath),opf=xml(await txt(opfPath));
+  const md=k=>{const e=opf.getElementsByTagNameNS('*',k)[0];return e?e.textContent.trim():''};
+  const man={};for(const it of opf.getElementsByTagNameNS('*','item'))man[it.getAttribute('id')]={href:rpath(od,it.getAttribute('href')||''),type:it.getAttribute('media-type')||'',props:it.getAttribute('properties')||''};
+  const spEl=opf.getElementsByTagNameNS('*','spine')[0];
+  const spine=[...opf.getElementsByTagNameNS('*','itemref')].map(r=>man[r.getAttribute('idref')]).filter(x=>x&&/html|xml/.test(x.type)&&!/ncx/.test(x.type)).map(x=>x.href);
+  const toc=[];
+  const ncx=(spEl&&spEl.getAttribute('toc')&&man[spEl.getAttribute('toc')])||Object.values(man).find(x=>/ncx/.test(x.type));
+  const nav=Object.values(man).find(x=>/\bnav\b/.test(x.props));
+  if(ncx){const n=xml(await txt(ncx.href)),nd=dirOf(ncx.href);
+    const walk=(el,d)=>{for(const np of el.children){if(np.localName!=='navPoint')continue;const lb=np.getElementsByTagNameNS('*','text')[0],c=np.getElementsByTagNameNS('*','content')[0];
+      if(lb&&c)toc.push({t:lb.textContent.trim(),href:rpath(nd,c.getAttribute('src')||''),d});walk(np,d+1)}};
+    const nm=n.getElementsByTagNameNS('*','navMap')[0];if(nm)walk(nm,0)}
+  if(!toc.length&&nav){const h=new DOMParser().parseFromString(await txt(nav.href)||'','text/html'),nd=dirOf(nav.href);
+    const nv=[...h.querySelectorAll('nav')].find(x=>/toc/.test(x.getAttribute('epub:type')||''))||h.querySelector('nav');
+    const walk=(ol,d)=>{if(!ol)return;for(const li of ol.children){const a=li.querySelector('a');if(a)toc.push({t:a.textContent.trim(),href:rpath(nd,a.getAttribute('href')||''),d});walk(li.querySelector('ol'),d+1)}};
+    if(nv)walk(nv.querySelector('ol'),0)}
+  const au=md('creator');
+  return {zip,file,title:md('title'),author:au,date:md('date'),publisher:md('publisher'),lang:md('language'),spine,toc}}
+const EP_BLOCK=new Set(['p','h1','h2','h3','h4','h5','h6','li','blockquote','pre','dt','dd','figcaption','caption','td','th']);
+const EP_BOXES=new Set(['div','section','article','aside','header','footer','main','body','nav','figure']);
+const EP_BLOCKISH=new Set([...EP_BLOCK,...EP_BOXES,'ul','ol','dl','table','tr','tbody','thead','hr']);
+const EP_KEEP=new Set([...EP_BLOCK,'ul','ol','dl','em','i','strong','b','sup','sub','br','hr','table','thead','tbody','tr','img','a','small','cite','q','u','s','code','span']);
+const EP_DROP=new Set(['script','style','head','iframe','object','embed','svg','math','form','input','button','link','meta','noscript','audio','video','template']);
+async function epubSections(E){
+  const secs=[],pageLoc=new Map(),idPage=new Map(),byPage=new Map();let pg=0,maxPg=0,numeric=true,firstPg=0;
+  for(let k=0;k<E.spine.length;k++){
+    const href=E.spine[k],dir=dirOf(href);const f=E.file(href);const src=f?await f.async('string'):'';
+    let d=new DOMParser().parseFromString(src,'application/xhtml+xml');
+    if(d.getElementsByTagName('parsererror').length)d=new DOMParser().parseFromString(src,'text/html');
+    const body=d.getElementsByTagName('body')[0];const out=document.createElement('div');const paras=[];let bi=0;const startPg=pg;
+    const pgOf=el=>{const id=el.getAttribute('id')||'';const ty=el.getAttribute('epub:type')||el.getAttribute('role')||'';
+      const m=id.match(/^p(?:age)?[_-]?(\d+)$/i);if(m)return m[1];
+      if(/pagebreak/.test(ty))return (el.getAttribute('title')||el.getAttribute('aria-label')||el.textContent||'').trim()||null;return null};
+    const walk=(srcEl,dst,blk)=>{
+      let skipNext=null;
+      for(const n of [...srcEl.childNodes]){
+        if(n.nodeType===3){if(!n.data)continue;if(skipNext&&n.data.trim()){if(n.data.trim()===skipNext){skipNext=null;continue}skipNext=null}dst.appendChild(document.createTextNode(n.data));if(blk)blk.t+=n.data;continue}
+        if(n.nodeType!==1)continue;const tag=(n.localName||'').toLowerCase();if(EP_DROP.has(tag))continue;
+        if(skipNext){const tt=(n.textContent||'').trim();if(tt===skipNext&&!n.children.length){skipNext=null;continue}if(tt)skipNext=null}
+        const id=n.getAttribute('id');const pl=pgOf(n);let skipNum=null;
+        if(pl){const num=/^\d+$/.test(pl);if(!num)numeric=false;pg=num?+pl:pl;if(num){if(+pl>maxPg)maxPg=+pl;if(!firstPg)firstPg=+pl}
+          const mk=document.createElement('span');mk.className='pbm';mk.dataset.pg=pl;mk.textContent=pl;if(id)mk.id='e'+k+'-'+id;
+          if(!pageLoc.has(String(pl)))pageLoc.set(String(pl),k);idPage.set(href+'#'+id,pg);
+          if((/pagebreak/.test(n.getAttribute('epub:type')||'')&&!EP_BOXES.has(tag))||(n.textContent||'').trim()===pl||!(n.textContent||'').trim()){dst.appendChild(mk);if(!(n.textContent||'').trim())skipNext=pl;continue}
+          skipNum={pl,mk}}
+        const box=EP_BOXES.has(tag);const hasBlockKid=[...n.children].some(c=>EP_BLOCKISH.has((c.localName||'').toLowerCase()));
+        let el,nb=blk;
+        if(box&&hasBlockKid){ // container: unwrap
+          if(skipNum)dst.appendChild(skipNum.mk);
+          if(id&&!skipNum){const a=document.createElement('span');a.id='e'+k+'-'+id;dst.appendChild(a);idPage.set(href+'#'+id,pg)}
+          walkSkip(n,dst,blk,skipNum);continue}
+        if(box){el=document.createElement(blk?'span':'p')}
+        else if(!EP_KEEP.has(tag)){walkSkip(n,dst,blk,skipNum);continue}
+        else el=document.createElement(tag);
+        if(id&&!skipNum){el.id='e'+k+'-'+id;idPage.set(href+'#'+id,pg)}
+        if(tag==='img'){const s2=n.getAttribute('src')||n.getAttribute('xlink:href');if(s2)el.dataset.src=rpath(dir,s2);el.alt=n.getAttribute('alt')||''}
+        if(tag==='a'){const h=n.getAttribute('href');if(h){if(/^https?:/i.test(h)){el.href=h;el.target='_blank';el.rel='noopener'}else if(!/^[a-z]+:/i.test(h)){el.dataset.href=h.startsWith('#')?href+h:rpath(dir,h);el.href='#';el.className='fn'}}}
+        if((tag==='td'||tag==='th')&&n.getAttribute('colspan'))el.colSpan=+n.getAttribute('colspan');
+        if(!blk&&(EP_BLOCK.has(tag)||box)){nb={i:bi++,pg,t:'',h:/^h\d$/.test(tag)};el.dataset.i=nb.i;el.dataset.pg=pg;paras.push(nb)}
+        if(skipNum)el.appendChild(skipNum.mk);
+        dst.appendChild(el);walkSkip(n,el,nb,skipNum)}};
+    const walkSkip=(n,dst,blk,skipNum)=>{
+      if(skipNum){const kid=[...n.children].find(c=>(c.textContent||'').trim()===skipNum.pl);if(kid){const hold=kid.parentNode;const nx=kid.nextSibling;hold.removeChild(kid);walk(n,dst,blk);hold.insertBefore(kid,nx);return}}
+      walk(n,dst,blk)};
+    if(body)walk(body,out,null);
+    for(const a of out.querySelectorAll('a[data-href]'))a.className=/^\s*\[?\d{1,4}[a-z]?\]?\s*$/.test(a.textContent)?'fn':'xl';
+    for(const el of out.querySelectorAll('[data-i]')){const pp=paras[+el.dataset.i];pp.t=pp.t.replace(/\s+/g,' ').trim();
+      if(!pp.h&&pp.t.length>1&&pp.t.length<90&&!/[.,;:!?…“”"»«)\]–-]$/.test(pp.t)&&/[A-Za-zÄÖÜ\u4e00-\u9fff]/.test(pp.t)&&!el.closest('td,li')){pp.h=true;if(el.tagName==='P')el.classList.add('h')}}
+    for(const pp of paras){if(!pp.t)continue;const key=String(pp.pg);if(!byPage.has(key))byPage.set(key,[]);byPage.get(key).push(pp.t)}
+    secs.push({href,html:out.innerHTML,paras,startPg,len:(out.textContent||'').length})}
+  const paged=numeric&&maxPg>0;
+  return {secs,pageLoc,idPage,byPage,paged,firstPg,pages:paged?maxPg:secs.length}}
+function epPageText(n){if(!S.ep)return '';if(S.ep.paged)return (S.ep.byPage.get(String(n))||[]).join('\n');const s=S.ep.secs[n-1];return s?s.paras.map(p=>p.t).join('\n'):''}
+function ctxEp(k,i){const s=S.ep&&S.ep.secs[k];if(!s)return '';return s.paras.slice(Math.max(0,i-4),i+5).map(p=>(p.pg?`[p.${p.pg}] `:'')+p.t).join('\n')}
+function secTitle(k){const f=S.ep.spine[k];const t=S.ep.toc.find(x=>x.href.split('#')[0]===f);if(t)return t.t;const p=S.ep.secs[k].paras.find(x=>x.t);return p?p.t.slice(0,40):`第 ${k+1} 部分`}
+function estH(len){const w=Math.min(innerWidth,720)-36,fs=ls.get('fs',19);return Math.max(60,Math.round(len/(w/(fs*.52))*fs*1.85*1.05))}
+function buildEp(){
+  const v=$('#view');v.innerHTML='';S.secs=[];$('#zoom').classList.add('hide');
+  if(S.io)S.io.disconnect();
+  S.io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)loadSec(e.target)}),{rootMargin:'2400px 0px'});
+  const frag=document.createDocumentFragment();
+  S.ep.secs.forEach((x,k)=>{const el=document.createElement('div');el.className='sec';el.dataset.s=k;
+    el.innerHTML=`<div class="ph"><span>${esc(secTitle(k).slice(0,48))}</span><span>${S.ep.paged&&x.startPg?'p.'+x.startPg:''}</span></div><div class="body"></div>`;
+    el.querySelector('.body').style.minHeight=estH(x.len)+'px';frag.append(el);S.secs.push(el)});
+  v.append(frag);S.secs.forEach(x=>S.io.observe(x))}
+function renderEp(k,b){
+  const x=S.ep.secs[k];b.innerHTML=`<div class="rf ep" lang="${esc(S.ep.lang||'')}">${x.html}</div>`;
+  const root=b.firstElementChild;
+  for(const img of root.querySelectorAll('img[data-src]')){const f=S.ep.file(img.dataset.src);if(f)f.async('blob').then(bl=>{const u=URL.createObjectURL(bl);S.ep.urls.push(u);img.src=u})}
+  for(const m of root.querySelectorAll('.pbm'))if(S.arcRefs&&S.arcRefs.has(+m.dataset.pg)){m.classList.add('ar');m.textContent='◆ '+m.dataset.pg}
+  applyGloss(root);paintMarks(b,k)}
+let jumpT2=[];
+function goEl(k,selector,label){
+  const s=S.secs[k];if(!s)return;S.noHide=Date.now()+1600;document.body.classList.remove('hidebars');S.cur=label;$('#pgIn').value=label;savePos();jumpT.forEach(clearTimeout);jumpT2.forEach(clearTimeout);
+  for(let j=k-1;j<=k+1;j++)if(S.secs[j])loadSec(S.secs[j]);
+  const align=()=>{const t=(selector&&s.querySelector(selector))||s;const y=t.getBoundingClientRect().top+scrollY-(t===s?52:110);scrollTo(0,Math.max(0,y));
+    if(t!==s&&!t.classList.contains('pbm')){t.style.transition='background .4s';t.style.background='var(--mark)';setTimeout(()=>{t.style.background=''},1400)}};
+  align();jumpT2=[120,400,900].map(t=>setTimeout(()=>{const t2=(selector&&s.querySelector(selector))||s;const y=t2.getBoundingClientRect().top+scrollY-(t2===s?52:110);scrollTo(0,Math.max(0,y))},t));
+  ['touchstart','wheel'].forEach(ev=>addEventListener(ev,()=>jumpT2.forEach(clearTimeout),{once:true,passive:true}))}
+function goPageEp(n){
+  if(!S.ep.paged){const k=Math.max(0,Math.min(S.secs.length-1,(n|0)-1));return goEl(k,null,k+1)}
+  n=Math.max(1,Math.min(S.doc.pages,n|0||1));let key=n;while(key>0&&!S.ep.pageLoc.has(String(key)))key--;
+  if(key<=0){return goEl(0,null,n)}
+  goEl(S.ep.pageLoc.get(String(key)),`.pbm[data-pg="${key}"]`,key)}
+function curPageEp(){
+  const line=innerHeight*.35;let lo=0,hi=S.secs.length-1;
+  while(lo<hi){const mid=(lo+hi+1)>>1;if(S.secs[mid].getBoundingClientRect().top<=line)lo=mid;else hi=mid-1}
+  if(!S.ep.paged)return lo+1;
+  let pg=S.ep.secs[lo].startPg||0;const ms=S.secs[lo].querySelectorAll('.pbm');let a=0,z=ms.length-1;
+  while(a<=z){const m=(a+z)>>1;if(ms[m].getBoundingClientRect().top<=line){pg=+ms[m].dataset.pg||pg;a=m+1}else z=m-1}
+  return pg||S.ep.firstPg||1}
+function pageAtNode(node,secEl,k){if(!S.ep.paged)return 0;let pg=S.ep.secs[k].startPg||0;
+  for(const m of secEl.querySelectorAll('.pbm')){if(m.compareDocumentPosition(node)&Node.DOCUMENT_POSITION_FOLLOWING)pg=+m.dataset.pg||pg;else break}return pg}
+function tocEp(){
+  const items=S.ep.toc.map(x=>{const [f,fr]=x.href.split('#');const k=S.ep.spine.indexOf(f);const pg=fr?S.ep.idPage.get(f+'#'+fr):(k>=0?S.ep.secs[k].startPg:null);return {...x,k,fr,pg}}).filter(x=>x.k>=0);
+  if(!items.length){$('#shB').innerHTML='<p class="muted">这本书没有自带目录。</p>';return}
+  $('#shB').innerHTML='<div class="toc">'+items.map((x,j)=>`<a href="#" data-j="${j}" style="padding-left:${x.d*16}px">${esc(x.t)}${S.ep.paged&&x.pg?`<small>p.${x.pg}</small>`:''}</a>`).join('')+'</div>';
+  const cur=S.cur;const near=[...$('#shB').querySelectorAll('a')].filter((a,j)=>S.ep.paged?(items[j].pg&&items[j].pg<=cur):items[j].k<=cur-1).pop();if(near){near.style.color='var(--accent)';near.scrollIntoView({block:'center'})}
+  $('#shB').onclick=e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();const x=items[+a.dataset.j];closeSheet();
+    goEl(x.k,x.fr?'#'+CSS.escape('e'+x.k+'-'+x.fr):null,(S.ep.paged?x.pg:x.k+1)||x.k+1)}}
+function showFn(full){
+  const [f,fr]=full.split('#');const k=S.ep?S.ep.spine.indexOf(f):-1;if(k<0||!fr)return;
+  const id='e'+k+'-'+fr;let el=document.getElementById(id);
+  if(!el){const tmp=document.createElement('div');tmp.innerHTML=S.ep.secs[k].html;el=tmp.querySelector('#'+CSS.escape(id))}
+  if(!el)return;
+  let start=el.closest('[data-i]')||el;const parts=[];let n=start,c=0;
+  while(n&&c<5){const t=(n.textContent||'').replace(/\s+/g,' ').trim();if(t)parts.push(t);c++;n=n.nextElementSibling;if(n&&(n.id&&n.tagName==='SPAN'))break;if(parts.join(' ').length>900)break}
+  const body=parts.join(' ').replace(/^\[\d+\]\s*/,'');
+  const back={k:S.curSec,y:scrollY};
+  sheet('注释',`<div class="quote" style="max-height:none">${esc(body||'（没有找到注释内容）')}</div><div class="row"><button class="btn sm" id="fnGo">在注释页查看</button></div>`);
+  $('#fnGo').onclick=()=>{closeSheet();goEl(k,'#'+CSS.escape(id),S.cur);const y=back.y;setBack('← 回到正文',()=>{scrollTo(0,y);$('#arcBack').classList.add('hide')})}}
+
+/* ---------- 术语表 ---------- */
+let glossRe=null,glossMap=null;
+function glossPrep(){const gs=(S.doc.glossary||[]).filter(g=>g.term&&g.term.trim().length>=2);if(!gs.length){glossRe=null;return}
+  const ts=[...gs].sort((a,b)=>b.term.length-a.term.length);glossMap=ts;
+  glossRe=new RegExp('('+ts.map(g=>g.term.trim().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')[A-Za-zÄÖÜäöüß]*','g')}
+function applyGloss(root){
+  if(!root)return;glossPrep();if(!glossRe)return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement&&n.parentElement.closest('abbr,.pbm,a,mark')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  const nodes=[];let t;while((t=w.nextNode())){glossRe.lastIndex=0;if(glossRe.test(t.data))nodes.push(t)}
+  for(const node of nodes){const frag=document.createDocumentFragment();let last=0;glossRe.lastIndex=0;let m;const s=node.data;
+    while((m=glossRe.exec(s))){if(m.index>last)frag.append(s.slice(last,m.index));const g=glossMap.find(x=>m[0].startsWith(x.term.trim()));
+      const ab=document.createElement('abbr');ab.className='gl';ab.dataset.g=g?g.id:'';ab.textContent=m[0];frag.append(ab);last=m.index+m[0].length}
+    if(last<s.length)frag.append(s.slice(last));node.replaceWith(frag)}}
+function rerenderLoaded(){for(const s of S.secs)if(s.dataset.ld){delete s.dataset.ld;loadSec(s)}}
+function glossPop(id){const g=(S.doc.glossary||[]).find(x=>x.id===id);if(!g)return;
+  sheet(g.term,`${g.def?`<div class="msg" style="margin-top:0">${fmt(g.def)}</div>`:'<p class="muted">还没写释义。</p>'}${g.ctx?`<div class="lbl">第一次记下时的语境 · ${locLabel(g)}</div><div class="quote">${esc(g.ctx.slice(0,500))}</div>`:''}
+    <div class="row"><button class="btn sm" id="gpE">编辑</button>${g.sec!=null||g.page?'<button class="btn sm" id="gpG">去那一处</button>':''}</div>`);
+  $('#gpE').onclick=()=>termSheet(g);if($('#gpG'))$('#gpG').onclick=()=>{closeSheet();goNote(g)}}
+function termSheet(g){
+  sheet(g.id?'术语':'加入术语表',`<div class="lbl">术语</div><input id="gT" value="${esc(g.term)}" placeholder="例：Sozialplan">
+    <div class="lbl">释义</div><textarea id="gD" placeholder="中文译法、在本书里的意思、冠词和复数……">${esc(g.def||'')}</textarea>
+    ${g.ctx?`<div class="lbl">原文语境 · ${locLabel(g)}</div><div class="quote">${esc(g.ctx.slice(0,500))}</div>`:''}
+    <div class="row"><button class="btn pri" id="gS">保存</button><button class="btn" id="gA">AI 释义</button><div style="flex:1"></div>${g.id?'<button class="btn" id="gX" style="color:var(--accent)">删除</button>':''}</div>`);
+  $('#gS').onclick=async()=>{const term=$('#gT').value.trim();if(!term){toast('先填术语');return}
+    S.doc.glossary=S.doc.glossary||[];Object.assign(g,{term,def:$('#gD').value.trim()});if(!g.id){g.id=uid();g.at=Date.now();S.doc.glossary.push(g)}
+    await dput('docs',S.doc);closeSheet();rerenderLoaded();toast('已存入术语表')};
+  $('#gA').onclick=async()=>{const term=$('#gT').value.trim();if(!term)return;const out=$('#gD');const btn=$('#gA');btn.disabled=true;out.value='…';
+    try{await claude({max:600,system:'你是德语和学术阅读助手。用中文，简洁，不写多余的话。',
+      messages:[{role:'user',content:`书：《${S.doc.name}》\n术语：${term}\n原文语境：${(g.ctx||'').slice(0,1500)}\n\n请按这个格式回答：\n译法：常用中文译法（1–2 个）\n本书语境：这段里它指什么（1–2 句）\n语法：如果是德语名词，写冠词和复数（如 der Sozialplan, -pläne）；其他词性写词性\n搭配：1–2 个常见搭配`}],onText:t=>{out.value=t}})}
+    catch(e){out.value='';toast(e.message,4000)}btn.disabled=false};
+  if($('#gX')){let armed=false;$('#gX').onclick=async e=>{if(!armed){armed=true;e.target.textContent='确认删除';return}S.doc.glossary=S.doc.glossary.filter(x=>x.id!==g.id);await dput('docs',S.doc);closeSheet();rerenderLoaded();toast('已删除')}}
+  if(!g.id&&!g.term)setTimeout(()=>$('#gT').focus(),200)}
+
+/* ---------- 引用库 ---------- */
+function surname(a){a=(a||'').trim();if(!a)return '';if(a.includes(','))return a.split(',')[0].trim();const p=a.split(/\s+/);return p[p.length-1]}
+function bibLine(){const b=S.doc.biblio||{};if(!b.author&&!b.title)return '未填写';return `${b.author||''}${b.year?` (${b.year})`:''}: ${b.title||''}.${b.place||b.publisher?' '+[b.place,b.publisher].filter(Boolean).join(': ')+'.':''}`}
+function citeRef(c){const b=S.doc.biblio||{};const who=surname(b.author)||'作者';return `${who} ${b.year||'o. J.'}, ${c.page?'S. '+c.page:(c.sec!=null?'Kap. '+(c.sec+1):'')}`}
+function citeText(c){return `„${c.quote}“ (${citeRef(c)})`}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('已复制')}catch(e){toast('复制失败')}}
+function citeSheet(c){
+  const uses=['论据','反驳','背景','金句'];
+  sheet(c.id?'引用':'加入引用库',`<div class="quote">${esc(c.quote)}</div><div class="cref">${esc(citeRef(c))}${(S.doc.biblio||{}).author?'':' · 先在“笔记 → 引用库”里填书目信息'}</div>
+    <div class="chips" id="cu">${uses.map(u=>`<button class="chip ${c.use===u?'on':''}">${u}</button>`).join('')}</div>
+    <div class="lbl">中文译文（做字幕、写中文稿用）</div><textarea id="cZ" style="min-height:70px">${esc(c.zh||'')}</textarea>
+    <div class="lbl">备注</div><textarea id="cN" style="min-height:50px">${esc(c.note||'')}</textarea>
+    <div class="row"><button class="btn pri" id="cS">保存</button><button class="btn" id="cA">AI 翻译</button><button class="btn" id="cC">复制引文</button><div style="flex:1"></div>${c.id?'<button class="btn" id="cX" style="color:var(--accent)">删除</button>':''}</div>`);
+  let use=c.use;
+  $('#cu').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;use=use===b.textContent?'':b.textContent;$('#cu').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.textContent===use))};
+  $('#cS').onclick=async()=>{Object.assign(c,{use,zh:$('#cZ').value.trim(),note:$('#cN').value.trim()});S.doc.cites=S.doc.cites||[];if(!c.id){c.id=uid();c.at=Date.now();S.doc.cites.push(c)}await dput('docs',S.doc);closeSheet();toast('已存入引用库')};
+  $('#cC').onclick=()=>copyText(citeText(c));
+  $('#cA').onclick=async()=>{const out=$('#cZ'),btn=$('#cA');btn.disabled=true;out.value='…';
+    try{await claude({max:900,system:'你是严谨的学术翻译。把引文忠实译成通顺的中文，用于视频字幕和中文写作。只输出译文，不加解释。',messages:[{role:'user',content:`语境（仅供理解，不要翻译）：${(c.ctx||'').slice(0,1500)}\n\n要翻译的引文：${c.quote}`}],onText:t=>{out.value=t}})}
+    catch(e){out.value='';toast(e.message,4000)}btn.disabled=false};
+  if($('#cX')){let armed=false;$('#cX').onclick=async e=>{if(!armed){armed=true;e.target.textContent='确认删除';return}S.doc.cites=S.doc.cites.filter(x=>x.id!==c.id);await dput('docs',S.doc);closeSheet();toast('已删除')}}}
+
+/* ---------- 导读问题 ---------- */
+$('#bQ').onclick=()=>qSheet();
+function qSheet(scroll){
+  const st=S.doc.study||{},qs=S.doc.questions||[];const groups=[];for(const q of qs){const g=q.group||'未分组';if(!groups.includes(g))groups.push(g)}
+  const lastG=qs.length?(qs[qs.length-1].group||''):'';
+  sheet('导读问题',`${st.big||st.q?`<div class="qhead">${st.big?`<b>大问题</b>　${esc(st.big)}${st.bigSide?`<br><span class="muted">我的立场：${esc(st.bigSide)}</span>`:''}${st.q?'<br>':''}`:''}${st.q?`<b>本周问题</b>　${esc(st.q)}${st.side?`<br><span class="muted">我的立场：${esc(st.side)}</span>`:''}`:''}</div>`:'<p class="muted" style="font-size:14px">还没设定研究问题，可以在顶部“研究”里填写。</p>'}
+    ${groups.map(g=>`<div class="qg">${esc(g)} · ${qs.filter(q=>(q.group||'未分组')===g&&q.done).length}/${qs.filter(q=>(q.group||'未分组')===g).length}</div>`+qs.filter(q=>(q.group||'未分组')===g).map(q=>`<div class="qi ${q.done?'done':''}" data-q="${q.id}"><button class="qc">${q.done?'☑':'☐'}</button><div class="qt">${q.kind==='task'?'<span class="kind">阅读</span> ':''}${mdInline(q.text)}</div><button class="qe">✎</button></div>`).join('')).join('')}
+    <div class="lbl">添加问题或阅读任务</div><textarea id="qNew" style="min-height:52px" placeholder="可以写页码，如 p.173，会变成可点的链接"></textarea>
+    <div class="row"><input id="qGrp" placeholder="分组，如 第1周" value="${esc(lastG)}" style="max-width:150px"><div class="chips" id="qKind" style="margin:0"><button class="chip on" data-k="q">问题</button><button class="chip" data-k="task">阅读任务</button></div><button class="btn pri sm" id="qAdd">添加</button></div>
+    ${(S.doc.guides||[]).length?`<details class="ai"><summary>AI 导读（${S.doc.guides.length}）</summary>${S.doc.guides.slice().reverse().map(g=>`<div class="guide">${mdBlock(`**p.${g.from}–${g.to}**\n`+g.text)}</div>`).join('')}</details>`:''}`);
+  const sb=$('#shB');if(scroll!=null)sb.scrollTop=scroll;
+  let kind='q';$('#qKind').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;kind=b.dataset.k;$('#qKind').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b))};
+  $('#qAdd').onclick=async()=>{const t=$('#qNew').value.trim();if(!t)return;S.doc.questions=S.doc.questions||[];S.doc.questions.push({id:uid(),text:t,group:$('#qGrp').value.trim(),kind,done:false,at:Date.now()});await dput('docs',S.doc);qSheet(sb.scrollTop)};
+  sb.onclick=async e=>{
+    const pl=e.target.closest('a.pl');if(pl){e.preventDefault();const top=sb.scrollTop;closeSheet();goPage(+pl.dataset.p);setBack('← 回到导读',()=>qSheet(top));return}
+    const it=e.target.closest('.qi');if(!it)return;const q=S.doc.questions.find(x=>x.id===it.dataset.q);
+    if(e.target.closest('.qc')){q.done=!q.done;await dput('docs',S.doc);qSheet(sb.scrollTop);return}
+    if(e.target.closest('.qe')){const top=sb.scrollTop;it.innerHTML=`<div style="flex:1"><textarea id="qEd" style="min-height:60px">${esc(q.text)}</textarea><div class="row"><input id="qEg" value="${esc(q.group||'')}" style="max-width:150px"><button class="btn sm pri" id="qEs">保存</button><button class="btn sm" id="qEx" style="color:var(--accent)">删除</button></div></div>`;
+      $('#qEs').onclick=async ev=>{ev.stopPropagation();q.text=$('#qEd').value.trim()||q.text;q.group=$('#qEg').value.trim();await dput('docs',S.doc);qSheet(top)};
+      let armed=false;$('#qEx').onclick=async ev=>{ev.stopPropagation();if(!armed){armed=true;ev.target.textContent='确认删除';return}S.doc.questions=S.doc.questions.filter(x=>x.id!==q.id);await dput('docs',S.doc);qSheet(top)}}}}
+
+/* ---------- 学习包 ---------- */
+async function importPack(j){
+  const d=S.doc;const st=d.study=d.study||{};let n=[];
+  if(j.study){for(const k of ['big','bigSide','q','side','line'])if(j.study[k]&&(!st[k]||j.overwriteStudy))st[k]=j.study[k];n.push('研究问题')}
+  if(j.questions){d.questions=d.questions||[];let c=0;for(const q of j.questions){if(!d.questions.some(x=>x.id===q.id)){d.questions.push({done:false,at:Date.now(),...q});c++}}n.push(c+' 个导读问题/任务')}
+  if(j.glossary){d.glossary=d.glossary||[];let c=0;for(const g of j.glossary){if(!d.glossary.some(x=>x.term===g.term)){d.glossary.push({id:g.id||uid(),at:Date.now(),page:0,...g});c++}}n.push(c+' 个术语')}
+  if(j.biblio){d.biblio=d.biblio||{};for(const [k,v] of Object.entries(j.biblio))if(v&&(!d.biblio[k]||j.biblioOverwrite))d.biblio[k]=v;n.push('书目信息')}
+  if(j.archive){d.archives=d.archives||[];const a=j.archive;if(!d.archives.some(x=>x.id===a.id))d.archives.push(a);S.arcRefs=arcRefs(d)}
+  await dput('docs',d);rerenderLoaded();toast('学习包已导入：'+n.join('、'),4000);qSheet()}
+
 /* ---------- 面板 ---------- */
-function sheet(t,html){if(t&&!(S.doc&&(S.doc.archives||[]).some(a=>a.title===t)))$('#arcBack').classList.add('hide');$('#shT').textContent=t;$('#shB').innerHTML=html;$('#shB').onclick=null;$('#sheet').classList.remove('hide');$('#mask').classList.remove('hide');$('#shB').scrollTop=0}
+function sheet(t,html){$('#arcBack').classList.add('hide');$('#shT').textContent=t;$('#shB').innerHTML=html;$('#shB').onclick=null;$('#sheet').classList.remove('hide');$('#mask').classList.remove('hide');$('#shB').scrollTop=0}
 function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add('hide')}
 $('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
 
