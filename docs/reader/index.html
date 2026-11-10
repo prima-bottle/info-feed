@@ -76,6 +76,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 .rf p.c{text-indent:0;text-align:center;color:var(--muted);font-size:.8em}
 .rf mark{background:var(--mark);color:inherit;border-radius:2px;cursor:pointer}
 .rf mark.n{border-bottom:2px solid var(--accent)}
+.rf mark.f-th{background:rgba(229,83,61,.30)}.rf mark.f-ev{background:rgba(61,160,90,.30)}.rf mark.f-ex{background:rgba(32,170,180,.28)}
+.rf mark.f-qu{background:rgba(150,95,210,.28)}.rf mark.f-op{background:rgba(60,120,220,.28)}.rf mark.f-df{background:rgba(240,170,40,.38)}
+.fd{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:middle;margin-right:4px;background:var(--mark)}
+.fd.f-th{background:rgb(229,83,61)}.fd.f-ev{background:rgb(61,160,90)}.fd.f-ex{background:rgb(32,170,180)}.fd.f-qu{background:rgb(150,95,210)}.fd.f-op{background:rgb(60,120,220)}.fd.f-df{background:rgb(240,170,40)}
+#selbar .fnrow{display:none;width:100%;justify-content:space-around}
+#selbar.pick .mainrow{display:none}#selbar.pick .fnrow{display:flex}
+#selbar .mainrow{display:flex;width:100%}
+#selbar .fnrow button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;padding:6px 1px}
+#selbar .fnrow .fd{width:16px;height:16px;margin:0}
 .rf .none{text-indent:0;color:var(--muted);font-size:15px;font-family:sans-serif}
 .loading{color:var(--muted);font-size:14px;padding:30px 18px;text-align:center}
 .og{overflow-x:auto;padding:4px 0}
@@ -89,7 +98,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 /* 选中工具条 */
 #selbar{position:fixed;left:8px;right:8px;bottom:max(10px,env(safe-area-inset-bottom));z-index:40;background:var(--ink);color:var(--bg);border-radius:14px;display:flex;justify-content:space-around;padding:4px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
-#selbar button{color:var(--bg);padding:10px 2px;font-size:14px;font-weight:600;flex:1}
+#selbar button{color:var(--bg);padding:10px 1px;font-size:13.5px;font-weight:600;flex:1}
 
 /* 底部面板 */
 #mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50}
@@ -196,13 +205,15 @@ details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);
   </div>
 </div>
 
-<div id="selbar" class="hide">
+<div id="selbar" class="hide"><div class="mainrow">
   <button id="sMark">划线</button>
   <button id="sNote">笔记</button>
   <button id="sAsk">问AI</button>
   <button id="sTerm">术语</button>
+  <button id="sPhr">表达</button>
   <button id="sCite">引用</button>
-  <button id="sCopy">复制</button>
+  <button id="sCopy">复制</button></div>
+  <div class="fnrow" id="fnRow"></div>
 </div>
 
 <div id="arcBack" class="hide"><button id="abGo">← 返回</button><button id="abX">✕</button></div>
@@ -222,6 +233,9 @@ function toast(t,ms=2200){const d=document.createElement('div');d.className='toa
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const TAGS=[['t1','支持我'],['t2','反对我'],['t3','背景'],['t4','疑问']];
 const tagName=t=>(TAGS.find(x=>x[0]===t)||[])[1]||'';
+const FNS=[['th','论点'],['ev','论据'],['ex','例证'],['qu','让步/限定'],['op','反方观点'],['df','概念'],['','普通']];
+const fnName=f=>(FNS.find(x=>x[0]===f)||[])[1]||'';
+const PFNS=['立论','举证','让步','反驳','回应','限定','过渡','总结','追问','其他'];
 
 /* ---------- 存储 ---------- */
 let db;
@@ -479,7 +493,7 @@ $('#bFont').onclick=()=>{sheet('阅读设置',`<div class="lbl">字号</div><div
 function applyTheme(){const t=ls.get('theme','');if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme}applyTheme();
 
 /* ---------- 选中 ---------- */
-function hideSel(){$('#selbar').classList.add('hide');S.sel=null}
+function hideSel(){$('#selbar').classList.add('hide');$('#selbar').classList.remove('pick');S.sel=null}
 document.addEventListener('selectionchange',()=>{
   if(!S.open)return;const s=getSelection();const t=s.toString().trim();
   if(!t||s.rangeCount===0){setTimeout(()=>{if(!getSelection().toString().trim())hideSel()},250);return}
@@ -489,17 +503,24 @@ document.addEventListener('selectionchange',()=>{
   else{const pp=a.closest('p');S.sel={text,page:+sec.dataset.p,ctx:pp?pp.textContent:''}}
   document.body.classList.remove('hidebars');$('#selbar').classList.remove('hide')});
 const keepSel=e=>e.preventDefault();
-['sMark','sNote','sAsk','sTerm','sCite','sCopy'].forEach(id=>$('#'+id).addEventListener('mousedown',keepSel));
+['sMark','sNote','sAsk','sTerm','sPhr','sCite','sCopy'].forEach(id=>$('#'+id).addEventListener('mousedown',keepSel));
+$('#fnRow').innerHTML=FNS.map(([k,v])=>`<button data-f="${k}"><span class="fd ${k?'f-'+k:''}"></span>${v.replace('/限定','').replace('观点','')}</button>`).join('')+'<button data-f="x">取消</button>';
+$('#fnRow').addEventListener('mousedown',keepSel);
+$('#fnRow').onclick=async e=>{const b=e.target.closest('[data-f]');if(!b)return;const f=b.dataset.f;$('#selbar').classList.remove('pick');
+  if(f==='x')return;const n=await newNote('','',f);ls.set('lastFn',f);getSelection().removeAllRanges();hideSel();toast(`已划线 · ${fnName(f)} · ${locLabel(n)}`)};
 $('#sCopy').onclick=async()=>{try{await navigator.clipboard.writeText(S.sel.text);toast('已复制')}catch(e){toast('复制失败')}getSelection().removeAllRanges();hideSel()};
-$('#sMark').onclick=async()=>{const n=await newNote('');getSelection().removeAllRanges();hideSel();toast('已划线 · p.'+n.page)};
+$('#sMark').onclick=()=>{$('#selbar').classList.add('pick')};
 const selNote=sel=>({id:null,docId:S.doc.id,page:sel.page,sec:sel.sec,i:sel.i,quote:sel.text,text:'',tag:'',ai:[]});
 $('#sNote').onclick=async()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();noteSheet(selNote(sel))};
 $('#sAsk').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();askSheet(selNote(sel))};
 $('#sTerm').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();termSheet({term:sel.text.slice(0,80),def:'',ctx:sel.ctx||'',page:sel.page,sec:sel.sec,i:sel.i})};
+$('#sPhr').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();
+  const h=sel.text.slice(0,20);const sent=(sel.ctx||'').split(/(?<=[.!?…])\s+/).find(x=>x.includes(h))||sel.ctx||'';
+  phraseSheet({phrase:sel.text.slice(0,120),fn:'',zh:'',ex:sent.slice(0,320),mine:'',src:{docId:S.doc.id,name:S.doc.name,page:sel.page,sec:sel.sec,i:sel.i}})};
 $('#sCite').onclick=()=>{const sel=S.sel;getSelection().removeAllRanges();hideSel();citeSheet({quote:sel.text,page:sel.page,sec:sel.sec,i:sel.i,use:'',zh:'',note:'',ctx:sel.ctx||''})};
 
 /* ---------- 笔记 ---------- */
-async function newNote(text,tag){const sel=S.sel;const n={...selNote(sel),id:uid(),text:text||'',tag:tag||'',at:Date.now()};
+async function newNote(text,tag,fn){const sel=S.sel;const n={...selNote(sel),id:uid(),text:text||'',tag:tag||'',fn:fn||'',at:Date.now()};
   await saveNote(n);return n}
 async function saveNote(n){if(!n.id)n.id=uid();if(!n.at)n.at=Date.now();await dput('notes',n);
   const i=S.notes.findIndex(x=>x.id===n.id);if(i>=0)S.notes[i]=n;else S.notes.push(n);refreshFor(n)}
@@ -515,17 +536,19 @@ function paintMarks(b,p){
     if(i<0){const h=q.slice(0,24);i=all.indexOf(h);len=Math.min(q.length,all.length-i)}
     if(i<0)continue;const end=i+len;
     for(const [node,off] of nodes){const a=Math.max(i,off),z=Math.min(end,off+node.data.length);if(a>=z)continue;
-      const r=document.createRange();r.setStart(node,a-off);r.setEnd(node,z-off);const m=document.createElement('mark');m.dataset.id=n.id;if(n.text||n.ai.length)m.className='n';
+      const r=document.createRange();r.setStart(node,a-off);r.setEnd(node,z-off);const m=document.createElement('mark');m.dataset.id=n.id;m.className=(n.fn?'f-'+n.fn:'')+((n.text||(n.ai&&n.ai.length))?' n':'');
       try{r.surroundContents(m)}catch(e){}}}}
 function noteSheet(n){
   sheet((n.id?'笔记 · ':'写笔记 · ')+locLabel(n),`<div class="quote">${esc(n.quote)}</div>
-    <div class="chips" id="tg">${TAGS.map(([k,v])=>`<button class="chip ${k} ${n.tag===k?'on':''}" data-k="${k}">${v}</button>`).join('')}</div>
+    <div class="lbl" style="margin-top:4px">句子功能</div><div class="chips" id="fnc">${FNS.map(([k,v])=>`<button class="chip ${(n.fn||'')===k?'on':''}" data-f="${k}"><span class="fd ${k?'f-'+k:''}"></span>${v}</button>`).join('')}</div>
+    <div class="lbl">和我的立场的关系</div><div class="chips" id="tg">${TAGS.map(([k,v])=>`<button class="chip ${k} ${n.tag===k?'on':''}" data-k="${k}">${v}</button>`).join('')}</div>
     <textarea id="nt" placeholder="你的想法…">${esc(n.text)}</textarea>
     ${n.ai&&n.ai.length?'<div class="lbl">AI 问答</div>'+n.ai.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join(''):''}
     <div class="row"><button class="btn pri" id="nSave">保存</button><button class="btn" id="nAsk">问AI</button><div style="flex:1"></div>${n.id?'<button class="btn" id="nDel" style="color:var(--accent)">删除</button>':''}</div>`);
-  let tag=n.tag;
+  let tag=n.tag,fn=n.fn||'';
+  $('#fnc').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;fn=b.dataset.f;$('#fnc').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b))};
   $('#tg').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;tag=tag===b.dataset.k?'':b.dataset.k;$('#tg').querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.dataset.k===tag))};
-  $('#nSave').onclick=async()=>{n.text=$('#nt').value.trim();n.tag=tag;await saveNote(n);closeSheet();toast('已保存')};
+  $('#nSave').onclick=async()=>{n.text=$('#nt').value.trim();n.tag=tag;n.fn=fn;await saveNote(n);closeSheet();toast('已保存')};
   $('#nAsk').onclick=()=>{n.text=$('#nt').value.trim();n.tag=tag;askSheet(n)};
   if($('#nDel')){let armed=false;$('#nDel').onclick=async e=>{if(!armed){armed=true;e.target.textContent='确认删除';return}await removeNote(n);closeSheet();toast('已删除')}}
   if(!n.id)setTimeout(()=>$('#nt').focus(),200)}
@@ -557,12 +580,18 @@ const sortKey=n=>isEp()?((n.sec||0)*1e6+(n.i||0)):((n.page||0)*1e6);
 function goNote(n){if(isEp()&&n.sec!=null)goEl(n.sec,`[data-i="${n.i||0}"]`,n.page||n.sec+1);else goPage(n.page)}
 function notesSheet(tab){
   tab=tab||'n';const gl=S.doc.glossary||[],cs=S.doc.cites||[];
-  const tabs=`<div class="tabs" id="nTabs"><button class="chip ${tab==='n'?'on':''}" data-t="n">笔记 ${S.notes.length}</button><button class="chip ${tab==='g'?'on':''}" data-t="g">术语表 ${gl.length}</button><button class="chip ${tab==='c'?'on':''}" data-t="c">引用库 ${cs.length}</button><div style="flex:1"></div><button class="btn sm" id="nExp">导出</button></div>`;
+  const tabs=`<div class="tabs" id="nTabs"><button class="chip ${tab==='n'?'on':''}" data-t="n">笔记 ${S.notes.length}</button><button class="chip ${tab==='g'?'on':''}" data-t="g">术语表 ${gl.length}</button><button class="chip ${tab==='p'?'on':''}" data-t="p">表达 ${PHR.length}</button><button class="chip ${tab==='c'?'on':''}" data-t="c">引用库 ${cs.length}</button><div style="flex:1"></div><button class="btn sm" id="nExp">导出</button></div>`;
   let body='';
-  if(tab==='n'){const ns=[...S.notes].sort((a,b)=>sortKey(a)-sortKey(b)||a.at-b.at);
-    body=ns.length?ns.map(n=>`<div class="note" data-id="${n.id}"><div class="nq">${esc(n.quote.length>160?n.quote.slice(0,160)+'…':n.quote)}</div>${n.text?`<div class="nt">${esc(n.text)}</div>`:''}
-      <div class="nm"><span>${locLabel(n)}</span>${n.tag?`<span class="tag ${n.tag}">${tagName(n.tag)}</span>`:''}${n.ai&&n.ai.length?`<span class="tag">AI问答 ${n.ai.length/2|0}</span>`:''}<div style="flex:1"></div><button class="btn sm go">跳到这里</button></div></div>`).join('')
-    :'<p class="muted">还没有笔记。在正文里长按选中文字，就会出现划线、笔记、问AI。</p>'}
+  if(tab==='n'){const flt=S.nFilter??null;const ns=[...S.notes].filter(n=>flt===null||(n.fn||'')===flt).sort((a,b)=>sortKey(a)-sortKey(b)||a.at-b.at);
+    body=`<div class="chips" id="nFlt" style="margin-top:0"><button class="chip ${flt===null?'on':''}" data-f="*">全部</button>${FNS.map(([k,v])=>{const c=S.notes.filter(n=>(n.fn||'')===k).length;return c?`<button class="chip ${flt===k?'on':''}" data-f="${k}"><span class="fd ${k?'f-'+k:''}"></span>${v} ${c}</button>`:''}).join('')}</div>`+(ns.length?ns.map(n=>`<div class="note" data-id="${n.id}"><div class="nq">${esc(n.quote.length>160?n.quote.slice(0,160)+'…':n.quote)}</div>${n.text?`<div class="nt">${esc(n.text)}</div>`:''}
+      <div class="nm"><span>${locLabel(n)}</span>${n.fn?`<span class="tag"><span class="fd f-${n.fn}"></span>${fnName(n.fn)}</span>`:''}${n.tag?`<span class="tag ${n.tag}">${tagName(n.tag)}</span>`:''}${n.ai&&n.ai.length?`<span class="tag">AI问答 ${n.ai.length/2|0}</span>`:''}<div style="flex:1"></div><button class="btn sm go">跳到这里</button></div></div>`).join('')
+    :'<p class="muted">还没有笔记。在正文里长按选中文字，就会出现划线、笔记、问AI。划线时可以选句子功能，用颜色区分论点、论据、例证、让步、反方观点和概念。</p>')}
+  else if(tab==='p'){const by=PFNS.map(f=>[f,PHR.filter(x=>(x.fn||'其他')===f)]).filter(x=>x[1].length);
+    body=`<p class="muted" style="font-size:13px;margin:0 0 6px">表达收集表是所有书共用的，收的是论证用的句型，和每本书的术语表分开。</p>`+
+      (by.length?by.map(([f,arr])=>`<div class="qg">${f} · ${arr.length}</div>`+arr.map(x=>`<div class="note" data-ph="${x.id}"><b style="font-size:15.5px">${esc(x.phrase)}</b>${x.zh?`<div class="nt">${esc(x.zh)}</div>`:''}${x.ex?`<div class="nq" style="margin-top:6px">${esc(x.ex)}</div>`:''}${x.mine?`<div class="zh">我的造句：${esc(x.mine)}</div>`:''}
+        <div class="nm"><span>${esc(x.src&&x.src.name?(x.src.name.slice(0,18)+(x.src.page?' · p.'+x.src.page:'')):'常用句型')}</span><div style="flex:1"></div>${x.src&&x.src.docId===S.doc.id?'<button class="btn sm go">原文</button>':''}</div></div>`).join('')).join('')
+      :'<p class="muted">还没有表达。在正文里选中一个句型，比如“Zwar … aber”，点“表达”。</p>')+
+      `<div class="row"><button class="btn sm" id="pAdd">＋ 手动添加</button><button class="btn sm" id="pSeed">加入常用论证句型</button><button class="btn sm" id="pCsv">导出 CSV</button></div>`}
   else if(tab==='g'){const g2=[...gl].sort((a,b)=>a.term.localeCompare(b.term,'de'));
     body=(g2.length?g2.map(g=>`<div class="note" data-g="${g.id}"><b style="font-size:15.5px">${esc(g.term)}</b>${g.def?`<div class="nt">${esc(g.def)}</div>`:''}<div class="nm"><span>${locLabel(g)}</span><div style="flex:1"></div>${g.sec!=null||g.page?'<button class="btn sm go">原文</button>':''}</div></div>`).join('')
       :'<p class="muted">还没有术语。在正文里选中一个词，点“术语”。加入术语表的词会在正文里加上蓝色虚线，点一下就能看释义。</p>')+
@@ -580,6 +609,11 @@ function notesSheet(tab){
   $('#nExp').onclick=()=>exportMd(S.doc.id);
   const sb=$('#shB');
   sb.querySelectorAll('.note[data-id]').forEach(el=>el.onclick=e=>{const n=S.notes.find(x=>x.id===el.dataset.id);if(e.target.closest('.go')){closeSheet();goNote(n)}else noteSheet(n)});
+  if($('#nFlt'))$('#nFlt').onclick=e=>{const b=e.target.closest('[data-f]');if(!b)return;S.nFilter=b.dataset.f==='*'?null:b.dataset.f;notesSheet('n')};
+  sb.querySelectorAll('.note[data-ph]').forEach(el=>el.onclick=e=>{const x=PHR.find(y=>y.id===el.dataset.ph);if(e.target.closest('.go')){closeSheet();goNote(x.src)}else phraseSheet(x)});
+  if($('#pAdd'))$('#pAdd').onclick=()=>phraseSheet({phrase:'',fn:'',zh:'',ex:'',mine:'',src:null});
+  if($('#pSeed'))$('#pSeed').onclick=async()=>{let c=0;for(const [ph,fn,zh] of PSEED)if(!PHR.some(x=>x.phrase===ph)){PHR.push({id:uid(),phrase:ph,fn,zh,ex:'',mine:'',src:null,at:Date.now()});c++}await savePhr();toast(`加入了 ${c} 条`);notesSheet('p')};
+  if($('#pCsv'))$('#pCsv').onclick=()=>download('论证表达收集表.csv','\ufeff'+PHR.map(x=>[x.phrase,x.fn,x.zh,x.ex,x.mine,x.src?x.src.name+(x.src.page?' p.'+x.src.page:''):''].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');
   sb.querySelectorAll('.note[data-g]').forEach(el=>el.onclick=e=>{const g=gl.find(x=>x.id===el.dataset.g);if(e.target.closest('.go')){closeSheet();goNote(g)}else termSheet(g)});
   sb.querySelectorAll('.note[data-c]').forEach(el=>el.onclick=async e=>{const c=cs.find(x=>x.id===el.dataset.c);
     if(e.target.closest('.cp')){await copyText(citeText(c));return}if(e.target.closest('.go')){closeSheet();goNote(c)}else citeSheet(c)});
@@ -637,7 +671,7 @@ async function studySheet(){
 async function tutorSheet(){
   const chat=(await dget('chats',S.doc.id))||[];
   const ns=[...S.notes].sort((a,b)=>sortKey(a)-sortKey(b));
-  const notesTxt=ns.length?ns.map(n=>`[${locLabel(n)}]「${n.quote.slice(0,400)}」${n.tag?'（'+tagName(n.tag)+'）':''}${n.text?' — 我的批注：'+n.text:''}`).join('\n'):'（还没有笔记）';
+  const notesTxt=ns.length?ns.map(n=>`[${locLabel(n)}]${n.fn?'['+fnName(n.fn)+']':''}「${n.quote.slice(0,400)}」${n.tag?'（'+tagName(n.tag)+'）':''}${n.text?' — 我的批注：'+n.text:''}`).join('\n'):'（还没有笔记）';
   const sys=`你是牛津导师制里的导师（tutor），学生在读《${S.doc.name}》。\n${studyBlock()}\n\n学生会向你汇报他的论点。你的任务：认真听，然后反驳、挑漏洞——追问概念定义，要求证据和页码，提出反例和对方最强的论证，指出逻辑跳跃和只挑有利证据的地方。一次只集中打一到两个点，不要长篇大论，每次以一个具体的问题结尾。不要替他写论点，不要轻易认同；他的论证真正站住时，明确说哪一点站住了、为什么。如果他反复出现同一类问题（比如概念不清、只引支持自己的证据、把描述当论证），直接点出来。用中文。\n\n他目前的阅读笔记：\n${notesTxt.slice(0,30000)}`;
   sheet('导师对谈',`<div id="tc">${chat.length?chat.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join(''):'<p class="muted" style="font-size:14px">先用几句话说出你目前的论点和最有力的证据，导师会开始反驳。</p>'}</div>
     <div class="chips" id="tk"><button class="chip">总结这次对谈</button>${chat.length?'<button class="chip" id="tNew">开始新一轮</button>':''}</div>
@@ -662,7 +696,7 @@ async function exportMd(id){
   if(s.big)md+=`**大问题**：${s.big}\n\n`;if(s.bigSide)md+=`**大问题立场**：${s.bigSide}\n\n`;
   if(s.q)md+=`**研究问题**：${s.q}\n\n`;if(s.side)md+=`**我的立场**：${s.side}\n\n`;if(s.line)md+=`**工作线**：${s.line}\n\n`;
   if((d.questions||[]).length)md+=`## 导读问题\n\n`+d.questions.map(q=>`- [${q.done?'x':' '}] ${q.group?'（'+q.group+'）':''}${q.text}`).join('\n')+'\n\n';
-  md+=`## 笔记\n\n`+ns.map(n=>`- ${lab(n)}${n.tag?' ['+tagName(n.tag)+']':''}\n  > ${n.quote.replace(/\n/g,' ')}\n${n.text?'\n  '+n.text.replace(/\n/g,'\n  ')+'\n':''}${(n.ai||[]).map(m=>`\n  ${m.role==='user'?'**问**':'**答**'}：${m.content.replace(/\n/g,'\n  ')}`).join('\n')}\n`).join('\n');
+  md+=`## 笔记\n\n`+ns.map(n=>`- ${lab(n)}${n.fn?' 〔'+fnName(n.fn)+'〕':''}${n.tag?' ['+tagName(n.tag)+']':''}\n  > ${n.quote.replace(/\n/g,' ')}\n${n.text?'\n  '+n.text.replace(/\n/g,'\n  ')+'\n':''}${(n.ai||[]).map(m=>`\n  ${m.role==='user'?'**问**':'**答**'}：${m.content.replace(/\n/g,'\n  ')}`).join('\n')}\n`).join('\n');
   if((d.glossary||[]).length)md+=`\n## 术语表\n\n`+[...d.glossary].sort((a,b)=>a.term.localeCompare(b.term,'de')).map(g=>`- **${g.term}**${g.page?'（p.'+g.page+'）':''}：${(g.def||'').replace(/\n/g,' ')}`).join('\n')+'\n';
   if((d.cites||[]).length){const b=d.biblio||{};const au=(b.author||'').split(',')[0].split(' ').pop();md+=`\n## 引用库\n\n${[b.author,b.year&&'('+b.year+')',b.title].filter(Boolean).join(' ')}\n\n`+d.cites.map(c=>`> „${c.quote}“ (${au} ${b.year||''}${c.page?', S. '+c.page:''})${c.use?' ['+c.use+']':''}${c.zh?'\n>\n> 译：'+c.zh.replace(/\n/g,' '):''}`).join('\n\n')+'\n'}
   if((d.guides||[]).length)md+=`\n## 导读\n\n`+d.guides.map(g=>`### p.${g.from}–${g.to}\n\n${g.text}\n`).join('\n');
@@ -672,7 +706,7 @@ async function exportMd(id){
   download(d.name.slice(0,40)+'-笔记.md',md,'text/markdown')}
 $('#bBackup').onclick=async()=>{
   const docs=await dall('docs'),notes=await dall('notes');const chats={};for(const d of docs)chats[d.id]=(await dget('chats',d.id))||[];
-  download('阅读器备份-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({v:1,at:Date.now(),docs,notes,chats,lines:await getLines()}),'application/json');
+  download('阅读器备份-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({v:1,at:Date.now(),docs,notes,chats,lines:await getLines(),phrases:PHR}),'application/json');
   toast('备份里只有笔记和研究记录，不含 PDF 文件',3500)};
 $('#restore').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const j=JSON.parse(await f.text());let a=0,b=0;
@@ -681,6 +715,7 @@ $('#restore').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(
     for(const n of j.notes||[]){if(await dget('docs',n.docId)){await dput('notes',n);b++}}
     for(const [id,c] of Object.entries(j.chats||{}))if(await dget('docs',id)&&c.length)await dput('chats',c,id);
     if(j.lines)await dput('meta',j.lines,'lines');
+    if(j.phrases){for(const x of j.phrases)if(!PHR.some(y=>y.id===x.id))PHR.push(x);await savePhr()}
     toast(`已恢复 ${a} 本书的记录、${b} 条笔记。没在这台设备上的书，先添加同一个 PDF 再恢复。`,5000);renderLib()}
   catch(err){toast('备份文件读不了：'+err.message,4000)}};
 
@@ -912,6 +947,52 @@ function termSheet(g){
   if($('#gX')){let armed=false;$('#gX').onclick=async e=>{if(!armed){armed=true;e.target.textContent='确认删除';return}S.doc.glossary=S.doc.glossary.filter(x=>x.id!==g.id);await dput('docs',S.doc);closeSheet();rerenderLoaded();toast('已删除')}}
   if(!g.id&&!g.term)setTimeout(()=>$('#gT').focus(),200)}
 
+/* ---------- 论证表达收集表（所有书共用） ---------- */
+let PHR=[];
+async function loadPhr(){PHR=(await dget('meta','phrases'))||[]}
+async function savePhr(){await dput('meta',PHR,'phrases')}
+const PSEED=[
+ ['Ich vertrete die These, dass …','立论','我的论点是……（开门见山提出立场）'],
+ ['Im Folgenden möchte ich zeigen, dass …','立论','下面我要说明……（预告论证方向）'],
+ ['Dafür spricht, dass …','举证','支持这一点的是……'],
+ ['Ein Beleg dafür findet sich bei … (S. …)','举证','这一点在……（第…页）可以找到证据'],
+ ['Das zeigt sich etwa daran, dass …','举证','这一点比如体现在……'],
+ ['Zwar …, aber …','让步','虽然……，但是……（先承认，再转折；zwar 后动词在第二位）'],
+ ['Es stimmt, dass …; dennoch …','让步','……确实如此；尽管如此……'],
+ ['Dagegen ließe sich einwenden, dass …','反驳','对此可以反驳说……（预设对方的反对意见）'],
+ ['Dieser Einwand greift zu kurz, weil …','回应','这个反驳不够全面，因为……'],
+ ['Das gilt allerdings nur, wenn …','限定','不过这只在……的情况下成立'],
+ ['Damit meine ich …','限定','我指的是……（澄清概念）'],
+ ['Daraus folgt, dass …','总结','由此可以得出……'],
+ ['Wie meinen Sie das genau?','追问','您具体指什么？'],
+ ['Können Sie das an einem Beispiel zeigen?','追问','您能举个例子说明吗？'],
+];
+function phraseSheet(x){
+  sheet(x.id?'表达':'加入表达收集表',`<div class="lbl">表达 / 句型</div><input id="pP" value="${esc(x.phrase)}" placeholder="例：Zwar …, aber …">
+    <div class="lbl">论证功能</div><div class="chips" id="pF">${PFNS.map(f=>`<button class="chip ${x.fn===f?'on':''}">${f}</button>`).join('')}</div>
+    <div class="lbl">意思和用法</div><textarea id="pZ" style="min-height:70px" placeholder="中文意思、句型模板、语法要点">${esc(x.zh||'')}</textarea>
+    ${x.ex?`<div class="lbl">原文例句${x.src&&x.src.page?' · p.'+x.src.page:''}</div><div class="quote">${esc(x.ex)}</div>`:''}
+    <div class="lbl">我的造句（用它说自己的论点）</div><textarea id="pM" style="min-height:56px">${esc(x.mine||'')}</textarea>
+    <div class="row"><button class="btn pri" id="pS">保存</button><button class="btn" id="pA">AI 解析</button><div style="flex:1"></div>${x.id?'<button class="btn" id="pX" style="color:var(--accent)">删除</button>':''}</div>`);
+  let fn=x.fn;
+  $('#pF').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;fn=fn===b.textContent?'':b.textContent;$('#pF').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.textContent===fn))};
+  $('#pS').onclick=async()=>{const ph=$('#pP').value.trim();if(!ph){toast('先填表达');return}Object.assign(x,{phrase:ph,fn,zh:$('#pZ').value.trim(),mine:$('#pM').value.trim()});
+    if(!x.id){x.id=uid();x.at=Date.now();PHR.push(x)}await savePhr();closeSheet();toast('已存入表达收集表')};
+  $('#pA').onclick=async()=>{const ph=$('#pP').value.trim();if(!ph)return;const out=$('#pZ'),btn=$('#pA');btn.disabled=true;out.value='…';const st=S.doc&&S.doc.study||{};
+    try{await claude({max:700,system:'你是德语学术写作和口语表达的老师。用中文讲解，例句用德语。简洁。',
+      messages:[{role:'user',content:`德语表达：${ph}
+原文例句：${x.ex||'（无）'}
+
+请按这个格式回答：
+模板：把它改写成可复用的句型，可替换部分用 … 表示
+功能：它在论证里起什么作用（立论/举证/让步/反驳/回应/限定/过渡/总结/追问）
+意思：中文意思
+语法：语序、配合的连词或固定搭配等要点
+例句：围绕这个问题用它造一个德语句子，附中文：${st.q||st.big||'工业转型中的社会计划'}`}],onText:t=>{out.value=t}});
+      const m=out.value.match(/功能[:：]\s*(立论|举证|让步|反驳|回应|限定|过渡|总结|追问)/);if(m&&!fn){fn=m[1];$('#pF').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.textContent===fn))}}
+    catch(e){out.value='';toast(e.message,4000)}btn.disabled=false};
+  if($('#pX')){let armed=false;$('#pX').onclick=async e=>{if(!armed){armed=true;e.target.textContent='确认删除';return}PHR=PHR.filter(y=>y.id!==x.id);await savePhr();closeSheet();toast('已删除')}}}
+
 /* ---------- 引用库 ---------- */
 function surname(a){a=(a||'').trim();if(!a)return '';if(a.includes(','))return a.split(',')[0].trim();const p=a.split(/\s+/);return p[p.length-1]}
 function bibLine(){const b=S.doc.biblio||{};if(!b.author&&!b.title)return '未填写';return `${b.author||''}${b.year?` (${b.year})`:''}: ${b.title||''}.${b.place||b.publisher?' '+[b.place,b.publisher].filter(Boolean).join(': ')+'.':''}`}
@@ -971,7 +1052,7 @@ function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add
 $('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
 
 /* ---------- 启动 ---------- */
-(async()=>{db=await openDB();renderLib();
+(async()=>{db=await openDB();await loadPhr();renderLib();
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})})();
 </script>
 </body>
