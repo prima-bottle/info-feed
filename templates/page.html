@@ -162,10 +162,11 @@ footer details{border:0}
   <span class="label">主线 · {{ t.title }}{% if t.user %}<span class="mine">· 我追踪的</span>{% endif %}</span>
   <ul class="tl">
     {% for u in t['update'] %}<li class="today"><b>今天</b>{{ u }}</li>{% endfor %}
-    {% for p in t.past|reverse %}<li><b>{{ p.date[5:] }}</b>{{ p['update']|join("；") }}</li>{% endfor %}
+    {% for p in t.recent|reverse %}<li><b>{{ p.date[5:] }}</b>{{ p['update']|join("；") }}</li>{% endfor %}
   </ul>
   {% if t.for_you %}<div class="foryou">{{ t.for_you }}</div>{% endif %}
-  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+  <details><summary>{% if t.older %}更早 {{ t.older|length }} 天的进展 · {% endif %}来龙去脉 · 各方视角 · 研判</summary>
+    {% if t.older %}<ul class="tl">{% for p in t.older|reverse %}<li><b>{{ p.date[5:] }}</b>{{ p['update']|join("；") }}</li>{% endfor %}</ul>{% endif %}
     {% if t.background %}<p>{{ t.background }}</p>{% endif %}
     {% if t.perspectives %}<ul class="persp">{% for p in t.perspectives %}<li><b>{{ p.source }}</b>{{ p.angle }}</li>{% endfor %}</ul>{% endif %}
     {% if t.outlook %}<p><b>研判：</b>{{ t.outlook }}</p>{% endif %}

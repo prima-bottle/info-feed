@@ -54,7 +54,10 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
 
     threads = []
     for t in m["threads"].values():
-        t["past"] = [p for p in history.get(t["id"], []) if p["date"] != date][-5:]
+        past = [p for p in history.get(t["id"], []) if p["date"] != date]
+        cut = (dt.date.fromisoformat(date) - dt.timedelta(days=2)).isoformat()
+        t["recent"] = [p for p in past if p["date"] >= cut]      # 不展开时显示：近三天
+        t["older"] = [p for p in past if p["date"] < cut]        # 展开后才显示：更早的全部
         t["key"] = _key("t", date, t["id"], len(t["update"]))
         threads.append(t)
     threads.sort(key=lambda t: -t["ts"])
