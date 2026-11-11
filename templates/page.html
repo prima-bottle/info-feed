@@ -118,6 +118,14 @@ footer details{border:0}
 .tile .play{position:relative}.tile .play::after{content:"▶";position:absolute;right:8px;bottom:8px;font-size:12px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:3px 7px}
 .tile .tt{font-size:14px;line-height:1.4;padding:8px 9px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .tile .ts{font-size:12px;color:var(--muted);padding:2px 9px 9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.favbar{display:flex;gap:6px;margin-bottom:10px}
+.favtab{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:0;background:var(--chip);color:var(--muted)}
+.favtab.on{background:var(--ink);color:var(--bg);font-weight:600}
+.art{position:relative}
+.favbtn{position:absolute;top:12px;right:12px;font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;z-index:1}
+.favbtn.on{border-color:#d9a21b;color:#d9a21b}
+.favbtn+h2{padding-right:104px}
+.favdate{font-size:12px;color:var(--muted);margin-top:8px}
 .runs{font-size:12.5px;color:var(--muted);margin-top:4px}
 .new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
 [data-key].read{opacity:.55}
@@ -244,8 +252,12 @@ footer details{border:0}
 </section>
 
 <section class="panel" id="art">
+  <div class="favbar"><button class="favtab on" data-v="today">今日作品</button><button class="favtab" data-v="fav">★ 我的收藏 <span id="favCount">0</span></button></div>
+  <div id="favList" style="display:none"></div>
+  <div id="artToday">
   {% for a in m.art %}
-  <article class="card art" data-key="{{ a.key }}" data-ts="{{ a.ts }}">
+  <article class="card art" data-key="{{ a.key }}" data-ts="{{ a.ts }}" data-art='{{ a.fav_json }}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 {{ loop.index }} / {{ m.art|length }}</span>
     {% if a.image %}<img class="artimg" src="{{ a.image }}" alt="{{ a.work }}" loading="lazy">{% endif %}
     <h2>{{ a.work }}</h2>
@@ -260,6 +272,7 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search={{ (a.work ~ ' ' ~ a.creator)|urlencode }}" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   {% else %}<div class="end">今天的作品赏析在早间版里</div>{% endfor %}
+  </div>
   {% set artb = m.briefs|selectattr("section","equalto","艺术")|list %}
   {% if artb %}<h3 class="sub">设计与艺术动态</h3>
   {% for b in artb %}<a class="brief" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener"><div class="meta">{{ items[b.item_id].source if b.item_id in items else '艺术' }}</div>{{ b.text }}</a>{% endfor %}{% endif %}
@@ -380,6 +393,35 @@ if(saved)unlock(saved,true);
  if(pageDate&&pageDate<today&&d.getHours()>=5){const bar=document.getElementById('stalebar');bar.style.display='flex';
   const[,m,dd]=pageDate.split('-');document.getElementById('staletext').textContent='这还是'+(+m)+'月'+(+dd)+'日的内容，今天的还没生成'}
 })();
+
+/* 艺术收藏：存在这台手机的浏览器里 */
+(()=>{const K='artFav';let fav={};try{fav=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+ const save=()=>{try{localStorage.setItem(K,JSON.stringify(fav))}catch(e){}};
+ const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const idOf=a=>(a.work||'')+'|'+(a.creator||'');
+ function count(){document.getElementById('favCount').textContent=Object.keys(fav).length}
+ function sync(){document.querySelectorAll('#artToday .art').forEach(c=>{let a;try{a=JSON.parse(c.dataset.art)}catch(e){return}
+   const b=c.querySelector('.favbtn'),on=!!fav[idOf(a)];b.classList.toggle('on',on);b.textContent=on?'★ 已收藏':'☆ 收藏'});count()}
+ function list(){const box=document.getElementById('favList');const xs=Object.values(fav).sort((x,y)=>y.saved-x.saved);
+  if(!xs.length){box.innerHTML='<div class="end">还没有收藏。在作品卡片右上角点 ☆ 收藏。</div>';return}
+  box.innerHTML=xs.map(a=>'<article class="card art"><button class="favbtn on" data-id="'+esc(idOf(a))+'">★ 取消收藏</button>'
+   +(a.image?'<img class="artimg" src="'+esc(a.image)+'" loading="lazy">':'')
+   +'<h2>'+esc(a.work)+'</h2><div class="by">'+esc(a.creator)+(a.year?' · '+esc(a.year):'')+'</div>'
+   +(a.brief?'<h4>它要解决什么问题</h4><p>'+esc(a.brief)+'</p>':'')
+   +((a.decisions||[]).length?'<h4>创作者的关键决定</h4><ol>'+a.decisions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')
+   +(a.symbols?'<h4>符号怎么用</h4><p>'+esc(a.symbols)+'</p>':'')
+   +((a.takeaway||[]).length?'<h4>你可以借用的手法</h4><ul>'+a.takeaway.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')
+   +(a.ai_prompt?'<h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>'+esc(a.ai_prompt)+'</div>':'')
+   +(a.ai_tips?'<p style="margin-top:8px;font-size:14px;color:var(--muted)">'+esc(a.ai_tips)+'</p>':'')
+   +'<div class="favdate">收藏于 '+new Date(a.saved).toLocaleDateString('zh-CN')+'</div></article>').join('');
+  box.querySelectorAll('.favbtn').forEach(b=>b.onclick=()=>{delete fav[b.dataset.id];save();list();sync()});
+  box.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+   (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})})}
+ document.querySelectorAll('#artToday .favbtn').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();
+  const a=JSON.parse(b.closest('.art').dataset.art),id=idOf(a);if(fav[id])delete fav[id];else fav[id]={...a,saved:Date.now()};save();sync()});
+ document.querySelectorAll('.favtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.favtab').forEach(x=>x.classList.toggle('on',x===t));
+  const f=t.dataset.v==='fav';document.getElementById('favList').style.display=f?'':'none';document.getElementById('artToday').style.display=f?'none':'';if(f)list()});
+ sync()})();
 /* 夜间模式：自动 → 夜间 → 日间 */
 (()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
  let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}

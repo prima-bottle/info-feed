@@ -118,6 +118,14 @@ footer details{border:0}
 .tile .play{position:relative}.tile .play::after{content:"▶";position:absolute;right:8px;bottom:8px;font-size:12px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:3px 7px}
 .tile .tt{font-size:14px;line-height:1.4;padding:8px 9px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .tile .ts{font-size:12px;color:var(--muted);padding:2px 9px 9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.favbar{display:flex;gap:6px;margin-bottom:10px}
+.favtab{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:0;background:var(--chip);color:var(--muted)}
+.favtab.on{background:var(--ink);color:var(--bg);font-weight:600}
+.art{position:relative}
+.favbtn{position:absolute;top:12px;right:12px;font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;z-index:1}
+.favbtn.on{border-color:#d9a21b;color:#d9a21b}
+.favbtn+h2{padding-right:104px}
+.favdate{font-size:12px;color:var(--muted);margin-top:8px}
 .runs{font-size:12.5px;color:var(--muted);margin-top:4px}
 .new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
 [data-key].read{opacity:.55}
@@ -1428,8 +1436,12 @@ footer details{border:0}
 </section>
 
 <section class="panel" id="art">
+  <div class="favbar"><button class="favtab on" data-v="today">今日作品</button><button class="favtab" data-v="fav">★ 我的收藏 <span id="favCount">0</span></button></div>
+  <div id="favList" style="display:none"></div>
+  <div id="artToday">
   
-  <article class="card art" data-key="art6c07fd9bb8" data-ts="1794394529">
+  <article class="card art" data-key="art6c07fd9bb8" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;用厨房刀切开魏玛啤酒肚文化的达达（Schnitt mit dem Küchenmesser Dada durch die letzte weimarer Bierbauchkulturepoche Deutschlands）&#34;, &#34;creator&#34;: &#34;汉娜·赫希（Hannah Höch）&#34;, &#34;year&#34;: &#34;1919–1920&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;一战后的魏玛德国，赫希在柏林达达圈里作为少数女性，把杂志和报纸上的图像剪开重组，给政治人物、军人和新兴大众文化一张“切开的全景”。这是给展览和圈内看的作品，要让观众在密集的图像里自己找出权力和性别的关系。&#34;, &#34;decisions&#34;: [&#34;满版堆叠大量印刷品里的头像和机器零件，不留空白，让观众先被信息量压住，再慢慢分辨。&#34;, &#34;不同尺度的头和身体错配，政治人物和女性、舞者、机械放在同一平面里，不分谁更重要。&#34;, &#34;在画面里放入文字和标题式的碎片，让图像之间互相注解，而不是做成一幅安静的画。&#34;], &#34;symbols&#34;: &#34;皇帝、政治家的头像被切下后放进舞者和齿轮之间，权威变成了零件。画面里有一张标示妇女获得选举权国家的地图，是用来把性别政治放进达达的批判里。机器和齿轮代表现代化的节奏。&#34;, &#34;takeaway&#34;: [&#34;用不同尺度的人物制造“谁大谁小”的权力暗示，比单纯堆元素更有政治含义。&#34;, &#34;把一个议题（比如性别）藏进整体拼贴的一个角落，让读者自己发现，会更有记忆点。&#34;, &#34;拼贴里要有“视觉出口”：一个大而干净的区域或一张脸，让眼睛有地方停留。&#34;], &#34;ai_prompt&#34;: &#34;dense Dada photomontage collage, 1920s magazine cutouts, oversized heads on mechanical gears, mismatched scale figures, politicians and dancers in one crowded composition, torn paper edges, muted sepia and red accents, printed halftone texture&#34;, &#34;ai_tips&#34;: &#34;AI 常把拼贴做成“光滑的合成图”，缺少剪刀边缘和纸张的厚度。提示词里要写 torn paper edges、visible cut lines、halftone，并分图层生成再自己拼。文字碎片容易变成乱码，建议后期自己加字。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 1 / 12</span>
     
     <h2>用厨房刀切开魏玛啤酒肚文化的达达（Schnitt mit dem Küchenmesser Dada durch die letzte weimarer Bierbauchkulturepoche Deutschlands）</h2>
@@ -1444,7 +1456,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E7%94%A8%E5%8E%A8%E6%88%BF%E5%88%80%E5%88%87%E5%BC%80%E9%AD%8F%E7%8E%9B%E5%95%A4%E9%85%92%E8%82%9A%E6%96%87%E5%8C%96%E7%9A%84%E8%BE%BE%E8%BE%BE%EF%BC%88Schnitt%20mit%20dem%20K%C3%BCchenmesser%20Dada%20durch%20die%20letzte%20weimarer%20Bierbauchkulturepoche%20Deutschlands%EF%BC%89%20%E6%B1%89%E5%A8%9C%C2%B7%E8%B5%AB%E5%B8%8C%EF%BC%88Hannah%20H%C3%B6ch%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="art88842b88e5" data-ts="1794394529">
+  <article class="card art" data-key="art88842b88e5" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;我们时代的精神：机械头（Der Geist unserer Zeit – Mechanischer Kopf）&#34;, &#34;creator&#34;: &#34;劳尔·豪斯曼（Raoul Hausmann）&#34;, &#34;year&#34;: &#34;1919&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;豪斯曼是柏林达达的核心人物。这件作品是现成物组合，不是平面拼贴，但常和摄影蒙太奇放在一起讨论。他要说的是：一战后的人，头脑里空空的，只装着量尺和机械，没有精神。&#34;, &#34;decisions&#34;: [&#34;用一个理发店的木头假人头，不去雕塑一个“人”，而是选一个已经存在的“无脸模特”。&#34;, &#34;把测量工具、机械零件贴在头上，让“理性、计量、机械”成为思想的外壳。&#34;, &#34;标题用嘲讽语气的“时代精神”，让观众一眼读出批判而不是赞美。&#34;], &#34;symbols&#34;: &#34;木头人头象征空洞的“标准化的人”，测量工具象征被量化的思想。这是对“时代精神”概念的反转：它不是理想，而是一堆装在空壳里的东西。&#34;, &#34;takeaway&#34;: [&#34;做海报时，可以用“现成的无脸形象”（模特、假人、剪影）代表一类人，再用附加物说明批评对象。&#34;, &#34;标题和图像要有反差，用一个正面的词配一个荒诞的图。&#34;, &#34;三个以内的象征物就够，别把每个概念都画出来。&#34;], &#34;ai_prompt&#34;: &#34;surreal assemblage photograph, wooden mannequin head covered with measuring tape, ruler, watch mechanism and metal parts, plain studio background, black and white documentary photo, hard side light, Dada aesthetic&#34;, &#34;ai_tips&#34;: &#34;AI 容易把物件做得过于精致或崭新。要写 worn wood、rusty metal、found objects。测量工具上的数字刻度常会变形，可以只保留形状，不要求清晰读数。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 2 / 12</span>
     
     <h2>我们时代的精神：机械头（Der Geist unserer Zeit – Mechanischer Kopf）</h2>
@@ -1459,7 +1472,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E6%88%91%E4%BB%AC%E6%97%B6%E4%BB%A3%E7%9A%84%E7%B2%BE%E7%A5%9E%EF%BC%9A%E6%9C%BA%E6%A2%B0%E5%A4%B4%EF%BC%88Der%20Geist%20unserer%20Zeit%20%E2%80%93%20Mechanischer%20Kopf%EF%BC%89%20%E5%8A%B3%E5%B0%94%C2%B7%E8%B1%AA%E6%96%AF%E6%9B%BC%EF%BC%88Raoul%20Hausmann%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="artbaf57b9606" data-ts="1794394529">
+  <article class="card art" data-key="artbaf57b9606" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;构造者（Der Konstrukteur）&#34;, &#34;creator&#34;: &#34;埃尔·利西茨基（El Lissitzky）&#34;, &#34;year&#34;: &#34;1924&#34;, &#34;image&#34;: &#34;https://upload.wikimedia.org/wikipedia/commons/8/8d/El_lissitzky_self_portrait_1924.jpg?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail_unscaled&#34;, &#34;brief&#34;: &#34;利西茨基是苏联构成主义的重要人物，这张自画像用摄影蒙太奇，把艺术家定位为“构造者”。受众是设计师和艺术圈，要让大家把设计师看成工程师，而不是装饰匠。&#34;, &#34;decisions&#34;: [&#34;把自己的脸和手叠合，手握圆规，把“思考”和“制图”在视觉上合二为一。&#34;, &#34;背景用方格纸和几何字符，让整张图像像工程图纸。&#34;, &#34;叠印而不是简单剪贴，让层与层之间有透明感，更像“思维叠加”。&#34;], &#34;symbols&#34;: &#34;圆规是设计师的工具，也代表理性和秩序。方格纸暗示图纸和计划，与苏联早期对“构建新社会”的想象呼应。&#34;, &#34;takeaway&#34;: [&#34;用“工具+手”的组合，比单纯展示人像更能说明职业身份。&#34;, &#34;叠印和透明叠层可以做出“思想在图纸上”的效果，比硬拼贴更安静。&#34;, &#34;只用两三种颜色（黑、灰、白），把重点留给构图和线条。&#34;], &#34;ai_prompt&#34;: &#34;constructivist self-portrait photomontage, double exposure of a face and a hand holding a compass, overlaid on graph paper with geometric lines, monochrome gelatin silver print look, 1920s avant-garde design&#34;, &#34;ai_tips&#34;: &#34;AI 做双重曝光时常让手变形或手指数量错误，可以先单独生成手部再合成。方格纸线条容易乱，建议用素材叠加，不要靠生成。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 3 / 12</span>
     <img class="artimg" src="https://upload.wikimedia.org/wikipedia/commons/8/8d/El_lissitzky_self_portrait_1924.jpg?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail_unscaled" alt="构造者（Der Konstrukteur）" loading="lazy">
     <h2>构造者（Der Konstrukteur）</h2>
@@ -1474,7 +1488,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E6%9E%84%E9%80%A0%E8%80%85%EF%BC%88Der%20Konstrukteur%EF%BC%89%20%E5%9F%83%E5%B0%94%C2%B7%E5%88%A9%E8%A5%BF%E8%8C%A8%E5%9F%BA%EF%BC%88El%20Lissitzky%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="artf6e4fc8011" data-ts="1794394529">
+  <article class="card art" data-key="artf6e4fc8011" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;让我们完成伟大工程的计划（Давайте выполним план великих работ）&#34;, &#34;creator&#34;: &#34;古斯塔夫·克卢西斯（Gustav Klutsis）&#34;, &#34;year&#34;: &#34;1930&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;苏联第一个五年计划期间，国家需要把宏大的工业计划变成人人看得懂的视觉信息。克卢西斯用摄影蒙太奇做政治海报，要街头、工厂和公共空间里的人在几秒内读懂号召。&#34;, &#34;decisions&#34;: [&#34;用巨大的手和密集的人群形成悬殊的尺度，让“计划”显得比个人大得多。&#34;, &#34;用红色和黑白照片分层，红色负责情绪，照片负责真实感。&#34;, &#34;大标语字体和图像绑在一起，保证远距离也能读到。&#34;], &#34;symbols&#34;: &#34;巨手代表国家和领导，小人群代表劳动者。这是把“个人融入集体计划”做成视觉比例的典型手法，也是之后被研究宣传美学的人反复拿来分析的例子。&#34;, &#34;takeaway&#34;: [&#34;尺度对比是最快的叙事：一个大的、一群小的，观众立刻知道谁在主导。&#34;, &#34;照片负责“真”，色块负责“情绪”，两者不要抢同一个位置。&#34;, &#34;海报上的字要能在三米外读到，字号不能为了好看缩小。&#34;], &#34;ai_prompt&#34;: &#34;Soviet constructivist propaganda poster, photomontage of a giant hand over a crowd of tiny workers, flat red and black color blocks, bold sans-serif slogan area, diagonal composition, printed paper texture&#34;, &#34;ai_tips&#34;: &#34;AI 做的手常常多指或太写实。使用时要避免生成真实政治人物，并注意这类风格带有宣传意味，做批判或对话作品时要在文案里明确立场。字体建议后期自己排版。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 4 / 12</span>
     
     <h2>让我们完成伟大工程的计划（Давайте выполним план великих работ）</h2>
@@ -1489,7 +1504,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E8%AE%A9%E6%88%91%E4%BB%AC%E5%AE%8C%E6%88%90%E4%BC%9F%E5%A4%A7%E5%B7%A5%E7%A8%8B%E7%9A%84%E8%AE%A1%E5%88%92%EF%BC%88%D0%94%D0%B0%D0%B2%D0%B0%D0%B9%D1%82%D0%B5%20%D0%B2%D1%8B%D0%BF%D0%BE%D0%BB%D0%BD%D0%B8%D0%BC%20%D0%BF%D0%BB%D0%B0%D0%BD%20%D0%B2%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D1%85%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%EF%BC%89%20%E5%8F%A4%E6%96%AF%E5%A1%94%E5%A4%AB%C2%B7%E5%85%8B%E5%8D%A2%E8%A5%BF%E6%96%AF%EF%BC%88Gustav%20Klutsis%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="art28a0f3268c" data-ts="1794394529">
+  <article class="card art" data-key="art28a0f3268c" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;到底是什么让今天的家如此不同、如此有魅力？（Just what is it that makes today&#39;s homes so different, so appealing?）&#34;, &#34;creator&#34;: &#34;理查德·汉密尔顿（Richard Hamilton）&#34;, &#34;year&#34;: &#34;1956&#34;, &#34;image&#34;: &#34;https://upload.wikimedia.org/wikipedia/en/f/ff/Hamilton-appealing2.jpg?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail_unscaled&#34;, &#34;brief&#34;: &#34;为伦敦白教堂画廊“这就是明天”展览做的小型拼贴，用美国杂志剪贴出一个“理想家庭”。要让观众思考战后消费文化和广告塑造的欲望，而不是简单赞美。&#34;, &#34;decisions&#34;: [&#34;把房间做成一个舞台：健美男、半裸女、家电、电视、录音机都被摆成商品橱窗。&#34;, &#34;全部来自广告和杂志，不自己画，让“广告语言”自己说话。&#34;, &#34;把房间的天花板换成月球的画面，让室内空间变成“未来”的象征。&#34;], &#34;symbols&#34;: &#34;手里的棒棒糖上写着“POP”，成了“波普”一词的早期视觉。电器、品牌标志和身体都被当作可消费的物品，讽刺意味很强，却并不严厉。&#34;, &#34;takeaway&#34;: [&#34;用广告剪贴做拼贴时，把它们放进一个“日常空间”（客厅、厨房），讽刺感比抽象排列更强。&#34;, &#34;让一个小物件带文字（比如标签、标语），既是视觉焦点也是点题。&#34;, &#34;把“理想生活”做得过分完美，让观众自己感到不对劲。&#34;], &#34;ai_prompt&#34;: &#34;1950s pop art collage of an idealized living room, glossy magazine advertisement cutouts, bodybuilder and woman posing among appliances, television and tape recorder, flat saturated colors, slightly off perspective, vintage print halftone&#34;, &#34;ai_tips&#34;: &#34;AI 容易让风格太“复古滤镜”，缺少拼贴的拼合感，要写 mismatched cutouts、different lighting on each figure。品牌标志会被生成成错字或假标志，建议做成虚构品牌。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 5 / 12</span>
     <img class="artimg" src="https://upload.wikimedia.org/wikipedia/en/f/ff/Hamilton-appealing2.jpg?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail_unscaled" alt="到底是什么让今天的家如此不同、如此有魅力？（Just what is it that makes today&#39;s homes so different, so appealing?）" loading="lazy">
     <h2>到底是什么让今天的家如此不同、如此有魅力？（Just what is it that makes today&#39;s homes so different, so appealing?）</h2>
@@ -1504,7 +1520,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88%E8%AE%A9%E4%BB%8A%E5%A4%A9%E7%9A%84%E5%AE%B6%E5%A6%82%E6%AD%A4%E4%B8%8D%E5%90%8C%E3%80%81%E5%A6%82%E6%AD%A4%E6%9C%89%E9%AD%85%E5%8A%9B%EF%BC%9F%EF%BC%88Just%20what%20is%20it%20that%20makes%20today%27s%20homes%20so%20different%2C%20so%20appealing%3F%EF%BC%89%20%E7%90%86%E6%9F%A5%E5%BE%B7%C2%B7%E6%B1%89%E5%AF%86%E5%B0%94%E9%A1%BF%EF%BC%88Richard%20Hamilton%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="art7233fd0701" data-ts="1794394529">
+  <article class="card art" data-key="art7233fd0701" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;把战争带回家：美丽家居（Bringing the War Home: House Beautiful）&#34;, &#34;creator&#34;: &#34;玛莎·罗斯勒（Martha Rosler）&#34;, &#34;year&#34;: &#34;1967–1972&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;越战期间美国人在电视和杂志里看战争，却觉得离自己很远。罗斯勒把战争照片贴进家居杂志里的室内图，用复印件在反战活动和地下刊物里传播，让战争进入客厅。&#34;, &#34;decisions&#34;: [&#34;用《房屋与园林》类杂志的光洁室内图做背景，把战争照片作为“闯入者”插入。&#34;, &#34;战争的画面不放大，只放进空间的一角，让观众先被“舒适的房间”吸引，再发现异常。&#34;, &#34;以复印件和小幅形式传播，不走画廊路线，更贴近街头和反战圈子。&#34;], &#34;symbols&#34;: &#34;家居杂志象征中产的安逸，战争照片象征被忽视的现实。两者放在同一张图里，反转的是“战争在远方”的观念。&#34;, &#34;takeaway&#34;: [&#34;做海报时，用“舒适的日常图”做底，再放一个“不该在这里的东西”，反差会比直接放惨烈画面更有力。&#34;, &#34;闯入者尺寸要小而精确，观众找到时才会有“被击中”的感觉。&#34;, &#34;素材要同色调、同光线风格的底图，闯入者用不同风格，才能让断裂感可见。&#34;], &#34;ai_prompt&#34;: &#34;photomontage of a clean 1960s American living room from a home magazine with a small black and white war photograph inserted, soldiers walking through the doorway, glossy color interior contrasted with grainy documentary photo, flat collage&#34;, &#34;ai_tips&#34;: &#34;AI 容易把两个部分融合得太自然，要强调 hard cut edges、mismatched grain。涉及战争场景要避免真实受害者的面孔，也别做得像血腥猎奇。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 6 / 12</span>
     
     <h2>把战争带回家：美丽家居（Bringing the War Home: House Beautiful）</h2>
@@ -1519,7 +1536,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E6%8A%8A%E6%88%98%E4%BA%89%E5%B8%A6%E5%9B%9E%E5%AE%B6%EF%BC%9A%E7%BE%8E%E4%B8%BD%E5%AE%B6%E5%B1%85%EF%BC%88Bringing%20the%20War%20Home%3A%20House%20Beautiful%EF%BC%89%20%E7%8E%9B%E8%8E%8E%C2%B7%E7%BD%97%E6%96%AF%E5%8B%92%EF%BC%88Martha%20Rosler%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="art3bb63e7a02" data-ts="1794394529">
+  <article class="card art" data-key="art3bb63e7a02" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;无题（你的身体是战场）（Untitled (Your body is a battleground)）&#34;, &#34;creator&#34;: &#34;芭芭拉·克鲁格（Barbara Kruger）&#34;, &#34;year&#34;: &#34;1989&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;1989年华盛顿为争取堕胎权的游行制作的海报和公共艺术。克鲁格有杂志编辑和平面设计的背景，把广告语言反过来用，给街头和媒体都能看懂的短句。&#34;, &#34;decisions&#34;: [&#34;用黑白照片一分为二，一半正片一半负片，让一张脸本身成为“对立”的图像。&#34;, &#34;用红色边框和红底白字，让文字像标签、像新闻标题一样强势。&#34;, &#34;标语只有一句，且是第二人称的“你的”，直接把观众拉进来。&#34;], &#34;symbols&#34;: &#34;正负片并置代表同一个身体被两种力量争夺。红底白字的粗体无衬线字（Futura Bold 风格）借用了媒体和广告的权威感，让话语权成为图像的一部分。&#34;, &#34;takeaway&#34;: [&#34;一句话+一张脸+一个颜色，是最容易复制的政治海报公式。&#34;, &#34;第二人称（你、你们）会让标语更有压力，第一人称更像宣言，第三人称像报道，要选哪种就要先想清楚。&#34;, &#34;用正负片、裁切和叠影来表示“被撕开”，比再添加更多元素更干净。&#34;], &#34;ai_prompt&#34;: &#34;black and white portrait split into positive and negative halves, bold red frame, white condensed italic sans-serif text on red bars across the face, high contrast graphic poster, flat layout, magazine advertisement style&#34;, &#34;ai_tips&#34;: &#34;AI 做字最容易出错，请把文字留给后期排版。正负片的“半边反色”AI 常常做不精确，可以自己在图像软件里反色。红色容易偏粉或偏橙，要指定 pure signal red。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 7 / 12</span>
     
     <h2>无题（你的身体是战场）（Untitled (Your body is a battleground)）</h2>
@@ -1534,7 +1552,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E6%97%A0%E9%A2%98%EF%BC%88%E4%BD%A0%E7%9A%84%E8%BA%AB%E4%BD%93%E6%98%AF%E6%88%98%E5%9C%BA%EF%BC%89%EF%BC%88Untitled%20%28Your%20body%20is%20a%20battleground%29%EF%BC%89%20%E8%8A%AD%E8%8A%AD%E6%8B%89%C2%B7%E5%85%8B%E9%B2%81%E6%A0%BC%EF%BC%88Barbara%20Kruger%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="artdf3c26d2de" data-ts="1794394529">
+  <article class="card art" data-key="artdf3c26d2de" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;女王万岁（God Save the Queen）唱片封面&#34;, &#34;creator&#34;: &#34;杰米·里德（Jamie Reid）&#34;, &#34;year&#34;: &#34;1977&#34;, &#34;image&#34;: &#34;https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Thesexpistols-logo.svg/250px-Thesexpistols-logo.svg.png?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail&#34;, &#34;brief&#34;: &#34;为英国朋克乐队性手枪的单曲做封面，正逢女王即位银禧。里德要在没有预算、要快速印刷的条件下，做一张能在街头和唱片店一眼辨认的反权威图像。&#34;, &#34;decisions&#34;: [&#34;把官方肖像直接放大，再用“勒索信”式剪字盖住眼睛和嘴，让女王“说不出话”也“看不见”。&#34;, &#34;字体来自报纸标题的剪贴，不同大小和字体混在一起，看起来像匿名威胁信。&#34;, &#34;用荧光色或高对比的印刷色，适合便宜的网点印刷，也很适合当街贴海报。&#34;], &#34;symbols&#34;: &#34;皇室肖像代表权威，勒索信字体代表匿名威胁和街头的反抗。他把“官方形象”和“犯罪文本”叠在一起，反转了谁在威胁谁。&#34;, &#34;takeaway&#34;: [&#34;用“勒索信字体”做标语，是最便宜的反权威语言，只要把每个字母的字体、大小、底色打乱。&#34;, &#34;遮住眼睛和嘴比在脸上画叉更有叙事：它让人物“失语”。&#34;, &#34;高饱和两色印刷（比如荧光粉加黑）很适合 DIY 海报和 Instagram 缩略图。&#34;], &#34;ai_prompt&#34;: &#34;punk record sleeve collage, official royal portrait with eyes and mouth covered by ransom-note style cut-out newspaper letters, mixed fonts and sizes, fluorescent pink and yellow flat colors, rough photocopy texture, cheap offset print&#34;, &#34;ai_tips&#34;: &#34;AI 的“勒索信字母”常常排得太整齐。要写 irregular baseline, different paper backgrounds, uneven spacing。不要让它生成真实人物的肖像，可以用虚构的权威人物或剪影。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 8 / 12</span>
     <img class="artimg" src="https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Thesexpistols-logo.svg/250px-Thesexpistols-logo.svg.png?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail" alt="女王万岁（God Save the Queen）唱片封面" loading="lazy">
     <h2>女王万岁（God Save the Queen）唱片封面</h2>
@@ -1549,7 +1568,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E5%A5%B3%E7%8E%8B%E4%B8%87%E5%B2%81%EF%BC%88God%20Save%20the%20Queen%EF%BC%89%E5%94%B1%E7%89%87%E5%B0%81%E9%9D%A2%20%E6%9D%B0%E7%B1%B3%C2%B7%E9%87%8C%E5%BE%B7%EF%BC%88Jamie%20Reid%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="arte88ecaec8f" data-ts="1794394529">
+  <article class="card art" data-key="arte88ecaec8f" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;组织性肿瘤分类的组织学（Histology of the Different Classes of Uterine Tumors）&#34;, &#34;creator&#34;: &#34;旺格奇·穆图（Wangechi Mutu）&#34;, &#34;year&#34;: &#34;2004&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;肯尼亚出生、在纽约工作的穆图，用杂志剪贴、医学插图和绘画做拼贴，质问非洲女性身体在医学、时尚和战争图像里被怎样“阅读”。这件作品是她早期代表作，面对的是当代艺术市场和国际观众。&#34;, &#34;decisions&#34;: [&#34;用医学图谱和时尚杂志的身体碎片拼成一个人形，让身体既像研究对象，又像商品。&#34;, &#34;使用半透明的画材和不规则的边缘，让身体看起来“半是肉体、半是图像”。&#34;, &#34;尺度不是小而精致，而是大幅，把观看变成面对面的压迫感。&#34;], &#34;symbols&#34;: &#34;医学插图的“解剖”视角，与时尚杂志的“欲望”视角被放在同一个身体上，指出两者都在把女性身体当作被观察、被分类的对象。&#34;, &#34;takeaway&#34;: [&#34;拼贴不一定要来自一个时代的素材，把“科学图谱”和“时尚图像”混在一起，是制造文化批评的好办法。&#34;, &#34;用手绘补出连接处，让拼贴既有印刷感又有人的痕迹。&#34;, &#34;身体作为主题要明确是谁在看，是批评凝视，不是复制凝视。&#34;], &#34;ai_prompt&#34;: &#34;contemporary mixed-media collage of a figure assembled from medical anatomy illustrations and fashion magazine fragments, painted ink washes and glitter accents, translucent layers, textured paper, rich earth tones with deep reds&#34;, &#34;ai_tips&#34;: &#34;AI 容易把这种风格做成“好看的艺术插画”，丢掉批判性。写提示词时强调 anatomical diagrams、fragmented, not glamorous。处理身体主题时要避免性化和刻板化，成品要审视是不是在复制它要批评的凝视。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 9 / 12</span>
     
     <h2>组织性肿瘤分类的组织学（Histology of the Different Classes of Uterine Tumors）</h2>
@@ -1564,7 +1584,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E7%BB%84%E7%BB%87%E6%80%A7%E8%82%BF%E7%98%A4%E5%88%86%E7%B1%BB%E7%9A%84%E7%BB%84%E7%BB%87%E5%AD%A6%EF%BC%88Histology%20of%20the%20Different%20Classes%20of%20Uterine%20Tumors%EF%BC%89%20%E6%97%BA%E6%A0%BC%E5%A5%87%C2%B7%E7%A9%86%E5%9B%BE%EF%BC%88Wangechi%20Mutu%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="art099baa5349" data-ts="1794394529">
+  <article class="card art" data-key="art099baa5349" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;摆拍（Photo Op）&#34;, &#34;creator&#34;: &#34;彼得·肯纳德与凯特·菲利普斯（Peter Kennard &amp; Cat Phillipps）&#34;, &#34;year&#34;: &#34;2005&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;伊拉克战争之后，肯纳德是英国反战和反核视觉运动中长期活跃的摄影蒙太奇艺术家。这件作品用英国首相布莱尔的自拍姿势，加上身后爆炸的蘑菇云式烟雾，在网络和街头传播，批评领导人对战争后果的轻浮。&#34;, &#34;decisions&#34;: [&#34;借用社交媒体的自拍构图，让观众立刻识别，图像风格轻、内容重。&#34;, &#34;背景用战争爆炸，前景用笑容，反差全靠“人物在前、灾难在后”的位置关系。&#34;, &#34;采用接近新闻摄影的色调，让它既像真的，又明显是假的。&#34;], &#34;symbols&#34;: &#34;自拍是日常的、愉快的，爆炸是战争的、灾难的。两者叠在一起，指出领导人的“形象管理”和战争后果之间的脱节。&#34;, &#34;takeaway&#34;: [&#34;借用观众熟悉的“网络姿势”（自拍、合影、直播），再把背景换成严肃议题，传播力很强。&#34;, &#34;人物清晰、背景被灾难占满，要让两者的色温不同，才能一眼读出分层。&#34;, &#34;涉及真实政治人物时，要想清楚法律和平台规则，是评论讽刺还是造谣，要在文案里让观众一看就知道是艺术作品。&#34;], &#34;ai_prompt&#34;: &#34;political satire photomontage, a smiling man taking a selfie in the foreground, huge dark explosion cloud and smoke behind him, news photography color grading, shallow depth contrast between warm foreground and cold background, clean digital composite&#34;, &#34;ai_tips&#34;: &#34;AI 往往让前后景光线一致，削弱荒诞感。要写 foreground bright flash lighting, background desaturated smoke。不要生成真实政治人物的脸，可以用虚构人物或遮挡面部，也要明确这是讽刺作品，免得被误传为真照片。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 10 / 12</span>
     
     <h2>摆拍（Photo Op）</h2>
@@ -1579,7 +1600,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E6%91%86%E6%8B%8D%EF%BC%88Photo%20Op%EF%BC%89%20%E5%BD%BC%E5%BE%97%C2%B7%E8%82%AF%E7%BA%B3%E5%BE%B7%E4%B8%8E%E5%87%AF%E7%89%B9%C2%B7%E8%8F%B2%E5%88%A9%E6%99%AE%E6%96%AF%EF%BC%88Peter%20Kennard%20%26%20Cat%20Phillipps%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="artc6cad063b6" data-ts="1794394529">
+  <article class="card art" data-key="artc6cad063b6" data-ts="1794394529" data-art='{&#34;work&#34;: &#34;红楔攻白军：构成主义风格的当代致敬——数码拼贴练习&#34;, &#34;creator&#34;: &#34;（无单一作者）数码拼贴练习&#34;, &#34;year&#34;: &#34;2020s&#34;, &#34;image&#34;: &#34;&#34;, &#34;brief&#34;: &#34;这一件不是具体作品，而是给你自己的一个练习，把前面九件作品的手法综合起来做一张当代数字拼贴海报。例如用今天的素材（报纸标题、手机截图、社媒界面）做一张关于“生活成本”或“Gen-Z 抗议”的海报。&#34;, &#34;decisions&#34;: [&#34;先定一个“大小对比”：一个巨大的元素和一群小元素，决定谁是主角。&#34;, &#34;再定一个“闯入者”：一个不属于背景的小元素，作为批判的落点。&#34;, &#34;最后只留一句话和两个颜色，其他全部是图像。&#34;], &#34;symbols&#34;: &#34;素材选当代日常：房租账单、超市小票、手机通知。这些东西比抽象符号更贴近德国学生的生活，也是前面作品里“广告和杂志”的当代替代品。&#34;, &#34;takeaway&#34;: [&#34;在 AI 里分层生成：背景、主角、闯入者各出一张，再自己合成，比一次生成更可控。&#34;, &#34;字体用无衬线粗体，文字量控制在一行内。&#34;, &#34;导出前缩小到手机屏幕大小检查，看一秒内能不能读出主题。&#34;], &#34;ai_prompt&#34;: &#34;contemporary digital collage poster about cost of living, receipts and rent bills torn into shapes, one oversized smartphone screen as focal point, flat red and black color blocks, cut paper edges, halftone texture, empty area for headline text&#34;, &#34;ai_tips&#34;: &#34;AI 常把账单和手机屏幕生成乱码，不要依赖它出现可读文字，可以先留空区，再自己加字。多个元素的风格容易混乱，每一层都要用同样的纹理词来统一。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 11 / 12</span>
     
     <h2>红楔攻白军：构成主义风格的当代致敬——数码拼贴练习</h2>
@@ -1594,7 +1616,8 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E7%BA%A2%E6%A5%94%E6%94%BB%E7%99%BD%E5%86%9B%EF%BC%9A%E6%9E%84%E6%88%90%E4%B8%BB%E4%B9%89%E9%A3%8E%E6%A0%BC%E7%9A%84%E5%BD%93%E4%BB%A3%E8%87%B4%E6%95%AC%E2%80%94%E2%80%94%E6%95%B0%E7%A0%81%E6%8B%BC%E8%B4%B4%E7%BB%83%E4%B9%A0%20%EF%BC%88%E6%97%A0%E5%8D%95%E4%B8%80%E4%BD%9C%E8%80%85%EF%BC%89%E6%95%B0%E7%A0%81%E6%8B%BC%E8%B4%B4%E7%BB%83%E4%B9%A0" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
-  <article class="card art" data-key="artd7aacda144" data-ts="1794372688">
+  <article class="card art" data-key="artd7aacda144" data-ts="1794372688" data-art='{&#34;work&#34;: &#34;《小麦角》（A Corner in Wheat）&#34;, &#34;creator&#34;: &#34;D. W. 格里菲斯（D. W. Griffith）&#34;, &#34;year&#34;: &#34;1909&#34;, &#34;image&#34;: &#34;https://upload.wikimedia.org/wikipedia/commons/4/4b/A_Corner_in_Wheat.jpg?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail_unscaled&#34;, &#34;brief&#34;: &#34;这是格里菲斯为 Biograph 公司拍的一部短片，改编自弗兰克·诺里斯（Frank Norris）的小说，面向镍币影院（nickelodeon）里的大众观众。要在十几分钟内让没读过小说的普通观众看懂：投机者囤积小麦，穷人买不起面包。&#34;, &#34;decisions&#34;: [&#34;用交叉剪辑（cross-cutting）：把农民播种、投机商开宴会、穷人排队买面包交替切换，不用解说，让观众自己看出因果。&#34;, &#34;把对比做成视觉对立：富人的宴会厅明亮、拥挤，穷人的街头冷清、画面开阔，画面中的人物位置和光线本身就传递阶级差距。&#34;, &#34;结尾让投机商掉进粮仓被小麦淹没：把“小麦”从财富符号反转为吞噬他的东西，一个画面完成道德判断。&#34;], &#34;symbols&#34;: &#34;小麦同时代表劳动、食物和资本：一开始是农民的成果，后来变成投机商的筹码，最后成为杀死他的东西。面包队伍则是社会后果的符号。借用的是“同一物件在不同阶级手里意义相反”的逻辑。&#34;, &#34;takeaway&#34;: [&#34;做海报时用上下或左右分屏，把两个阶层的同一物件（面包、房钥匙、电费单）并排放，不需要文字解释。&#34;, &#34;只选一个核心物件反复出现，在最后一次出现时反转它的含义（从财富变成惩罚）。&#34;, &#34;用大面积留白和一个高亮的小主体来表现“匮乏”，用拥挤、满溢的构图来表现“囤积”。&#34;, &#34;德语 Instagram 帖子里，把一个数字（租金、涨幅）做成最大字号，其他内容压到最小。&#34;], &#34;ai_prompt&#34;: &#34;split-screen poster composition, left half: crowded lavish banquet hall with warm golden light, right half: empty cold street with a long bread queue in blue-grey tones, early 1900s black-and-white film grain, high contrast, a single stalk of wheat as a recurring motif, vintage silent film still, flat graphic layout, strong central divider line&#34;, &#34;ai_tips&#34;: &#34;AI 容易把两半画面做成“一幅图里的两个角落”，失去强对比；要明确写出 split-screen 和 central divider line。文字几乎一定会变形，先只生成图，再用设计软件加标题。风格容易做得太精致、太甜，加 film grain、flat、cold tones 和 high contrast 来压住。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 12 / 12</span>
     <img class="artimg" src="https://upload.wikimedia.org/wikipedia/commons/4/4b/A_Corner_in_Wheat.jpg?utm_source=en.wikipedia.org&amp;utm_campaign=api&amp;utm_content=thumbnail_unscaled" alt="《小麦角》（A Corner in Wheat）" loading="lazy">
     <h2>《小麦角》（A Corner in Wheat）</h2>
@@ -1609,6 +1632,7 @@ footer details{border:0}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search=%E3%80%8A%E5%B0%8F%E9%BA%A6%E8%A7%92%E3%80%8B%EF%BC%88A%20Corner%20in%20Wheat%EF%BC%89%20D.%20W.%20%E6%A0%BC%E9%87%8C%E8%8F%B2%E6%96%AF%EF%BC%88D.%20W.%20Griffith%EF%BC%89" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   
+  </div>
   
   
   <div class="end"><span class="dot">·</span>艺术看完了</div>
@@ -1744,6 +1768,35 @@ if(saved)unlock(saved,true);
  if(pageDate&&pageDate<today&&d.getHours()>=5){const bar=document.getElementById('stalebar');bar.style.display='flex';
   const[,m,dd]=pageDate.split('-');document.getElementById('staletext').textContent='这还是'+(+m)+'月'+(+dd)+'日的内容，今天的还没生成'}
 })();
+
+/* 艺术收藏：存在这台手机的浏览器里 */
+(()=>{const K='artFav';let fav={};try{fav=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+ const save=()=>{try{localStorage.setItem(K,JSON.stringify(fav))}catch(e){}};
+ const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const idOf=a=>(a.work||'')+'|'+(a.creator||'');
+ function count(){document.getElementById('favCount').textContent=Object.keys(fav).length}
+ function sync(){document.querySelectorAll('#artToday .art').forEach(c=>{let a;try{a=JSON.parse(c.dataset.art)}catch(e){return}
+   const b=c.querySelector('.favbtn'),on=!!fav[idOf(a)];b.classList.toggle('on',on);b.textContent=on?'★ 已收藏':'☆ 收藏'});count()}
+ function list(){const box=document.getElementById('favList');const xs=Object.values(fav).sort((x,y)=>y.saved-x.saved);
+  if(!xs.length){box.innerHTML='<div class="end">还没有收藏。在作品卡片右上角点 ☆ 收藏。</div>';return}
+  box.innerHTML=xs.map(a=>'<article class="card art"><button class="favbtn on" data-id="'+esc(idOf(a))+'">★ 取消收藏</button>'
+   +(a.image?'<img class="artimg" src="'+esc(a.image)+'" loading="lazy">':'')
+   +'<h2>'+esc(a.work)+'</h2><div class="by">'+esc(a.creator)+(a.year?' · '+esc(a.year):'')+'</div>'
+   +(a.brief?'<h4>它要解决什么问题</h4><p>'+esc(a.brief)+'</p>':'')
+   +((a.decisions||[]).length?'<h4>创作者的关键决定</h4><ol>'+a.decisions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')
+   +(a.symbols?'<h4>符号怎么用</h4><p>'+esc(a.symbols)+'</p>':'')
+   +((a.takeaway||[]).length?'<h4>你可以借用的手法</h4><ul>'+a.takeaway.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')
+   +(a.ai_prompt?'<h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>'+esc(a.ai_prompt)+'</div>':'')
+   +(a.ai_tips?'<p style="margin-top:8px;font-size:14px;color:var(--muted)">'+esc(a.ai_tips)+'</p>':'')
+   +'<div class="favdate">收藏于 '+new Date(a.saved).toLocaleDateString('zh-CN')+'</div></article>').join('');
+  box.querySelectorAll('.favbtn').forEach(b=>b.onclick=()=>{delete fav[b.dataset.id];save();list();sync()});
+  box.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+   (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})})}
+ document.querySelectorAll('#artToday .favbtn').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();
+  const a=JSON.parse(b.closest('.art').dataset.art),id=idOf(a);if(fav[id])delete fav[id];else fav[id]={...a,saved:Date.now()};save();sync()});
+ document.querySelectorAll('.favtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.favtab').forEach(x=>x.classList.toggle('on',x===t));
+  const f=t.dataset.v==='fav';document.getElementById('favList').style.display=f?'':'none';document.getElementById('artToday').style.display=f?'none':'';if(f)list()});
+ sync()})();
 /* 夜间模式：自动 → 夜间 → 日间 */
 (()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
  let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}

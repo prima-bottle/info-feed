@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import datetime as dt
 import hashlib
+import json
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -36,7 +37,11 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
             m["hooks"].setdefault(v.get("item_id"), v.get("hook", ""))
         arts = d.get("art") or []
         arts = [arts] if isinstance(arts, dict) else arts
-        m["art"] += [{**a, "ts": ts, "key": _key("art", date, a.get("work"))} for a in arts if a.get("work")]
+        m["art"] += [{**a, "ts": ts, "key": _key("art", date, a.get("work")),
+                      "fav_json": json.dumps({k: a.get(k) for k in ("work", "creator", "year", "image", "brief", "decisions",
+                                                                     "symbols", "takeaway", "ai_prompt", "ai_tips")},
+                                             ensure_ascii=False)}
+                     for a in arts if a.get("work")]
         m["german"] += d.get("german", [])
         m["creative"] += d.get("creative", [])
         for t in d.get("threads", []):
