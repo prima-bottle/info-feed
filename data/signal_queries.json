@@ -270,5 +270,21 @@
    "q": "EU China trade war explained",
    "lang": "en"
   }
+ },
+ "u23": {
+  "news": [
+   {
+    "q": "Polizei Gesichtsabgleich Gaza Proteste",
+    "lang": "de"
+   },
+   {
+    "q": "Berlin Baden-Württemberg Polizei Gesichtserkennung Demonstranten",
+    "lang": "de"
+   }
+  ],
+  "video": {
+   "q": "Gesichtserkennung Polizei Demonstranten Dokumentation",
+   "lang": "de"
+  }
  }
 }
