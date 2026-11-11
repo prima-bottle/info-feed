@@ -36,8 +36,7 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
             m["hooks"].setdefault(v.get("item_id"), v.get("hook", ""))
         arts = d.get("art") or []
         arts = [arts] if isinstance(arts, dict) else arts
-        if not m["art"] and any(a.get("work") for a in arts):
-            m["art"] = [{**a, "key": _key("art", date, a.get("work"))} for a in arts if a.get("work")]
+        m["art"] += [{**a, "ts": ts, "key": _key("art", date, a.get("work"))} for a in arts if a.get("work")]
         m["german"] += d.get("german", [])
         m["creative"] += d.get("creative", [])
         for t in d.get("threads", []):

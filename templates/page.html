@@ -244,8 +244,8 @@ footer details{border:0}
 
 <section class="panel" id="art">
   {% for a in m.art %}
-  <article class="card art" data-key="{{ a.key }}" data-ts="0">
-    <span class="label">今日作品 {{ loop.index }} / {{ m.art|length }}</span>
+  <article class="card art" data-key="{{ a.key }}" data-ts="{{ a.ts }}">
+    <span class="label">作品 {{ loop.index }} / {{ m.art|length }}</span>
     {% if a.image %}<img class="artimg" src="{{ a.image }}" alt="{{ a.work }}" loading="lazy">{% endif %}
     <h2>{{ a.work }}</h2>
     <div class="by">{{ a.creator }}{% if a.year %} · {{ a.year }}{% endif %}</div>

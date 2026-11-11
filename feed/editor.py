@@ -48,7 +48,7 @@ SCHEMA = """输出格式（JSON）：
   "german": [    // 从当天德语条目里挑5个实用词或表达
     {"word": "", "meaning": "", "example": "德语例句"}
   ],
-  "art": [ {     // 每期4件作品精读（数组，4个对象，字段如下），从创作者的思路出发，服务于读者用 AI 工具做海报和文化符号
+  "art": [ {     // 每期10件作品精读（数组，10个对象，字段如下），从创作者的思路出发，服务于读者用 AI 工具做海报和文化符号
     "work": "作品名（中文 + 原名）", "creator": "作者", "year": "年代",
     "wiki": "这件作品或作者在英文维基百科的条目标题，用于配图，不确定就留空",
     "brief": "创作时要解决的问题：谁委托、给谁看、在什么场合、要达到什么效果",
@@ -111,9 +111,10 @@ UPDATE_SCHEMA = """这是午间增量更新：上午的日报已经发出，下�
   "threads": [ 同上午格式，只为有新进展的主线输出，update 只写新进展 ],
   "picks": [ 0到2篇，只有真正重要或和读者直接相关时才写，格式同上 ],
   "briefs": [ 10到25条简讯，格式同上 ],
-  "videos": [ 给新视频写一句中文看点，格式同上 ]
+  "videos": [ 给新视频写一句中文看点，格式同上 ],
+  "art": [ 10件作品，格式同上 ]
 }
-午间版不要输出 art、german、creative。"""
+午间版不要输出 german、creative；art 照常输出10件新作品（格式同上），不要和已经讲过的重复。"""
 
 
 def _art(cfg: dict, art_history: list[dict], date: str) -> str:
@@ -122,10 +123,10 @@ def _art(cfg: dict, art_history: list[dict], date: str) -> str:
     if not themes:
         return ""
     week = _dt.date.fromisoformat(date).isocalendar()[1]
-    done = "；".join(f'{a["work"]}（{a["creator"]}）' for a in art_history[-40:]) or "无"
+    done = "；".join(f'{a["work"]}（{a["creator"]}）' for a in art_history[-150:]) or "无"
     return (f"## 艺术赏析\n本周主题：{themes[week % len(themes)]}\n"
             f"已经讲过的作品（不要重复）：{done}\n"
-            "挑4件真实存在、资料可靠的作品，都围绕本周主题但角度不同：不同年代或地区，至少一件当代作品（可以来自今天「艺术」板块），4件之间最好能互相对照。"
+            "挑10件真实存在、资料可靠的作品，大部分围绕本周主题，角度要分散：不同年代、地区、媒介，至少两件当代作品（可以来自今天「艺术」板块），作品之间最好能互相对照。每件讲解精炼一些，decisions 和 takeaway 各2到3条。"
             "读者是做政治与文化内容的创作者，用 AI 工具做海报和文化符号，讲解要从创作者的决策出发，少讲艺术史八卦。\n\n")
 
 
