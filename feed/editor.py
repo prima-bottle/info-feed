@@ -134,8 +134,13 @@ def edit(items: list[dict], cfg: dict, history: dict, date: str, mode: str = "fu
          likes: list[str] | None = None, art_history: list[dict] | None = None) -> dict:
     profile = os.environ.get("READER_PROFILE", "（未设置）")
     client = anthropic.Anthropic()
-    user = (f"日期：{date}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n## 长期主线\n{_threads(cfg, history)}\n\n"
-            f"## 今天的条目（每行一个 JSON）\n{_compact(items)}\n\n"
+    likes_txt = ("## 读者点过赞的内容（同类话题和来源优先入选精选和简讯，但不要因此忽略其它重要新闻）\n"
+                 + "\n".join(f"- {x}" for x in likes) + "\n\n") if likes else ""
+    user = (f"日期：{date}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n"
+            f"## 长期主线（id 以 u 开头的是读者自己点了追踪的，优先找后续，title 写成简短的中文主线名）\n{_threads(cfg, history)}\n\n"
+            + likes_txt
+            + _art(cfg, art_history or [], date)
+            + f"## 今天的条目（每行一个 JSON）\n{_compact(items)}\n\n"
             + (SCHEMA if mode == "full" else SCHEMA + "\n\n" + UPDATE_SCHEMA))
     with client.messages.stream(
         model=MODEL,
