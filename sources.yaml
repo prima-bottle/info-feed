@@ -8,6 +8,7 @@
 settings:
   max_items_per_source: 8      # 每个来源最多取几条
   max_age_hours: 36            # 只要最近多少小时内的内容
+  videos_enabled: false        # 视频抓取（YouTube、B 站、推荐视频）暂停；改成 true 即恢复
   videos_per_channel: 5        # 每个 YouTube 频道最多取几个视频
   video_age_days: 1            # 订阅的账号只要当天（最近24小时）更新的视频
   timezone: Europe/Berlin

@@ -225,7 +225,8 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
     cache_file = data_dir / "youtube_ids.json"
     cache = json.loads(cache_file.read_text()) if cache_file.exists() else {}
     shorts_groups = set(cfg.get("shorts_from", []))
-    for ch in cfg.get("youtube", []):
+    videos_on = s.get("videos_enabled", True)
+    for ch in (cfg.get("youtube", []) if videos_on else []):
         label = ch.get("name") or ch.get("handle", "").lstrip("@") or ch.get("search")
         src = {"name": label, "section": ch["section"], "stance": ch.get("note", "")}
         try:
@@ -273,7 +274,7 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
     if sq.get("videos") and rec.get("lines"):
         rec["lines"] = [{"name": "你追踪和赞过的", "queries": sq["videos"]}] + list(rec["lines"])
     ykey = os.environ.get("YOUTUBE_API_KEY", "").strip()
-    if rec.get("lines") and ykey:
+    if rec.get("lines") and ykey and videos_on:
         try:
             got = youtube_recommend(rec, ykey, set(cache.values()))
             items += got
@@ -283,14 +284,14 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
 
     b = cfg.get("bilibili", {})
     sess = os.environ.get("BILI_SESSDATA", "").strip()
-    if b.get("enabled") and sess:
+    if b.get("enabled") and sess and videos_on:
         try:
             got = fetch_bilibili(b, sess, s.get("video_age_days", 10))
             items += got
             status.append({"source": "B站关注动态", "ok": True, "count": len(got)})
         except Exception as ex:  # noqa: BLE001
             status.append({"source": "B站关注动态", "ok": False, "error": str(ex)[:160]})
-    elif b.get("enabled"):
+    elif b.get("enabled") and videos_on:
         status.append({"source": "B站关注动态", "ok": False, "error": "没有设置 BILI_SESSDATA"})
 
     return items, status

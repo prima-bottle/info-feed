@@ -19,7 +19,7 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
     date = edition["date"]
     runs = sorted(edition["runs"], key=lambda r: -r["ts"])
     titles = {t["id"]: t["title"] for t in cfg.get("threads", [])}
-    m = {"art": None, "headline": "", "picks": [], "briefs": [], "german": [], "creative": [],
+    m = {"art": [], "headline": "", "picks": [], "briefs": [], "german": [], "creative": [],
          "hooks": {}, "items": {}, "threads": {}, "status": runs[0]["status"] if runs else []}
 
     for r in runs:
@@ -34,8 +34,10 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
             m["briefs"].append({**b, "ts": ts, "key": _key("b", b.get("item_id"), b.get("text"))})
         for v in d.get("videos", []):
             m["hooks"].setdefault(v.get("item_id"), v.get("hook", ""))
-        if not m["art"] and (d.get("art") or {}).get("work"):
-            m["art"] = {**d["art"], "key": _key("art", date)}
+        arts = d.get("art") or []
+        arts = [arts] if isinstance(arts, dict) else arts
+        if not m["art"] and any(a.get("work") for a in arts):
+            m["art"] = [{**a, "key": _key("art", date, a.get("work"))} for a in arts if a.get("work")]
         m["german"] += d.get("german", [])
         m["creative"] += d.get("creative", [])
         for t in d.get("threads", []):

@@ -117,11 +117,14 @@ def main() -> int:
             return 0
         art_history = load_json(DATA / "art.json", [])
         digest = edit(items, cfg, history, date, mode, likes, art_history)
-        art = digest.get("art") or {}
-        if art.get("work"):
-            art["image"] = wiki_image(art.get("wiki", ""))
-            art_history.append({"date": date, "work": art["work"], "creator": art.get("creator", "")})
-            (DATA / "art.json").write_text(json.dumps(art_history[-200:], ensure_ascii=False, indent=1))
+        arts = digest.get("art") or []
+        arts = [arts] if isinstance(arts, dict) else arts
+        for art in arts:
+            if art.get("work"):
+                art["image"] = wiki_image(art.get("wiki", ""))
+                art_history.append({"date": date, "work": art["work"], "creator": art.get("creator", "")})
+        digest["art"] = [a for a in arts if a.get("work")]
+        (DATA / "art.json").write_text(json.dumps(art_history[-300:], ensure_ascii=False, indent=1))
         for it in items:
             seen[it["id"]] = time.time()
         (DATA / "seen.json").write_text(json.dumps(seen))

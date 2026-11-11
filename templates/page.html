@@ -139,7 +139,7 @@ footer details{border:0}
   <button class="tab" data-p="work">工作</button>
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
-  <button class="tab" data-p="video">视频</button>
+  {% if video_groups or shorts %}<button class="tab" data-p="video">视频</button>{% endif %}
   <button class="tab" data-p="art">艺术</button>
   <button class="tab" data-p="de">德语·创作</button>
 </div></nav>
@@ -243,10 +243,9 @@ footer details{border:0}
 </section>
 
 <section class="panel" id="art">
-  {% set a = m.art %}
-  {% if a %}
+  {% for a in m.art %}
   <article class="card art" data-key="{{ a.key }}" data-ts="0">
-    <span class="label">今日作品</span>
+    <span class="label">今日作品 {{ loop.index }} / {{ m.art|length }}</span>
     {% if a.image %}<img class="artimg" src="{{ a.image }}" alt="{{ a.work }}" loading="lazy">{% endif %}
     <h2>{{ a.work }}</h2>
     <div class="by">{{ a.creator }}{% if a.year %} · {{ a.year }}{% endif %}</div>
@@ -259,7 +258,7 @@ footer details{border:0}
     {{ sources(a.item_ids or []) }}
     <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search={{ (a.work ~ ' ' ~ a.creator)|urlencode }}" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
-  {% else %}<div class="end">今天的作品赏析在早间版里</div>{% endif %}
+  {% else %}<div class="end">今天的作品赏析在早间版里</div>{% endfor %}
   {% set artb = m.briefs|selectattr("section","equalto","艺术")|list %}
   {% if artb %}<h3 class="sub">设计与艺术动态</h3>
   {% for b in artb %}<a class="brief" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener"><div class="meta">{{ items[b.item_id].source if b.item_id in items else '艺术' }}</div>{{ b.text }}</a>{% endfor %}{% endif %}
