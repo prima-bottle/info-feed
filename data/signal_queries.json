@@ -1,20 +1,4 @@
 {
- "u3": {
-  "news": [
-   {
-    "q": "Serbien Medienaufsicht Informer Prva Sendeverbot",
-    "lang": "de"
-   },
-   {
-    "q": "Serbia media regulator Informer Vucic broadcast ban",
-    "lang": "en"
-   }
-  ],
-  "video": {
-   "q": "Serbien Studentenproteste Vucic Medien Propaganda",
-   "lang": "de"
-  }
- },
  "u4": {
   "news": [
    {
@@ -285,6 +269,22 @@
   "video": {
    "q": "Gesichtserkennung Polizei Demonstranten Dokumentation",
    "lang": "de"
+  }
+ },
+ "u25": {
+  "news": [
+   {
+    "q": "Spain general strike housing election",
+    "lang": "en"
+   },
+   {
+    "q": "Spain general strike unions 2026",
+    "lang": "en"
+   }
+  ],
+  "video": {
+   "q": "Spain housing crisis explained documentary",
+   "lang": "en"
   }
  }
 }

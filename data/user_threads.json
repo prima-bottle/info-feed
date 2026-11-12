@@ -1,12 +1,5 @@
 [
  {
-  "id": "u3",
-  "title": "塞尔维亚媒体监管机构对 Informer 和 Prva 的亲武契奇（Vucic）宣传节目作出强制停播处罚，这是学生名单赢",
-  "keywords": [],
-  "context": "塞尔维亚媒体监管机构对 Informer 和 Prva 的亲武契奇（Vucic）宣传节目作出强制停播处罚，这是学生名单赢得选举后最早出现的变化之一。\n来源：Tagesschau\nhttps://www.tagesschau.de/ausland/europa/serbien-medienaufsicht-strafe-100.html\n\n（来自信息台 2026-11-05。想取消就把这个 Issue 关掉。）",
-  "user": true
- },
- {
   "id": "u4",
   "title": "法国：抗议之后工会号召罢工，学生也加入",
   "keywords": [],
@@ -67,6 +60,13 @@
   "title": "柏林和巴符警方在加沙抗议之后“定期”比对面部图像（nd，只有标题）。涉及抗议者的监控与隐私。",
   "keywords": [],
   "context": "柏林和巴符警方在加沙抗议之后“定期”比对面部图像（nd，只有标题）。涉及抗议者的监控与隐私。\n来源：nd-aktuell.de\nhttps://news.google.com/rss/articles/CBMi2AFBVV95cUxNcTF3S0pFY2RJY2dpVTZ5MVBaNWpIdVFHNnVqaFpjSjc5aFRmd3ZXcDd3YWx4bkpRazAxYmExYWoyYW81X1g3Z3E3c0lHUWNMVnEtb0hGS3YwM0lLSi1uV3BXc2hWTFFoRGVRd08ta25FbG9sMU1EczktSFByRzV4YU5UbFBMQWRwcWVXMTdtcFFBTUNha0VvNzNVb0FMSlhFM2dHbHJCRlY2TS1DUC1lWmtXYXR5b3BpVV9yOFlEd2swUWxDOTlKakJkMDJ0NkRkOE5uRHlreUs?oc=5\n\n（来自信息台 2026-11-11。想取消就把这个 Issue 关掉。）",
+  "user": true
+ },
+ {
+  "id": "u25",
+  "title": "西班牙14年来首次总罢工：住房成为大选前的主题",
+  "keywords": [],
+  "context": "西班牙今天开始自14年来首次总罢工，公共交通和多个行业受到影响。Al Jazeera 写明诉求包括住房改革，时间在11月29日大选前三周。France 24 的报道把住房危机放到选举的中心位置。条目都很短，没有说明由哪些工会发起、参与人数或具体要求。\n来源：Al Jazeera\nhttps://www.aljazeera.com/news/2026/11/11/spains-first-general-strike-in-14-years-begins?traffic_source=rss\n\n（来自信息台 2026-11-11。想取消就把这个 Issue 关掉。）",
   "user": true
  }
 ]
