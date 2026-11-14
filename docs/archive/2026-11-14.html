@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="信息台">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>信息台 · 2026-11-14</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --thread:#2f5d8a; --thread-soft:#e2ecf5;
+  --chip:#efe9e0; --radius:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}}
+:root[data-theme=dark]{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{padding:20px 16px 4px;max-width:680px;margin:0 auto}
+.date{font-size:13px;color:var(--muted);letter-spacing:.04em}
+.headline{font-size:21px;font-weight:700;line-height:1.4;margin-top:4px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:680px;margin:0 auto;padding:10px 12px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:6px 14px;border-radius:999px;font-size:15px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--ink);color:var(--bg);font-weight:600}
+main{max-width:680px;margin:0 auto;padding:12px 12px 40px}
+section.panel{display:none}section.panel.on{display:block}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.label{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+.card h2{font-size:18px;line-height:1.45;margin-bottom:6px}
+.card p{font-size:15px;color:var(--ink)}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+summary{font-size:14px;color:var(--muted);cursor:pointer;list-style:none}
+summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+details p{margin-top:6px;font-size:14.5px}
+.foryou{margin-top:10px;font-size:14.5px;padding:8px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.srcs{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.src{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.thread{border-left:4px solid var(--thread)}
+.thread .label{color:var(--thread);background:var(--thread-soft)}
+.tl{margin-top:10px;padding-left:14px;border-left:2px solid var(--line)}
+.tl li{list-style:none;position:relative;font-size:14px;color:var(--muted);margin-bottom:6px}
+.tl li::before{content:"";position:absolute;left:-19px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tl li.today{color:var(--ink)}.tl li.today::before{background:var(--thread)}
+.tl b{font-weight:600;color:var(--thread);margin-right:4px}
+.persp li{list-style:none;font-size:14px;margin-top:6px}.persp b{margin-right:4px}
+.signals{margin-top:6px;font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:13.5px;padding:5px 12px;border-radius:999px;background:var(--chip);border:0;color:var(--muted);font-family:inherit;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff}
+.brief{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:15px}
+.brief .meta{font-size:12px;color:var(--muted);margin-bottom:2px}
+.vid{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.thumb{aspect-ratio:16/9;background:var(--chip) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted)}
+.vid .body{padding:12px 14px}
+.vid .t{font-weight:600;font-size:15.5px;line-height:1.45}
+.vid .h{font-size:14px;color:var(--muted);margin-top:4px}
+.shorts{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:4px}
+.shorts::-webkit-scrollbar{display:none}
+.short{flex:none;width:130px}
+.short .thumb{aspect-ratio:9/16;border-radius:12px}
+.short .t{font-size:13px;margin-top:6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+.word{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.word b{font-size:17px}.word span{color:var(--muted);font-size:14px}
+.ex{font-size:14px;color:var(--muted);font-style:italic;margin-top:4px}
+.end{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 8px}
+.end .dot{font-size:22px;display:block;margin-bottom:4px}
+footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
+footer details{border:0}
+.acts{display:flex;gap:8px;margin-top:10px}
+.act{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
+.act.done{border-color:var(--accent);color:var(--accent)}
+.brief .acts,.vid .acts{margin-top:6px}
+.thread .label .mine{margin-left:4px}
+.topline{display:flex;justify-content:space-between;align-items:center}
+.theme{font:inherit;font-size:13px;color:var(--muted);background:var(--chip);border:0;border-radius:999px;padding:4px 11px;cursor:pointer}
+.artimg{display:block;width:100%;max-height:420px;object-fit:contain;background:var(--chip);border-radius:10px;margin:4px 0 12px}
+.art h2{font-size:20px}.art .by{font-size:13.5px;color:var(--muted);margin-bottom:10px}
+.art h4{font-size:14px;margin:14px 0 4px;color:var(--accent)}
+.art ol,.art ul{padding-left:20px;font-size:14.5px}.art li{margin-bottom:6px}
+.prompt{font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;background:var(--chip);border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-word;position:relative}
+.copy{position:absolute;top:6px;right:6px;font:inherit;font-size:12px;border:0;border-radius:6px;padding:2px 8px;background:var(--card);color:var(--muted);cursor:pointer}
+.work .lv{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.lv-red{background:#d0453a}.lv-yellow{background:#d9a21b}.lv-green{background:#3f9a5c}.lv-later{background:#8a8f99}.lv-paused{background:var(--line)}
+.todo{list-style:none;margin-top:6px}.todo li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.todo li:last-child{border-bottom:0}.todo input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.todo li.done span{text-decoration:line-through;color:var(--muted)}
+.todo .tag{font-size:12px;color:var(--muted);margin-left:4px;white-space:nowrap}
+.due{display:flex;justify-content:space-between;font-size:14.5px;padding:5px 0}.due b{color:var(--accent);white-space:nowrap;margin-left:10px}
+.due.key b{color:#d0453a}
+.wstat{font-size:14.5px;margin-top:4px}.wnote{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stale{font-size:12px;color:#d0453a;margin-left:6px}
+.lock{display:flex;gap:8px;margin-top:10px}.lock input{flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.lock button{font:inherit;padding:8px 14px;border:0;border-radius:10px;background:var(--ink);color:var(--bg)}
+.wlog{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stalebar{display:none;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14.5px;align-items:center;justify-content:space-between;gap:10px}
+.stalebar button{font:inherit;font-size:14px;border:0;border-radius:999px;padding:6px 12px;background:var(--accent);color:#fff;white-space:nowrap}
+.flow{column-count:2;column-gap:8px}
+.tile{display:block;break-inside:avoid;margin-bottom:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile img{display:block;width:100%;height:auto;min-height:80px;background:var(--chip)}
+.tile .play{position:relative}.tile .play::after{content:"▶";position:absolute;right:8px;bottom:8px;font-size:12px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:3px 7px}
+.tile .tt{font-size:14px;line-height:1.4;padding:8px 9px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tile .ts{font-size:12px;color:var(--muted);padding:2px 9px 9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.favbar{display:flex;gap:6px;margin-bottom:10px}
+.favtab{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:0;background:var(--chip);color:var(--muted)}
+.favtab.on{background:var(--ink);color:var(--bg);font-weight:600}
+.art{position:relative}
+.favbtn{position:absolute;top:12px;right:12px;font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;z-index:1}
+.favbtn.on{border-color:#d9a21b;color:#d9a21b}
+.favbtn+h2{padding-right:104px}
+.favdate{font-size:12px;color:var(--muted);margin-top:8px}
+.runs{font-size:12.5px;color:var(--muted);margin-top:4px}
+.new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
+[data-key].read{opacity:.55}
+.folded{margin:14px 0 4px;border:0;padding:0}
+.folded>summary{font-size:13.5px;color:var(--muted);padding:8px 4px}
+.vgroup{margin:0;border:0;padding:0}
+.vgroup>summary{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+</style>
+<script>try{const t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body data-latest="1794656298" data-date="2026-11-14">
+<header>
+  <div class="topline"><div class="date">11月14日 周六</div><span><button class="theme" id="reload">↻ 刷新</button> <button class="theme" id="fetchNow">⤓ 抓取</button> <button class="theme" id="theme">自动</button></span></div>
+  <div class="headline">白宫确认下周四在深圳 APEC 期间举行特朗普、习近平、普京三方会谈；乌克兰称美方首次提出“让出顿巴斯换北约”；英伟达丑闻继续发酵；IG Metall 备战多年来首次 24 小时罢工。</div>
+  <div class="runs">早间 12:30</div>
+</header>
+<nav><div class="tabs" id="tabs">
+  <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="work">工作</button>
+  <button class="tab" data-p="threads">主线</button>
+  <button class="tab" data-p="briefs">简讯</button>
+  
+  <button class="tab" data-p="art">艺术</button>
+  <button class="tab" data-p="de">德语·创作</button>
+</div></nav>
+<main>
+<div class="stalebar" id="stalebar"><span id="staletext">这是旧的一期，今天的还没生成</span><button class="fetchbtn">⤓ 现在抓取</button></div>
+
+
+
+
+
+
+
+
+
+<section class="panel on" id="rec">
+  <article class="card work" id="today"><span class="label">今日安排</span>
+    <div id="todayBody"><p style="font-size:14.5px;color:var(--muted)">工作安排已加密，输入密码后这台手机会记住。</p>
+    <form class="lock" id="lockForm"><input type="password" id="lockPw" placeholder="密码" autocomplete="current-password"><button>解锁</button></form></div>
+  </article>
+  
+  <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
+</section>
+
+<section class="panel" id="work"><div id="workBody"><div class="end">先在「推荐」页最上面输入密码</div></div></section>
+
+<section class="panel" id="threads">
+  <article class="card thread" data-key="t5e658200bd" data-ts="1794656298">
+  <span class="label">主线 · 美国政治与美伊战争<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>白宫周五确认：特朗普访华行程将以与习近平、普京的首次三方会面收尾，在深圳 APEC 期间，时间为下周四；特朗普想谈“削减核武”（BBC、DW、SCMP、HKFP）。</li><li class="today"><b>今天</b>泽连斯基说，美方谈判代表首次提出“乌克兰让出顿巴斯、换取北约成员资格”，他重申乌克兰不愿撤军（BBC、France 24、Le Monde、Spiegel）。FAZ 直播栏的标题称有五国将代表欧洲参加谈判；大公文汇则说欧洲五国入席后“前景难料”。</li><li class="today"><b>今天</b>BBC 的罗森伯格（Rosenberg）分析：欧洲安全问题现在被放上谈判桌，莫斯科视之为胜利，普京在抬高要价。Meduza 转述 Bild：俄方在非正式会谈中要求芬兰退出北约，莫斯科否认，赫尔辛基愤怒。TASS 转述泽连斯基：乌克兰不会把中立地位写进宪法。</li><li class="today"><b>今天</b>英伟达事件继续：Le Monde 引《纽约时报》称，特朗普早在 5 月就被告知黄仁勋与涉嫌间谍的中国女子的关系带来风险；France 24 引《金融时报》称英伟达已接触 Arm 的 CEO 勒内·哈斯（Rene Haas）物色继任者，部分员工希望黄仁勋回来。HKFP 引 AFP：新加坡的 Megaspeed 公司办公室是空壳。法广标题说丑闻在撕开特朗普政府表面的团结。</li><li class="today"><b>今天</b>Al Jazeera：卡塔尔与土耳其签署共同防御条约，分析人士称，在美伊战争背景下，它旨在威慑而非组建进攻同盟。Le Monde：伊朗与俄罗斯走得更近，里海成了贸易与军事往来的战略轴线，但受限于俄方承诺的限度。</li><li class="today"><b>今天</b>taz：特朗普赴深圳之前，中国在台湾附近举行了规模“空前”的军演，被称作“安静的恐吓”。Tagesschau、Al Jazeera：美国民主党胜选后，一支 1000 多人的移民大篷车从墨西哥出发北上。</li>
+    <li><b>11-13</b>黄仁勋（Jensen Huang）辞职的余波进了白宫：Tagesschau 称媒体报道特朗普两次被告知黄仁勋与涉嫌中国间谍的女子有染，特朗普否认知情；El País 则称他曾打电话劝黄仁勋顶住。SCMP 说白宫在讨论是否让商务部长卢特尼克（Lutnick）下台。；伊朗革命卫队（IRGC）称击中了美军在巴林的雷达站，说是报复「敌方」对霍尔木兹甘省（Hormozgan）一座通信塔的空袭（Al Jazeera）。这是伊朗单方说法，条目里没有美方确认。；TASS 转述特朗普：应地区国家请求，美国没有对伊朗采取更严厉措施，否则本可以更进一步。TASS 另称美军中央司令部（CENTCOM）否认曾指示以色列备战对伊战争，称相关报道「纯属猜测」，这对应昨天以色列安全内阁加紧备战的说法。；乌克兰线：库什纳（Kushner）和威特科夫（Witkoff）从莫斯科飞抵都柏林见泽连斯基，称下一轮俄乌谈判欧洲将参加（Tagesschau、SZ、BBC、France 24）。Le Monde 指出莫斯科尚未明确同意，两人带回的新东西很少。；美国国内：民主党参议员范霍伦（Chris Van Hollen）宣布竞选参议院民主党领袖，挑战舒默（Schumer）（Al Jazeera）。特朗普威胁，若墨西哥不收紧边境，就把对墨关税翻倍（Le Monde、El País）。Al Jazeera 称特朗普暗示可能在卸任前对古巴动手。FAZ 直播栏说美国政府宣称一年内遣返近五十万人，并缩减与韩国的军演。；中美：HKFP 称特朗普说中国对黎智英（Jimmy Lai）怀有「极深的恨意」，不大可能放人。SCMP 的评论在说下周深圳 APEC 峰会上习近平和特朗普有哪些「容易摘的果子」。；特朗普公开训斥副总统万斯（Vance）。FAZ 说万斯想结束对伊战争，特朗普不同意。Al Jazeera 的分析把这件事放进美伊「不战不和」的局面，标题引了特朗普的「无需达成协议」。这与昨天 TASS 转述 WSJ 的说法（万斯曾致信伊朗官员）相呼应，但那条没有其他来源印证。；伊拉克外长福阿德·侯赛因（Fuad Hussein）对 France 24 说，美伊「不战不和」的状态「不能继续」。他还说，美国要求关闭伊朗边境除两处之外的所有口岸，「不可能」做到。；黄仁勋（Huang）事件进入国会阶段：参议院银行委员会传唤黄仁勋和商务部长卢特尼克（Lutnick），称不出席可能面临法律行动（Al Jazeera、DW）。Le Monde 说，先进芯片出口管制成了国会的关注中心。El País 说民主党议员在追问他与特朗普的关系。；Guardian 写卢特尼克「面临下台压力」：有警告称那名涉嫌间谍的女子与黄仁勋有关联，同时 Megaspeed 迟迟没被列入贸易黑名单。大公文汇的标题称特朗普说库克是执掌英伟达的「好候选人」，条目没写全名，也没说是谁提出的人选。；HN 转 Forbes：消息人士称黄仁勋与另一名员工也有关系。FAZ 转述 Bloomberg，他在最后几小时骂自己「Stück Sch...」。这些都是匿名消息源或二手转述。；乌克兰线：库什纳（Kushner）见过普京后「谨慎乐观」，DW 说普京想让欧洲人参与谈判，并有大规模换俘的迹象。France 24 的标题则说普京在核心要求上寸步不让。Le Monde 直播引欧盟外交负责人卡拉斯（Kallas）：先把停火放第一位，谈俄方要的「安全架构」就是落入陷阱。taz 问都柏林非正式欧盟峰会上「谁来代表欧洲」。；TASS 引莫斯科大学学者马斯洛夫（Maslov）：深圳的中美俄三方峰会可能为新世界秩序打基础，这是俄方学者的解读。；美国国内：ICE 称一年内遣返近五十万人，Tagesschau 提到数据透明度受质疑。El País 称约 1500 名移民组成的大篷车正徒步穿越墨西哥，特朗普再次威胁把对墨关税翻倍。</li><li><b>11-12</b>伊朗首席谈判代表对 Al Jazeera 说“球在美国一边”，要美方回应伊朗在最新一轮和谈中的立场。；Al Jazeera 引以色列媒体称，以色列安全内阁已命令军方加紧准备可能对伊朗的袭击，伊朗警告会扩大报复。受命组阁的艾森科特（Gadi Eisenkot）则对内塔尼亚胡（Netanyahu）说，新政府上任前不要做有风险的军事决定（Spiegel）。；TASS 转引 WSJ：特朗普不反对万斯（Vance）重启与伊朗的接触，万斯十月曾致信伊朗最高国家安全委员会秘书礼萨伊（Rezaei），提议会面。这是单一来源经俄方转述，其他媒体今天没有印证。；美国国内：Spiegel 说白宫在民主党调查开始前就在用强硬措辞恐吓对方。Le Monde 说民主党准备展开全方位调查，涉及总统个人敛财、ICE 滥权和爱泼斯坦案后续，风险是政府拒绝配合。；TASS 称，弹劾赫格塞思（Hegseth）失败暴露了民主党内的分歧。议员文森特·冈萨雷斯（Vicente Gonzalez）对 WSJ 说，不少民主党人对同僚在表决时缺席感到失望。；民主党在密西西比州拿下参议院席位：斯科特·科洛姆（Scott Colom）击败共和党的海德-史密斯（Hyde-Smith），1月起民主党至少有55席（Tagesschau、FAZ、BBC、France 24）。Spiegel 说他靠挨家挨户拉票和一支走红的竞选视频，还有特朗普“不情愿的帮忙”。；中美：SCMP 和 TASS 说，鲁比奥（Rubio）与王毅通话，谈到下周可能的中美俄三方领导人会谈，要谈和平与无核化。财新转述的中方通稿只写“相互支持办好 APEC 领导人会议和 G20 峰会”。SCMP 说深圳 APEC 峰会定在11月18、19日，将有中美领导人会面。；Le Monde 的播客报道：深陷对美以战争的伊朗，经济在崩溃，民众已疲惫不堪。；Spiegel 分析认为，民主党在中期选举后的第一件大事（弹劾国防部长赫格塞思，Hegseth）搞砸了，原因暴露了党内的领导混乱。WSWS 则说民主党「救了」赫格塞思，反映出两党对特朗普的某种默契。；密西西比州的斯科特·科洛姆（Scott Colom）胜选获更多报道：DW 称这是 40 多年来首个赢得该州参议院席位的民主党人。他是该州首位黑人参议员，不过各家给的年数不一：nd 写 145 年，L&#39;Humanité 写 146 年，Al Jazeera 说「自 1800 年代以来」。nd 说他动员了很多非选民，L&#39;Humanité 说他有桑德斯（Sanders）支持，竞选主打医疗和食品援助。；中美俄三方峰会的讨论升温：SCMP 称美方确认存在这种可能，特朗普下周启程亚洲行。Le Monde 专栏写这场会「要么象征 21 世纪多极化，要么是自由国际秩序的送葬者聚会」。HKFP 担心重演「雅尔塔」式瓜分，乌克兰、欧洲和台湾可能被边缘化。；乌克兰线：阿布扎比三方会谈无果收场。DW 说只谈成了战俘交换。SZ 评论称「普京现在知道特朗普已在他口袋里」。Meduza 引 RBC-Ukraine 的消息源称，俄方在第二天拒绝谈停火、领土、能源和黑海安全，只想谈欧洲安全架构。美国特使库什纳（Kushner）和威特科夫（Witkoff）在莫斯科见了普京，随后要去都柏林见泽连斯基。；大公文汇的标题称伊朗说两艘油轮在霍尔木兹海峡爆炸并停航。条目只有标题，可能就是 11 月 8 日 Tagesschau 记录的「两艘货船起火」，无法确认。</li>
+  </ul>
+  <div class="foryou">欧洲安全架构怎么谈，直接牵动德国的国防开支、兵役争论和年轻人的抗议。你做政治和历史视频，下周的深圳会谈本身就是现成选题。英伟达的领导层动荡短期不会改变你手里 5060 Ti 的使用，但出口管制和供应链新闻值得持续看。</div>
+  <details><summary>更早 8 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-11</b>众议院共和党人挡下了弹劾国防部长赫格塞思（Hegseth）的动议。Tagesschau 说他们几乎一致投反对票；El País 给出的数字是 211 比 204，议案被转交委员会，等于搁置。；BBC 加了一句“暂时如此”：民主党明年可以再提。特朗普称赞赫格塞思是“伟大的爱国者”。TASS 转述他指责民主党“滥用国家”，并说“在委内瑞拉和伊朗的胜利”证明了赫格塞思无过。；France 24：吉姆·乔丹（Jim Jordan）以 106 比 73 击败斯卡利斯（Scalise），当选众议院共和党领袖，接替约翰逊（Mike Johnson）。共和党这次同时丢了参众两院。；美国司法部起诉三名被指受伊朗指使的人，指控他们策划包括 9 月英国 RAF Fairford 空军基地事件在内的多起袭击（BBC、France 24）。法国则召见伊朗大使，指伊朗是 10 月攻击超市冷柜系统的幕后黑手（DW）。以上目前都是美国和法国官方的指控，条目里没有伊朗的回应。；teleSUR 的标题称，德黑兰要求先完全解除制裁再谈和平。条目只有标题。Al Jazeera 报道伊朗开设了首个全女性军训营，理由是担心美国再次攻击。；特朗普的“凯旋门”计划又遭阻力：肯尼迪家族（九名成员）加入诉讼，担心这座 250 英尺的建筑遮蔽 JFK 墓和长明火（Spiegel、BBC、Al Jazeera）。；RFI 说特朗普再次指责中期选举有舞弊。Tagesschau 说 DAX 本来几乎收复了周五“AI 崩盘”的跌幅，但“英伟达事件”的新细节让涨势受阻。；美国司法部起诉三名被指受伊朗指使的男子。SZ 写明，他们涉及近二十起袭击和未遂袭击，目标包括欧洲和美国的犹太社区，也包括英国 Fairford 空军基地的未遂袭击（Tagesschau、SZ）。；DW、nd、taz 都确认，共和党在初始阶段就挡下了弹劾赫格塞思（Hegseth）的动议，特朗普“非常高兴”。这与上午的报道一致，没有新数字。；伊朗一侧：TASS 转述伊朗最高国家安全委员会秘书穆赫辛·礼萨伊（Mohsen Rezaei）的话，称浓缩铀是伊朗的“国家资产”，只供国内使用，伊朗无意放弃。这是单一的伊朗官方说法，经俄方转述。；市场：Tagesschau 称 DAX 周中重新“冲击纪录”，科技板块恢复信心，西门子能源（Siemens Energy）业绩亮眼。上午说“英伟达事件”的细节让涨势受阻，下午的报道语气更乐观。；Al Jazeera：美国财长贝森特（Bessent）据报因“伊朗威胁”被转移到军事基地。伊朗据说在一张照片公开后，定位到了他在华盛顿价值1250万美元的住宅。这是该报的转述，条目里没有美方或伊朗方面的正式表态。；俄乌在美国斡旋下的阿布扎比谈判进入第二天（France 24 引乌方首席谈判代表乌梅罗夫（Umerov））。TASS 转述佩斯科夫（Peskov）：俄方代表团随时向普京通报三方谈判进展。TASS 还说，普京和卢卡申科周二谈到了这场谈判。；TASS 转述俄外交部官员德罗比宁（Drobinin）：欧亚安全架构应建立在“平等且不可分割的安全”原则上。条目只有标题和一句摘要。</li><li><b>11-10</b>马西（Thomas Massie）提出的弹劾赫格塞思（Hegseth）动议共八条条款，France 24 称众议院本周预计表决；Spiegel 说这是在逼共和党人做“忠诚度测试”。；SZ 的分析文章《堕落的战争部长》列出对赫格塞思的指控：未经授权的伊朗战争、不当杀戮、滥用权力，并称他的去留可能在 1 月前见分晓。；BBC：特朗普说美国再袭击伊朗“极不可能”，称目前是“维持现状”，但仍“子弹上膛”，一旦中东局势变化随时可动。这与上周“可能要摧毁剩下的部分”的说法不同。；Spiegel：特朗普与 UFC 老板达纳·怀特（Dana White）在白宫一起面对媒体，拿这几天白宫发言人职位的来回打趣，条目没说怀特是否接任。；Al Jazeera 的民调：美国人支持主战候选人的可能性比反战者低三分之一（约 3 比 1），多数人认为“避免物价上涨”比实现特朗普在伊朗的军事目标更重要。；法国外长巴罗（Barrot）周一指控伊朗革命卫队是 10 月攻击法国超市冷柜的幕后黑手，称伊朗将承担后果（France 24）。；七国集团（G7）外长在巴黎首次于中期选举后聚会，欧洲代表担心特朗普为求外交胜利，不加保留地接受克里姆林宫的说法（Le Monde）。；FAZ 早报（Frühdenker）以「赫格塞思（Hegseth）如何应对弹劾程序」为题，同时提到俄乌正与美国谈论可能的结束战争方案。；Al Jazeera：欧洲外交官在巴黎 G7 外长会议上向鲁比奥（Rubio）施压，要求在美国斡旋的俄乌谈判中拥有一席之位。该谈判随后在阿布扎比举行。</li><li><b>11-09</b>特朗普周日宣称要「卷土重来」。民主党新领导层誓言追究政府责任，司法部长则承诺保护官员免于被起诉（France 24）。；特朗普改口，说此前的遣返移民政策「太严厉」（FAZ 直播栏、Le Monde）。Le Monde 指出他没有宣布任何具体措施，只是语气松动。；白宫新闻秘书人选风波：特朗普说请 UFC 老板达纳·怀特（Dana White）当发言人「只是个玩笑」，但周一仍会在华盛顿与怀特见面（SZ、Le Monde、Al Jazeera）。Le Monde 补充说，这个职位自 10 月 16 日凯蒂·扎卡里亚（Katie Zacharia）干了五天被解职后一直空缺。；国务卿鲁比奥（Rubio）说对伊战争不得人心，但为阻止核威胁「有必要」，还称伊朗的谈判条件「荒唐、不现实」（Al Jazeera）。TASS 转述特朗普的话：若不是中期选举，美伊本来已签协议，他仍有信心谈成。；TASS 引伊朗法尔斯通讯社（Fars）称，美国打击了伊朗的格什姆岛（Qeshm），重要设施未受损，目标在居民区之外。这是伊朗一方、经俄方转述的单一说法，今天条目里没有西方媒体证实。；G7 外长会议在巴黎召开，欧洲想就乌克兰和平与可能的新一轮对伊打击向美方施压。鲁比奥这次两天都出席，3 月那次只来一天（France 24）。Le Monde 称，鲁比奥说战后乌克兰「安全架构」有进展，俄乌在美国斡旋下的谈判定于周二、周三在阿布扎比举行。；也门胡塞武装（Houthis）再次袭击，沙特首都利雅得的阿美塔楼（Aramco Tower）受损，BBC Verify 核实了画面。条目没有把这次袭击和美伊战争直接联系起来。；BBC 报道伊朗处决三名一月抗议活动的参与者，罪名是「武装骚乱」，与 Spiegel 11 月 8 日的报道对应。；亚洲股市在上周科技股暴跌后反弹（Al Jazeera）。；Tagesschau、BBC 报道特朗普说向 UFC 老板怀特（Dana White）提出的白宫发言人职位是“玩笑”。Spiegel 另写了一篇，分析怀特多年来对特朗普的政治角色。；Tagesschau 的市场报道称，DAX 收回周五“AI 崩盘”的一部分跌幅，但投资者仍回避风险；出口数据好于预期，给了支撑。；端传媒的标题把亚洲市场联系起来：期中选举引爆 AI 股崩跌，从华尔街到台积电。条目只有标题。；中央社的节目标题称，赫格塞思（Hegseth）可能遭民主党弹劾，特朗普出面力挺。条目只有标题，没有细节。；taz 的中东快讯称，特朗普要与卡塔尔代表谈伊朗冲突。；Hyperallergic 写到，华盛顿有抗议者嘲讽特朗普的“凯旋门”（Arc de Trump）。这与上午法官下令暂停凯旋门工程是同一条线。；SCMP 称，多架美军大型运输机周末降落深圳，被普遍视为在为美国总统出席深圳峰会做准备。；共和党众议员托马斯·马西（Thomas Massie，肯塔基州）周一动议，要在众议院强制就弹劾国防部长赫格塞思（Hegseth）表决（Tagesschau、Spiegel、SZ、BBC、France 24、Le Monde、Zeit、FAZ直播栏都报了）。；Spiegel 写到，理由之一是赫格塞思未经授权下令攻击伊朗。Le Monde 说马西同时批评这场伊朗战争本身和指挥方式。；BBC 认为这个动议大概率会失败，真正用意是在民主党发起自己的弹劾之前，逼特朗普先把赫格塞思换掉。SZ 称马西是即将离任的议员。；特朗普周一在 Truth Social 上质疑期中选举的公正性，没有给出证据（BBC、Spiegel、SZ、Al Jazeera）。Spiegel 的措辞是，他认输之后的“醒悟期”显然结束了。舒默（Schumer）批评这是毫无根据的老调重弹。；TASS 转述特朗普：必要时美国准备再次打击伊朗，卡塔尔和沙特更希望和平解决。；TASS 引一家电视台称，若达成协议，美国将解冻最多 90 亿美元伊朗资产，同时开放霍尔木兹海峡、立即解除海上封锁。这是单一来源，条目没说是哪家电视台，其他媒体今天没有印证。；埃及外长对 France 24 说，“我们认为”美伊双方都想谈，但需要一份“具体协议”防止再次升级。；SCMP 引分析人士称，特朗普提过由中美俄三方峰会来促成伊朗战争的收场。这是分析人士的解读，不是官方宣布。；Spiegel 称，特朗普说乌克兰在与俄罗斯达成协议后会有“稍微不同的形态”，欧洲人因此警觉；外长瓦德富尔（Wadephul）已与国务卿鲁比奥（Rubio）通话，后者的回答仍然含糊。；相关事件：法国指控伊朗革命卫队（IRGC）的网络部队 Shahid Kaveh 是 10 月攻击法国超市冷柜的幕后黑手（见简讯），这是伊朗战争在欧洲社会层面的一个新侧面。</li><li><b>11-08</b>美军在阿曼湾向一艘被指违反美国海上封锁的货船开火并使其丧失行动能力，该船悬挂圣基茨和尼维斯旗（Tagesschau、Al Jazeera、ms-aktuell）。；伊朗同时称有两艘货船在霍尔木兹海峡起火（Tagesschau）。条目没说起火原因，也不清楚是否就是 11 月 5 日说的那两艘油轮。；BBC：美国悬赏 2000 万美元征集伊朗核计划的情报，并提到特朗普多次提出再次打击伊朗核设施。；FAZ 直播栏标题：特朗普让司法部盯上民主党人，并缩减与韩国的军演。条目只有标题，没有细节。；特朗普提出请 UFC 老板达纳·怀特（Dana White）当白宫新闻秘书（France 24、El País）。据 CNN，怀特拒绝；据 TMZ，两人下周会面再谈。；中美：SCMP 说中国又将迎来一位「跛脚鸭」美国总统，场合是深圳的多边峰会。HKFP 称，美国财长贝森特（Bessent）和贸易代表格里尔（Greer）周五与中方通话，称会谈「坦率」，双方领导人本月在中国举行的亚太峰会上要见面。；德国评论：Spiegel 周日版说「苍白的特朗普」，FAZ 认为美国选举结果「远不是向左的风向转变」，联盟党低估了「可负担性」议题。；L&#39;Humanité：里奥格兰德河谷的拉美裔选民在中期选举中大量离开共和党，有受访者说特朗普「也许是种族主义者，但他谈到了生活成本」。；Spiegel：伊朗处决了三名一月抗议活动的参与者，人权组织说没有可信证据，处决也被当作震慑手段。；特朗普提名 UFC 老板达纳·怀特（Dana White）当白宫新闻秘书，新来源进一步印证：Tagesschau 说这个提议“引发猜测”，还问是不是有误会；Zeit 的标题写“怀特将与特朗普会面”；香港01 转述美媒说怀特已拒绝。；taz 补充：白宫发言人的位置自 10 月中旬起一直空缺，这次是想用“老朋友”来填。；El País 分析：特朗普虽败选，但在外交上仍然有权力、也难以预测；提名斯蒂芬·米勒（Stephen Miller）出任幕僚长，说明他不容许党内对败选做反思。；El País 另有两篇：民主党参议员乔恩·奥索夫（Jon Ossoff）被博彩公司看作 2028 年民主党总统候选人的热门；一批少数族裔新生代民主党候选人放弃身份政治议题、转向选民的实际问题，并且赢了。；Al Jazeera：民主党拿下国会可能增强乌克兰对俄的筹码，但乌克兰仍面对特朗普和平努力与军援的不确定。；L&#39;Humanité 称民主党胜利之大，让特朗普“无法质疑结果”，并提醒民主党需要拿出“比回到常态更多的东西”。</li><li><b>11-07</b>特朗普在败选三天后让斯蒂芬·米勒（Stephen Miller）接替苏西·怀尔斯（Susie Wiles）出任白宫幕僚长（DW、SZ、FAZ、taz、BBC 都报了）。；美国司法部放弃了指控加州「故意向非公民发放选票」的官司（SZ、FAZ 直播栏）。；对伊朗：WSWS 引福克斯新闻称，特朗普周四召集国安团队讨论再次打击伊朗，并提到有人猜测 11 月 9 日会动手。这是单一来源转述，其他媒体今天没有印证。Al Jazeera 的标题说特朗普发出的信号前后矛盾。卡塔尔首相说美方愿意寻求结束战争的办法（Al Jazeera）。；市场：BBC 说 AI 概念股在市值蒸发数万亿美元后反弹，此前抛售的部分原因是担心民主党获胜会拖慢 AI 发展。Le Monde 说纳斯达克因民主党大胜而急跌。；民主党的打算：Le Monde 称他们要拿五角大楼预算和「金穹」导弹防御项目开刀，France 24 说他们的优先事项是生活成本、调查腐败和加强对 ICE（移民与海关执法局）的监督。；DW 报道伊朗民众在矛盾信息和「可能遭核攻击」的传言中生活。；FAZ 的金融专栏称，特朗普的 meme 币在中期选举后“几乎跌到谷底”。这是选举之后市场对特朗普相关资产信心下降的又一个侧面，条目只有摘要，没有具体跌幅。；SCMP 引美中关系全国委员会（NCUSCR）主席斯蒂芬·奥林斯（Stephen Orlins）的话：国防部长赫格塞思（Hegseth）和太平洋司令部司令帕帕罗（Paparo）上将可能“很快”访华。这只是一位资深观察人士的转述，不是官方宣布。</li><li><b>11-06</b>国防部长赫格塞思（Hegseth）成了共和党败选后的头号“替罪羊”候选。他发视频说自己“不会退缩”，弹劾“不会奏效”，还称新国会是“跛脚鸭”（SCMP、Spiegel）。；白宫否认赫格塞思和国务卿鲁比奥（Rubio）要离职（BBC）。鲁比奥对《纽约时报》说会干到特朗普任期结束（France 24、TASS）。TASS 的标题称他表示愿意支持万斯竞选总统。；特朗普对伊朗说美国可能要“摧毁”剩下的部分，“很快就会知道”（Al Jazeera）。TASS 转述他强调自己不愿这样做，并说美方很快决定是否“更进一步”。FAZ 的直播栏说军方在为新的战斗做准备。；特朗普此前接受了选举结果，现在又称选举“被操纵”，没有给出证据（Le Monde 直播）。；TASS 转引报道：民主党人想先为调查特朗普和马斯克打好法律基础，再谈重启弹劾。；美股科技股大跌，Nasdaq 100 下跌约6%，特斯拉跌11%，SpaceX 跌9%。FAZ 的解释是选后担心对 AI 的监管，BBC 说是担心数据中心和 AI 行业受到更严格审查。；特朗普签署行政令，阻止未来的总统改动椭圆形办公室（BBC）。Spiegel 报道，美国政府在战争期间仍坚持把伊朗人遣返回伊朗，联邦法院对此措辞严厉。；联邦法官塔尼娅·查特金（Tanya Chutkan）在周四夜到周五凌晨下令暂停特朗普要建的 76 米高“凯旋门”。此前首都规划委员会刚刚批准了这个项目（Le Monde）。；Al Jazeera：特朗普签署公告，把椭圆形办公室宣布为“国家纪念碑”，这是他败选后一周内第三场翻修项目活动。上午 BBC 报道的“阻止后任总统改动椭圆形办公室”的行政令，很可能说的是同一件事，条目没有明说。；民主党内部：杰弗里斯（Jeffries）和舒默（Schumer）被看作未来的众议院议长和参议院多数党领袖，但都有人质疑他们。两人已经在拟定新国会的优先事项（Le Monde）。；伊拉克：总理扎伊迪（al-Zaidi）与特朗普通了电话（Al Jazeera）。伊拉克外长称，伊拉克会尽力避免被拖入冲突，民主党获胜也不能保证中东和平（TASS）。Al Jazeera 写到，伊拉克外交部门在劝武装团体不要参与伊朗对美国袭击的报复。；普京接见了伊朗安全部长，谈到修建输气管道，据称俄方还答应提供军备（Spiegel）。；科技股抛售扩散：Tagesschau 称芯片和科技股全球抛售，首尔一度暂停交易，美国是2020年以来最严重的一次下挫；DAX 跌回 26000 点以下。；SZ 称 Nasdaq 迎来一年半来最差的一天，Tesla、Nvidia 等大跌，并把原因和民主党的中期选举胜利联系起来。Guardian 报道，欧洲股市随之下挫，伦敦 FTSE 跌 1.5%，市场担心 AI 行业放缓。Al Jazeera 称亚洲交易日抛售继续，起因是对美国数据中心扩建和 AI 监管的担忧。；法官下令暂停特朗普的“凯旋门”工程，期限14天（Al Jazeera）。SZ 补充了椭圆形办公室的细节：特朗普在墙上装了大量金色装饰，他想用“国家纪念碑”的名义，让继任者更难改动。；Tagesschau 写到，共和党在败选后争论党的未来路线：错误分析、互相指责和个人的“竞选演说”很难分清。；BBC 称，卫星图像显示 11 月伊朗导弹基地附近有挖掘和新建筑施工。条目只有标题和一句摘要，没有更多细节。；TASS 的新闻评论摘要标题称，欧盟想在和谈中争取一个角色，华盛顿内部在伊朗战略上的分歧加深。只有标题。</li><li><b>11-05</b>万斯（Vance）说共和党败选的原因是伊朗战争（Tagesschau）。BBC 称这是近年来现任副总统与总统最尖锐的一次决裂。Le Monde 指出他在为 2028 年总统提名铺路。；Spiegel 报道，特朗普说他以后仍会同样行事，党内则传出更尖锐的批评。；SCMP 称，新国会 1 月开幕后民主党将同时掌握两院，可以阻挡特朗普的立法、质询战争开支。BBC 提醒：民主党能通过法案，但特朗普仍有否决权。阿拉斯加和密西西比两个参议院席位仍在计票（Al Jazeera）。；TASS 转引一家美国报纸（原文未点名）称，白宫内部对选后伊朗政策没有共识，有官员在劝特朗普再次发动打击。；韩国计划把海军反海盗部队的行动范围扩大到距霍尔木兹海峡约 650 公里处，需经国会批准（Guardian）。France 24 说韩国将派巡逻机和排爆小组，但排除军事介入。Guardian 称这是在特朗普批评其对伊战争支持不足之后。；乌克兰对美国转向持谨慎乐观，但怀疑变化会来得很快（Tagesschau）。泽连斯基（Zelensky）与美方特使威特科夫（Witkoff）、库什纳（Kushner）通了电话（Le Monde）。；华尔街收涨，市场预期华盛顿将陷入僵局（Le Monde）。；Al Jazeera：万斯把中期选举惨败归咎于伊朗战争，民主党准备用国会权力约束这场战争。；FAZ 英文版总结败因：伊朗战争、油价和特朗普的误判。FAZ 德文版另一篇写道，特朗普许诺花钱、马斯克砸了数百万美元，选民没有被收买，“怕社会主义”的攻势也没奏效。；Le Monde 直播：共和党参议员特德·克鲁兹（Ted Cruz）称这是“蓝色海啸、一场惨败”。民主党人詹姆斯·塔拉里科（James Talarico）在得州击败共和党人肯·帕克斯顿（Ken Paxton），拿下参议院席位。；FAZ 直播栏的标题称，有共和党人要求弹劾国防部长赫格塞思（Hegseth），特朗普还缩减了与韩国的军演。目前只有标题，没有细节。；TASS 转引 Axios：中情局局长和财政部长在劝特朗普维持对伊朗的封锁，目的是逼伊朗按美方条件谈判。这和上午 TASS 转引的“有官员劝再次打击”并不一致。；美国财政部制裁了被指协助伊朗的印度和土耳其公司。据 Al Jazeera，一对印度夫妇为伊朗油轮伪造圭亚那、老挝等国的船舶注册（Al Jazeera）。；克里姆林宫发言人佩斯科夫（Peskov）说，特朗普会继续行使总统权力，其余是美国内政（TASS）。Le Monde 评论认为，欧洲人不该指望特朗普败选带来变化，他还有两年时间塑造美国外交，华盛顿仍会优先本国利益。；DAX 创历史新高，Tagesschau 称驱动因素包括中期选举后的乐观情绪、油价下降和工业数据向好。；霍尔木兹海峡：据伊朗说法，两艘油轮起火。Tagesschau 写到，德黑兰自开战以来基本封锁海峡，但仍不断有油轮冒险通过。起火原因条目里没说。；油价继续下跌，汽油变便宜，柴油仍然贵，DAX 创历史新高。Tagesschau 称投资者指望中期选举后伊朗战事缓和，但局势依然紧张。；国会权力的边界：Al Jazeera 指出，民主党赢了席位，但没有三分之二多数，推翻不了总统否决。另一篇写道，民主党可在众议院通过弹劾赫格塞思（Hegseth）的条款，但参议院需要共和党人支持。；共和党内部：FAZ 称保守派媒体也开始指责特朗普，标题是“Schuld hat Trump, ihr Idioten”（罪魁是特朗普，你们这些白痴），特朗普大发脾气。；伊朗反应：DW 称德黑兰领导层既有“满足”也有怀疑，不指望华盛顿改变路线；也有人把民主党的胜利看作反战信号。；押注落空：France 24 称马斯克投入超过 4.4 亿美元支持共和党，结果落空。El País 称民主党获胜后，特斯拉和 SpaceX 的市值合计蒸发 1110 亿（原文未标币种）。</li><li><b>11-04</b>El País 报道，共和党人在寻找败选的责任人，却没人敢点特朗普的名。特朗普把败选责任推给伊朗，同时在炫耀白宫宴会厅的施工进度。；El País 还写到，特朗普在考虑否决对手的法案，民主党新多数派则打算调查政府成员。；Zeit 的标题称万斯在选举惨败后与特朗普拉开距离。Spiegel 说特朗普对副总统万斯的表态“含糊其辞”。；伊朗最高领袖哈梅内伊（Khamenei）表示，美国大选结果不会改变其对伊政策（teleSUR 标题）。Al Jazeera 在问美国会不会恢复对伊朗的袭击，称德黑兰已备好“最大威慑”方案。；TASS 引用一位前美国驻沙特大使的话：特朗普不必顾虑选举后果，可以改善对俄关系，但也有他做出“不理智、破坏性”举动来重树权威的危险。</li></ul>
+    <p>11 月 12 日中美俄三方峰会还只是“讨论升温”（SCMP 说美方确认有这种可能），今天白宫正式确认。乌克兰线承接 11 月 13 日库什纳（Kushner）和威特科夫（Witkoff）见普京、飞都柏林见泽连斯基的行程，泽连斯基今天披露了美方带来的新方案。英伟达线承接 11 月 13 日黄仁勋辞职、参议院银行委员会传唤他和卢特尼克（Lutnick）。</p>
+    <ul class="persp"><li><b>BBC World</b>三方会面以“削减核武”为官方议题；罗森伯格的分析强调莫斯科把欧洲安全议题入桌当作胜利、普京在加码。</li><li><b>Le Monde</b>把顿巴斯换北约放在泽连斯基的话里报道，同时关注英伟达事件如何变成特朗普的政治危机，并点出他“不作为”。</li><li><b>taz</b>把中国在台湾附近的军演框成特朗普到访前的“安静的恐吓”，措辞带明确的安全忧虑。</li><li><b>法广 RFI 香港</b>标题把英伟达丑闻读成特朗普政府内部的裂缝，只有标题，细节看不到。</li><li><b>大公文汇</b>只写“欧洲五国要入席，前景难料”，没有展开，偏向淡化欧洲角色的口吻（仅凭标题判断）。</li></ul>
+    <p><b>研判：</b>研判：泽连斯基已拒绝撤军，俄方又在抬价，“顿巴斯换北约”短期内很难被任何一方接受。深圳三方会谈更可能产出核军控或“对话继续”的表态，而不是乌克兰或伊朗的实质方案。英伟达事件的政治成本会在国会听证时继续放大。</p>
+    <p class="signals">观察信号：莫斯科和基辅对“顿巴斯换北约”是否正式回应 · 欧洲五国的名单和在谈判中的实际席位 · 深圳会谈的议程是否包含乌克兰、伊朗、台湾 · 参议院银行委员会传唤黄仁勋和卢特尼克的结果</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.dw.com/de/weißes-haus-kündigt-dreiertreffen-trumps-mit-xi-und-putin-an/a-79946925?maca=de-rss-de-all-1119-rdf" target="_blank" rel="noopener">DW ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/ckz74jzpy18do?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://www.scmp.com/news/china/diplomacy/article/3374415/white-house-confirms-us-china-russia-trilateral-apec-sidelines" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://hongkongfp.com/2026/11/14/trump-xi-putin-to-hold-historic-meeting-in-china-white-house/" target="_blank" rel="noopener">Hong Kong Free Press ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/cwvg2l312ylqo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://www.france24.com/en/europe/20261114-us-negotiators-suggest-ukraine-cedes-territory-in-exchange-for-nato-membership" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://www.lemonde.fr/international/live/2026/11/14/en-direct-guerre-en-ukraine-volodymyr-zelensky-affirme-que-les-etats-unis-ont-evoque-des-concessions-territoriales-en-echange-d-une-adhesion-a-l-otan_6808609_3210.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://www.spiegel.de/ausland/ukraine-russland-konflikt-us-unterhaendler-bringen-offenbar-nato-beitritt-der-ukraine-ins-spiel-a-f8b38fc5-a754-4ec2-bf85-3c857dbd0f96#ref=rss" target="_blank" rel="noopener">Spiegel ↗</a><a class="src" href="https://www.faz.net/aktuell/politik/ukraine/ukraine-liveticker-selenskyj-usa-bringen-nato-beitritt-fuer-gebietsverzicht-ins-spiel-faz-110683325.html" target="_blank" rel="noopener">FAZ ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMid0FVX3lxTFBWYkFfZXJ6OGN6SEY0bXFodjJkYjBjbmViVWJNYV8yWDQtbzY1YkJrUUh2eDV5Vl9pRUhwZXJoaXFTTjdFcXBFSlpTZ3FEVWZObXlxZzRCNUlua25sTDFMZjVIUzl2YXVrcnZwaDc2bjlnSWtFNzdB?oc=5" target="_blank" rel="noopener">大公文汇 ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/cq39glwprknjo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://meduza.io/en/news/2026/11/14/russia-demands-finland-leave-nato-bild-reports-moscow-denies-it-and-helsinki-is-outraged" target="_blank" rel="noopener">Meduza ↗</a><a class="src" href="https://tass.com/world/2218171" target="_blank" rel="noopener">TASS ↗</a><a class="src" href="https://www.lemonde.fr/international/article/2026/11/14/aux-etats-unis-l-affaire-nvidia-tourne-a-la-crise-politique-pour-donald-trump_6809696_3210.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://www.lemonde.fr/idees/article/2026/11/14/l-administration-trump-percutee-par-l-onde-de-choc-nvidia_6809983_3232.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://www.france24.com/en/can-nvidia-survive-without-tech-titan-jensen-huang" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://hongkongfp.com/2026/11/14/spies-and-silicon-chips-alice-huangs-tangled-corporate-web/" target="_blank" rel="noopener">Hong Kong Free Press ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMizwJBVV95cUxPbWQ3bVZtRlhpRlExZ0I2RVgzTXF3cVVKdTlBRm5MY09tMXd4TTAwRkxxS2Y1YkVkMTJjMXhJazJWblIwdUZ5VHgwT0NDVlRLVU9Ja2tQaFVCdENidmZoQW1kYUlNSHVFNFIxb2JrNktuN2tpdnRvTlJHZlQzZEU1aVZEUUVnNHdWTkZrQkZpNnRSZ1gwWGdtYTNsWGNJUG9vZFhpX01VcDFnR1g3cFZDbFRxX3NkVWk2SUFwb3p4bkxBV2xZcHl3M3ZMTzlBMU9yOGNvMDNtUzRnNDhwZ0hCdWhWWHpsakg1SThhOVhwM24xRVZtdmNXNU1HcmZpa3l5UlFTaktjak82V19SZVNaejlweGl0OTZ3bVdxa1pIdFJINVE3SmhCaG1jbF91X1I0YzNGY1FUM0pUdlFkbEE4NzZWejVzWUNqVU5fb0pCOA?oc=5" target="_blank" rel="noopener">法广 RFI 香港 ↗</a><a class="src" href="https://www.aljazeera.com/news/2026/11/14/qatar-and-turkiye-sign-a-mutual-defence-pact-what-do-we-know?traffic_source=rss" target="_blank" rel="noopener">Al Jazeera ↗</a><a class="src" href="https://www.lemonde.fr/international/article/2026/11/14/face-a-israel-et-aux-etats-unis-l-iran-resserre-ses-liens-avec-la-russie_6809692_3210.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://taz.de/Chinas-Drohgebaerden-gegen-Taiwan/!6230039/" target="_blank" rel="noopener">taz ↗</a><a class="src" href="https://www.tagesschau.de/ausland/amerika/migranten-usa-mexiko-110.html" target="_blank" rel="noopener">Tagesschau ↗</a></div>
+  
+<div class="acts" data-key="at5e658200bd" data-title="美国政治与美伊战争" data-text="白宫周五确认：特朗普访华行程将以与习近平、普京的首次三方会面收尾，在深圳 APEC 期间，时间为下周四；特朗普想谈“削减核武”（BBC、DW、SCMP、HKFP）。；泽连斯基说，美方谈判代表首次提出“乌克兰让出顿巴斯、换取北约成员资格”，他重申乌克兰不愿撤军（BBC、France 24、Le Monde、Spiegel）。FAZ 直播栏的标题称有五国将代表欧洲参加谈判；大公文汇则说欧洲五国入席后“前景难料”。；BBC 的罗森伯格（Rosenberg）分析：欧洲安全问题现在被放上谈判桌，莫斯科视之为胜利，普京在抬高要价。Meduza 转述 Bild：俄方在非正式会谈中要求芬兰退出北约，莫斯科否认，赫尔辛基愤怒。TASS 转述泽连斯基：乌克兰不会把中立地位写进宪法。；英伟达事件继续：Le Monde 引《纽约时报》称，特朗普早在 5 月就被告知黄仁勋与涉嫌间谍的中国女子的关系带来风险；France 24 引《金融时报》称英伟达已接触 Arm 的 CEO 勒内·哈斯（Rene Haas）物色继任者，部分员工希望黄仁勋回来。HKFP 引 AFP：新加坡的 Megaspeed 公司办公室是空壳。法广标题说丑闻在撕开特朗普政府表面的团结。；Al Jazeera：卡塔尔与土耳其签署共同防御条约，分析人士称，在美伊战争背景下，它旨在威慑而非组建进攻同盟。Le Monde：伊朗与俄罗斯走得更近，里海成了贸易与军事往来的战略轴线，但受限于俄方承诺的限度。；taz：特朗普赴深圳之前，中国在台湾附近举行了规模“空前”的军演，被称作“安静的恐吓”。Tagesschau、Al Jazeera：美国民主党胜选后，一支 1000 多人的移民大篷车从墨西哥出发北上。" data-src="DW" data-link="https://www.dw.com/de/weißes-haus-kündigt-dreiertreffen-trumps-mit-xi-und-putin-an/a-79946925?maca=de-rss-de-all-1119-rdf">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="t1fd1d9971b" data-ts="1794656298">
+  <span class="label">主线 · 中国高层政治</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>财新：湖北原书记王忠林被查，标题概括他从山东基层警察一路做到武汉“抗疫书记”。条目只有标题，没有罪名和通报内容。</li><li class="today"><b>今天</b>巴西左翼媒体 Brasil de Fato 刊出介绍中共反腐的文章，标题引用“自我革命永不停止”。条目只有标题。</li><li class="today"><b>今天</b>SCMP：解放军正在用大数据推行“端到端阳光”征兵，目的是招到更好的兵并杜绝腐败，对着明年的建军百年。</li>
+    
+  </ul>
+  
+  <details><summary>更早 6 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-11</b>SCMP：解放军信息安全领域的科学家郭世泽（Guo Shize，57 岁）的名字从中国科学院官网上被撤下。他是解放军信息技术安全研究中心的研究员，当选过中科院院士（条目被截断，细节未显示）。条目没有说明原因，也没有官方说法。</li><li><b>11-10</b>RTHK 报道：北京外国语大学马克思主义学院原院长韩强在中国记协的新闻茶座上谈二十届五中全会通过的“全面从严治党”决定，称习近平党建思想标志党建理论进入体系化新阶段，反腐要“半步不退让”。；他给出数字：往年每年查处的中管干部约 60 人，今年至今已查处 69 人，据此说明反腐力度不减。</li><li><b>11-08</b>SCMP：中共发布指导意见，为明年召开的二十一大代表遴选定调，称对贿选等干扰选举行为「零容忍」。该报称这届大会预计有重大人事调整。</li><li><b>11-07</b>中共中央发出通知，部署党的二十一大代表选举工作（中国政府网、人民网同一标题）。条目只有标题，看不到选举办法和代表名额。；苏州新闻刊出「深学细悟全会精神 持之以恒推进全面从严治党」，是地方层级在落实全会精神。</li><li><b>11-06</b>SCMP 称，中共二十届五中全会期间，新的战区领导人在为关键指挥官保留的席位区露面，填补了反腐留下的空缺。这是北京对军队新人事格局的暗示。</li><li><b>11-05</b>前政治局委员、新疆党委书记马兴瑞（Ma Xingrui，67 岁）被起诉，指控涉及受贿，时间最早可追溯到 1990 年代末，官方媒体周四报道（SCMP）。；前武警司令王宁（Wang Ning，71 岁）被免去全国政协常委等职。SCMP 称他是 15 年来连续第三位落马的武警部队首长。；SCMP 还刊出了“五中全会决议”的官方英译节选，条目里只有说明，看不到具体内容。</li></ul>
+    <p>11 月 5 日前政治局委员马兴瑞被起诉、前武警司令王宁落马；11 月 10 日 RTHK 报道韩强说今年已查处中管干部 69 人。今天王忠林被查，是同一条“反腐不减力度”的延续，时间上靠近二十一大代表选举。</p>
+    <ul class="persp"><li><b>财新</b>用个人履历做标题（基层警察到抗疫书记），突出落马者的位置和公众记忆，没有评论。</li><li><b>Brasil de Fato</b>引用官方口号式的“自我革命”，是对中国反腐机制的解释性介绍，立场偏同情（仅凭标题判断）。</li></ul>
+    <p><b>研判：</b>研判：二十一大召开前，反腐和军队人事清理会继续，通报节奏可能保持密集。王忠林案的具体指控要等中纪委通报才清楚。</p>
+    <p class="signals">观察信号：中纪委对王忠林案的正式通报措辞 · 二十一大代表选举结果和名额 · 解放军高层和军工系统的新一批人事变动</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE5ISTJId3pSMFRMNzdab3M4My1rV2EyZzlsTmQzeW8xcHVPSkRka0IwcXV6a1p0dmNlLUNQRFVMeDdRbm1reTNkS2xLSVRmOHZUM29NcTVBZmtlb2RxakNz?oc=5" target="_blank" rel="noopener">财新 ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi1wFBVV95cUxOZ281SnlwY0NVbVdnYVVVSEdIRnIzZm5WQkdPbDRjM2p5VFlPZUJVWmxSZXZfZW1mV3NrMUhxTFhMc3JiUUZROXBzakFuX1M0bExoc1B0SUtZNHpxd3M1cFVpWEE4cnk3N3kyZE1rWjljMERXU0JoZlBuUEVoSzFEblNMM25uUTZyYzlxczZfc01QUXIyWW1OWTFpOWFsbnM2TEhVUktFYWVaUjk0ckROSnFJb1dGRWtPZmZ4Z3dfcnd1VktZTTRQMk9XSlBrOW8teUZqVE5CRQ?oc=5" target="_blank" rel="noopener">Brasil de Fato ↗</a><a class="src" href="https://www.scmp.com/news/china/military/article/3374390/cleaner-smarter-big-data-plas-bet-sunshine-military-recruitment" target="_blank" rel="noopener">SCMP China ↗</a></div>
+  
+<div class="acts" data-key="at1fd1d9971b" data-title="中国高层政治" data-text="财新：湖北原书记王忠林被查，标题概括他从山东基层警察一路做到武汉“抗疫书记”。条目只有标题，没有罪名和通报内容。；巴西左翼媒体 Brasil de Fato 刊出介绍中共反腐的文章，标题引用“自我革命永不停止”。条目只有标题。；SCMP：解放军正在用大数据推行“端到端阳光”征兵，目的是招到更好的兵并杜绝腐败，对着明年的建军百年。" data-src="财新" data-link="https://news.google.com/rss/articles/CBMiX0FVX3lxTE5ISTJId3pSMFRMNzdab3M4My1rV2EyZzlsTmQzeW8xcHVPSkRka0IwcXV6a1p0dmNlLUNQRFVMeDdRbm1reTNkS2xLSVRmOHZUM29NcTVBZmtlb2RxakNz?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="t823c0bb068" data-ts="1794656298">
+  <span class="label">主线 · 柏林左翼党组阁</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>Zeit：左翼党州主席为处理议员瓦内萨·恩德（Vanessa Emde）的“漫长程序”辩护。条目只有标题，没有具体理由。</li><li class="today"><b>今天</b>FAZ 长文《Migrantifa: Der Pakt von Neukölln》：称左翼党在柏林选举中的胜利，也是“极左与移民伊斯兰主义者携手”的结果，并问他们是否面临“骤然坠落”。这是 FAZ 对左翼党的框架，摘要里没有给出具体证据。</li>
+    <li><b>11-13</b>taz 的评论标题《Von Wagenknecht zu Emde: Veni, Vedi, Vici》写道，柏林左翼党对议员瓦内萨·恩德（Vanessa Emde）「竖起了刺」，但瓦根克内希特（Wagenknecht）分裂党的先例应让各方警惕分裂。标题里也写作 Vedi，和 Klasse Gegen Klasse 此前的拼写一致。；nd 刊出《柏林和钱》，说红绿红谈判是在预算缺口的压力下进行的，但回旋余地可能被低估了。；德共《我们的时代》（UZ）刊出德共柏林组织的声援声明，称恩德这位直选议员遭到「大规模攻击」，其中也有来自她自己党内的。；FAZ 刊出评论《Emde und Co.》，写道否认国家存在就是背叛人权，主张边界可以和平改变，但不应有「灭绝幻想」。摘要没点名以色列，标题点了恩德（Emde）。；FAZ 另有一篇评论质疑埃拉尔普（Eralp）谈保护犹太人生活时总要同时提到其他受害群体，认为这种说法遮蔽多于说明。；Tagesspiegel 的标题把柏林和梅克伦堡-前波莫瑞（MV）的左翼党放在一起：柏林是「老问题」，MV 是「撑得起国家」。nd 同时报道 MV 红红绿政府的部长分配，左翼党拿到两个部长职位。</li><li><b>11-12</b>FAZ：左翼党新克尔恩（Neukölln）区执委会站到议员瓦内萨·恩德（Vanessa Emde）一边，与昨天党团领导层起草开除动议的方向相反。；Spiegel 刊出对谈，左翼党政治家扬妮娜·维斯勒（Janine Wissler）和居纳·巴尔奇（Güner Balci）谈“左翼党是反犹主义的温床？这太荒谬了”。条目只有标题，看不到内容。；Zeit 的柏林评论标题是“Aus dieser Rettungsboje ist die Luft raus”（这个救生圈漏了气），讲柏林左翼党，只有标题，不清楚“救生圈”指什么。；nd 的另一篇评论拿落败的柏林 CDU 候选人埃弗斯（Evers）开涮，说他“最后一刻才发现自己是文化参议员”。这是左翼媒体的嘲讽，与组阁谈判没有直接关系。；ZDFheute 的标题问：柏林左翼党是不是要违背选举承诺（讲租金）。这是 11 月 9、10 日联邦主席施韦特纳「征收后租金仍可能上涨」那场争论的延续，条目只有标题。；DIE ZEIT 报道，在全体会议（Plenarsitzung）上，埃利夫·埃拉尔普（Elif Eralp）表示要让柏林的犹太人生活更可见。条目只有标题，没有背景。恩德（Emde）风波也牵涉反犹主义争论，但这条标题本身没有提到恩德。</li>
+  </ul>
+  <div class="foryou">你面向德国学生发帖时，这件事涉及以色列立场和反犹主义争论，措辞很敏感。引用时最好把“党内程序之争”和“对以色列的立场”分开写，并标明来源立场。</div>
+  <details><summary>更早 8 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-11</b>柏林左翼党议会党团的领导层决定起草开除瓦内萨·恩德（Vanessa Emde）出党团的动议（SZ）。Deutschlandfunk 说动议将在下周提出，Jüdische Allgemeine 的标题是“左翼党在商议把恩德踢出去”。；nd 的标题称这是“恩德风波的最后一幕”，并称她为“亲巴勒斯坦的议员”。；FAZ 评论：即使开除恩德，社民党（SPD）和绿党的问题也没有解决，因为她只是“冰山一角”。；另有一条租户相关消息：Gaebler 要求降低对付租金暴利的门槛（tagesschau.de，条目只有标题，没写他的职务）。；WELT 的视频标题：左翼党议会党团领导层“着手推动”开除瓦内萨·恩德（Vanessa Emde）。这与上午 SZ 的“起草开除动议”是同一进展。；FAZ 直播栏：左翼党新克尔恩（Neukölln）区执委会为恩德辩护。她是新克尔恩的直选议员，说明基层和党团领导层的态度不一致。；Tagesschau：左翼党要求对军工企业征收暴利税，这是联邦层面的另一条议题线。；T-Online 的标题是《征收之后租金还会涨？左翼党主席施韦特纳（Schwerdtner）这样解释她的话》。条目只有标题，没有她解释的内容。</li><li><b>11-10</b>rbb24：瓦内萨·恩德（Vanessa Emde）再次拒绝党方要她交出议席的要求。；Zeit 的标题称“如今连左翼党也要涨租金”，讲的是被征收（社会化）的住房，对应联邦主席施韦特纳（Ines Schwerdtner）此前“征收后租金仍可能上涨”的说法。；junge Welt 把施韦特纳写成“今日租户代言人”，口吻偏友善；另有一篇采访标题《左翼党正在失去变革潜力》，条目只有标题，看不出是否专指柏林。</li><li><b>11-09</b>议员瓦内萨·恩德（Vanessa Emde）拒绝交出议席，这一点今天又被多家媒体确认。Handelsblatt 的标题是「恩德想保留议席，柏林左翼党承压」，Zeit 的标题是「恩德想保住柏林市议会议席」，FAZ 直播栏写「恩德拒绝放弃议席」。；评论层面出现分歧：SZ 评论说恩德一案「现在是柏林左翼党的一次机会」；FAZ 刊出「左翼的诱惑：社民党与柏林组阁」，把社民党的选择写成对左翼党的「诱惑」；junge Welt 的标题是「恩德不想倒下」，口吻明显同情她。；《柏林晨邮报》（Berliner Morgenpost）出了解读文章，讲红绿红探索文件是组阁谈判的「密码」。；BILD 和 WELT 都报道了左翼党联邦主席施韦特纳（Schwerdtner）的说法：她认为即使对大房东实行征收，柏林租金仍可能上涨。条目只有标题，没有具体条件和幅度。；关于“征收（Vergesellschaftung）”的争论转到租金上：BZ Berlin 的标题是左翼党联邦主席施韦特纳（Ines Schwerdtner）说“征收之后租金仍会上涨”。RP Online 的标题引语是“我无法向任何一位租户保证租金会下降”，条目没标明说话人，应是同一话题。；taz 评论《Alles besser als Vonovia》承认这个说法“引发轩然大波”，但认为征收大房东“依然有意义”。；左翼内部：Klasse Gegen Klasse 转载了 Linksjugend [&#39;solid] Salzgitter 的声明，要求柏林左翼党执委会辞职，理由是为了入阁而配合针对瓦内萨（该报写作 Vedi）·恩德（Emde）和亲巴勒斯坦派的“镇压运动”。这是运动左翼一侧的声音。</li><li><b>11-08</b>Zeit：左翼党议员瓦内萨·恩德（Vanessa Emde）拒绝了州执委会要她退回议席的要求。；nd：党的领导层要求恩德交还议席，如果她不照办，会面临被开除出议会党团。；nd 评论《Emde, Abed und Marg | Die Linke springt über jedes Stöckchen – und verliert trotzdem》：一些媒体在对柏林左翼党搞「运动式攻击」，党靠牺牲自己的成员躲不开压力。条目没解释「Abed」是谁。；柏林左翼党议员瓦内萨·恩德（Vanessa Emde）公开拒绝交出议席。Spiegel 的标题引用她的话，说会“当然”继续履职；Tagesschau 称她看起来也没有在对以色列的立场上让步。；FAZ 直播栏引用左翼党州主席：“我们不再信任她。”；FAZ 直播栏还提到：BSW 领导层批评其州级组织提名康斯坦丁·施赖伯（Constantin Schreiber），这条另有来龙去脉，条目只有标题。；ZDFheute 做了一篇街头采访：柏林人对埃利夫·埃拉尔普（Elif Eralp）有“对变化的希望”，也有对治安和经济的担忧。</li><li><b>11-07</b>柏林左翼党州执委会要求议员瓦内萨·恩德（Vanessa Emde）交出议席（SZ、ZDFheute）。SZ 称原因是她关于中东冲突的争议言论，她是否真的交出议席还不确定。Tagesspiegel 和 Stern 的标题是「恩德必须决定是否放弃议席」。；junge Welt 的标题是「恩德面临被击倒」，Klasse Gegen Klasse 则号召「声援恩德」。后者写的名字是「Vedi Emde」，与此前的「Vanessa」拼写不一致，条目没说明原因。它称她是新克尔恩（Neukölln）直选议员，并说此前居西（Gysi）已要求开除她。；SZ 同时提到，左翼党批评联盟党推艾格纳竞选联邦总统的过程，这属于另一条线。；Zeit Online 的标题称，左翼党女党首希望瓦内萨·恩德（Vanessa Emde）“让步”（Einlenken）。这是在州执委会上午要求她交出议席之后，党的领导层释放出的软化信号。条目里没有正文，不清楚“让步”具体指什么。；taz 刊出评论称，柏林选举的获胜者埃拉尔普（Elif Eralp）“几周来一直遭到攻击”，背后也有对“左翼女性”的恐惧。评论呼吁媒体“多一点尊重”。</li><li><b>11-06</b>Spiegel 采访了在柏林选举中败选的 CDU 的埃弗斯（Stefan Evers）。他把败选归咎于左翼党“有诱惑力的承诺”，说柏林“现在就已为左翼党的胜利付出高昂代价”，并探讨 CDU 如何回应人们对“社会化（Vergesellschaftung，指征收大房东）”的向往。；nd 的评论《Die Linke kann von den Grünen lernen》围绕开除瓦内萨·恩德（Vanessa Emde）展开，认为议会党团里需要对国家持批评态度的人作为“健康的纠偏者”。《犹太人总汇报》（Jüdische Allgemeine）的标题则说，恩德带着一名激进反以色列活动人士参加了党团会议。；德共的《我们的时代》（Unsere Zeit）指出，红绿红探索性文件的最后一章“稳健财政与未来投资”把所有项目都放在“财政保留（Finanzierungsvorbehalt）”之下。；nd 报道，交通和环保团体称赞红绿红探索文件中的交通目标，并作了补充。；WELT 的标题称，德国趋势调查（Deutschlandtrend）显示，对左翼党和 AfD 的计划执政“大面积拒绝”。条目只有标题，没有数字。；Spiegel 晨间新闻摘要写到，一些著名社民党（SPD）政治家想阻止首都的红绿红联盟。；Augsburger Allgemeine 的标题是“谁来买单？”，写租户怎么看征收大房东；上午已记录，今天条目依旧只有标题。；Zeit 的标题引用左翼党元老居西（Gysi）谈议员恩德（Emde）：“我希望我们开除她。”这是党内资深人物的明确表态。；三家媒体报道左翼党议员卡特琳娜·马尔格（Katharina Marg）出席了反对遣返“家族犯罪（Clan）成员”或“警方熟知的巴勒斯坦人”的抗议：Spiegel 标题写“Clan-Mitgliedern”，WELT 写“polizeibekannter Palästinenser”，BILD 标题称“下一个麻烦左翼”和“激进派”。条目都只有标题。</li><li><b>11-05</b>Deutschlandfunk：柏林左翼党投票同意与绿党、社民党开始组阁谈判。；《柏林报》（Berliner Zeitung）的评论标题称左翼党“完全疯了”，对柏林“很不好”，起因是“CO2 赔偿”。目前只有标题，看不到具体内容。；《奥格斯堡汇报》（Augsburger Allgemeine）的标题是“谁来买单？”，写租户怎么看对柏林大房东的征收。同样只有标题。；柏林左翼党、绿党和社民党计划在 1 月提交联合执政协议（tagesschau.de）。；Jungle.World 刊出标题为“Emde Gelände”的文章，FAZ 刊出“左翼党与青年军官（Jugendoffiziere）”一文，目前都只有标题。；WEB.DE 标题：社民党（SPD）左翼派为柏林“有争议的联盟”辩护。只有标题，应是指与左翼党的合作，但条目没有明说。</li><li><b>11-04</b>nd 报道，柏林左翼党年轻化、执政经验少，议员文克·克里斯托夫（Wenke Christoph）被看好出任参议员（Senatorin，即柏林州政府部长）。；nd 报道，柏林社会事务部门计划在 2027 年 2 月推出数字化的社会票“Fairgnügen-Pass”，用作资格证明。；taz 报道，左翼党联邦议员加伦堡（Katalin Gennburg）要求同党议员瓦内萨·恩德（Vanessa Emde）交出议席，理由是需要对“美化恐怖主义”划清界限。</li></ul>
+    <p>11 月 11 日党团领导层决定起草开除恩德的动议，下周提出；11 月 12 日新克尔恩（Neukölln）区执委会站到恩德一边。柏林的红绿红组阁谈判、“征收后租金仍可能上涨”的争论也在同时进行。</p>
+    <ul class="persp"><li><b>Zeit Online</b>把焦点放在党方处理程序是否过长，偏向程序性报道，条目里没有评论。</li><li><b>FAZ</b>用“Pakt”（联盟、勾结）一词，把左翼党的选举成功与极端群体联系起来；这是中间偏右媒体的框架，实际联系有多深，摘要里看不到。</li></ul>
+    <p><b>研判：</b>研判：开除动议下周提交党团，恩德是新克尔恩的直选议员，基层支持她，党团内部分歧可能继续公开。组阁谈判中，社民党和绿党怎么对待这件事是关键变量。</p>
+    <p class="signals">观察信号：下周党团会议对开除动议的表决 · 新克尔恩基层和其他区组织的态度 · 社民党和绿党对恩德事件的公开表态</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMinAFBVV95cUxPV0YtX1dOcEZDdTVPLVNKQmp3ejRVRl84d1U3bUxTSkhKamNjTlo4XzNDNThqUTJEMmpNVm5XYld5M0RDQ1NSM19RVnJJVlRFYTdqSi1xNGJYZHhVSWJia1BnVTJiUVFlYlFVWkgyTEhYak9zZjJaMVBWMlBjSzlheDFxblhwVloxcGxuSWhRSFRSRklOaGZnc3RIeGk?oc=5" target="_blank" rel="noopener">DIE ZEIT ↗</a><a class="src" href="https://www.faz.net/aktuell/politik/inland/der-berliner-pakt-zwischen-linksextremen-und-hamas-unterstuetzern-accg-201648148.html" target="_blank" rel="noopener">FAZ ↗</a></div>
+  
+<div class="acts" data-key="at823c0bb068" data-title="柏林左翼党组阁" data-text="Zeit：左翼党州主席为处理议员瓦内萨·恩德（Vanessa Emde）的“漫长程序”辩护。条目只有标题，没有具体理由。；FAZ 长文《Migrantifa: Der Pakt von Neukölln》：称左翼党在柏林选举中的胜利，也是“极左与移民伊斯兰主义者携手”的结果，并问他们是否面临“骤然坠落”。这是 FAZ 对左翼党的框架，摘要里没有给出具体证据。" data-src="DIE ZEIT" data-link="https://news.google.com/rss/articles/CBMinAFBVV95cUxPV0YtX1dOcEZDdTVPLVNKQmp3ejRVRl84d1U3bUxTSkhKamNjTlo4XzNDNThqUTJEMmpNVm5XYld5M0RDQ1NSM19RVnJJVlRFYTdqSi1xNGJYZHhVSWJia1BnVTJiUVFlYlFVWkgyTEhYak9zZjJaMVBWMlBjSzlheDFxblhwVloxcGxuSWhRSFRSRklOaGZnc3RIeGk?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="tbfb27f1895" data-ts="1794656298">
+  <span class="label">主线 · 金属电器行业劳资谈判与警告罢工</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>IG Metall 的 24 小时警告罢工在扩大：top agrar 标题称农机厂 Fendt 和 John Deere 也在备战；Neue Westfälische 说比勒费尔德（Bielefeld）的 IG Metall 正准备 24 小时罢工。</li><li class="today"><b>今天</b>Oldenburger Online Zeitung 的标题称，IG Metall 提出“限期的集体合同偏离”。条目只有标题，没说内容，一般指困难企业可临时偏离合同，具体条件不明。</li><li class="today"><b>今天</b>雇主一侧反击：WELT 的标题引语是“IG Metall 在锯自己坐的树枝”；Merkur 报道隧道掘进机企业家赫伦克内希特（Martin Herrenknecht）怒斥罢工；BILD 引他说“德国必须再多干点”。</li><li class="today"><b>今天</b>SWR 在问梅赛德斯（Mercedes）的工厂会不会被关；junge Welt 用《汽车老板进攻》的标题，把汽车业雇主的施压写成攻势。以上都只有标题。</li>
+    <li><b>11-13</b>IG Metall 号召多年来首次的全天警告罢工：FAZ 标题写「自 2018 年以来首次」。Sat.1 巴伐利亚的节目标题是「24 小时罢工？IG Metall 让职工投票」，具体怎么投、投什么，条目没写。；梅赛德斯（Mercedes）董事会冻结在德国所有厂址的投资，并考虑关厂（SZ、Tagesschau）。SZ 写明董事会给出的理由：没有和职工委员会就更长工时、更低工资达成一致。；WELT 标题称「汽车业大权力斗争开始了」，把梅赛德斯和大众都写成与 IG Metall 对抗，条目只有标题。；梅赛德斯冻结德国投资一事，工会作出回应：IG Metall 要求就投资停止与公司谈判（Zeit、n-tv 转载）。n-tv 的标题写「梅赛德斯威胁关厂」。；SZ 的标题是「对职工委员会施压：梅赛德斯威胁关厂并停止投资」，把这件事框成压力手段。junge Welt 只用平实的标题报道「梅赛德斯停止在德国的投资」。；FAZ 商业快讯的标题是「梅赛德斯停止所有对德国厂址的新投资」，同一条里还有「一半员工拿到圣诞奖金」，条目没说是哪家公司。；不来梅（Bremen）的 buten un binnen 在问，当地是否也会出现 24 小时警告罢工（只有标题）。</li><li><b>11-12</b>IG Metall 筹备全天警告罢工：SZ.de 的标题称这是“多年来首次”（erstmals seit Jahren）。多家媒体经 IG Metall 汇总：北威州已申请24小时警告罢工（n-tv），黑森中部地区要求同样做法（FAZ），多个大区也想这样做（Stern）。；RP Online：北威州金属电气行业谈判又一轮没有结果，标题说周三可能升级。这条应是昨天的稿，今天条目没有更新结果。；巴伐利亚明德尔海姆（Mindelheim）的格罗布（Grob）工厂周一有职工放下工作（Augsburger Allgemeine）。；德共的《我们的时代》（UZ）称，雇主给全行业370万职工的报价看起来只是几百欧的一次性补贴，条目摘要被截断。UZ 还采访了一位工会人士，舍弗勒（Schaeffler）在谈判期间宣布关四家工厂，对方称“预计会是更长的对抗”。；IG Metall 决定在金属电气行业数百家企业开展 24 小时警告罢工。SZ 和 n-tv 都强调这是「多年来首次」，n-tv 写「八年来第一次」（NDR、BILD、ZDFheute、WELT、Zeit、Manager Magazin 同步报道）。；SZ 的标题引语是「现在我们让企业整天停摆」，条目没标说话人，语气应来自工会一方。该报同时写雇主方「fassungslos」（目瞪口呆、难以接受）。；各家措辞有差别：BILD、Zeit、NDR 写「beschließt」（已决定），SZ、WELT 写「plant」（计划）。标题里都没有具体企业名单和罢工日期。</li>
+  </ul>
+  <div class="foryou">你 2027 年起在大众埃姆登培训。大众一般适用自己的公司集体合同，不是这个行业合同，但这轮谈判和梅赛德斯事件会影响整个汽车业的劳资氛围。要留意学徒津贴是否包含在本轮诉求里，条目没写。</div>
+  <details><summary>更早 7 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-11</b>巴伐利亚周二继续有多家企业停工（Augsburger Allgemeine 经 IG Metall 汇总）。洛尔（Lohr）谈判没有结果，警告性罢工继续（Radio Gong Würzburg）。；Badische Zeitung 的标题说，IG Metall 正在商讨“升级”警告性罢工。具体怎么升级，条目没说。；Telepolis 的标题把局面概括为“5% 对上一个很小的雇主报价”，没有给出报价数字。；WAZ：北威州雇主方警告，金属电气行业面临罢工升级。Rosenheim24 也在问，罗森海姆一带的大企业罢工之后，劳资冲突会不会升级。；职位流失的消息同时出现：汽车零部件商 WKW 被投资人收购后仍要减少 450 个岗位（WDR）。IG Metall 古特斯洛-奥尔德（Gütersloh-Oelde）分会则回应了米勒（Miele）在邻县的计划，具体内容条目没写。；L&#39;Humanité 向法国读者解释：德国金属工人罢工是因为雇主想在谈判里压低实际工资，并且与默茨政府的“反社会改革”同向。；IG Metall 沿海大区（Bezirk Küste）发出第二期谈判通讯“TARIFINFO #2”，条目只有标题，看不到内容。；IG Metall 就居特斯洛（Gütersloh）的洗衣护理产线表态：结束生产将是“严重错误”（Die Glocke）。条目没写细节，很可能与上午提到的米勒（Miele）计划有关。；FAZ 做了一篇测算：企业裁员给的补偿金够不够撑到退休。</li><li><b>11-10</b>IG Metall 在汇总里的标题是“金属电气行业集体谈判 2026：IG Metall 商讨升级”，只有标题，具体升级方式条目没说。；Augsburger Allgemeine：巴伐利亚警告罢工“达到高潮”。</li><li><b>11-09</b>警告性罢工继续：纽伦堡的博世（Bosch）、西门子（Siemens）、曼恩（MAN）又有罢工游行，唐沃特（Donauwörth）有中央集会，比勒费尔德的罢工也在延续。；FAZ 的标题称，集体谈判的「预先决定」将在杜塞尔多夫做出，意味着北威州区域谈判被当作风向标（条目只有标题）。；SZ 标题：金属行业雇主警告会有职位流失。雇主这边的叙事是「涨工资会丢工作」。；Klasse Gegen Klasse 写英戈尔施塔特（Ingolstadt）：奥迪老板德尔纳（Döllner）在特朗普的竞选活动上为美国新厂游说，而雇主协会在谈判中要职工承担汽车业危机。这是托派媒体的框架。；WSWS：舍弗勒（Schaeffler）在欧洲削减 3460 个岗位，同时家族在 2025 财年拿了 2.24 亿欧元分红，批评 IG Metall 把职工交出去。；周一警告性罢工继续：巴伐利亚有一批企业停工（Augsburger Allgemeine），奥格斯堡与唐沃特（Donauwörth）设了中央罢工日。；吕贝克（Lübeck）的 Vestas 多个厂区被警告性罢工瘫痪（Lübecker Nachrichten 标题）。；杜伊斯堡/下莱茵地区，雇主方公开批评警告性罢工（Antenne Niederrhein）。；勃兰登堡路德维希斯费尔德（Ludwigsfelde）的梅赛德斯和 Gestamp 也有警告性罢工（tagesschau.de）。；IG Metall 汇总里还有“下一轮谈判”的预告，但只有标题，没有时间和地点。；IG Metall 汇总的剪报显示，巴伐利亚和北威州的谈判都“没有靠近”（WirtschaftsWoche 标题）。巴伐利亚雇主协会 vbw 发声明称，“IG Metall 缺乏妥协意愿，谈判无果延期”。；萨克森州金属电气行业的谈判同样没有进展（MDR）。；英戈尔施塔特的奥迪（Audi）警告性罢工，BR 称参与者有 15,000 人。巴伐利亚电视台报道“数千人停工”。</li><li><b>11-08</b>SZ.de 的标题：IG Metall 计划在 2000 多家企业采取行动。；雇主一方的 Westmetall 警告 IG Metall 不要搞 24 小时罢工；Hasepost 标题称金属行业的集体谈判争端“继续升级”。；梅赛德斯（Mercedes）位于路德维希斯费尔德（Ludwigsfelde）的工厂被号召参加警告性罢工（Tagesspiegel、n-tv 转载）。；IG Metall 汇总的剪报里还有一句职工代表的话：“职工期待他们的付出被认可”（Rhein-Neckar-Zeitung），以及纳德林根（Nördlingen）瓦尔塔（Varta）厂关闭后工会的评论，说“经历职工的震惊很沉重”。</li><li><b>11-07</b>第三轮谈判在多个地区没有结果：tagesschau.de 标题是「IG Metall 与雇主之间没有靠近」，不来梅、莱茵兰-普法尔茨（RLP）的第三轮同样无果，下萨克森与萨克森-安哈尔特地区 11 月 6 日也有谈判。；黑森（Hessen）仍有警告性罢工（hessenschau 标题）。；nd 报道：柏林-勃兰登堡地区金属电气行业的集体谈判仍无结果，IG Metall 表示对“阶段性放弃部分工资”持开放态度。</li><li><b>11-06</b>Zeit 称 IG Metall 号召“数万人”参加警告性罢工；n-tv 说巴伐利亚也有数万人被号召；慕尼黑的 IG Metall 扩大了警告性罢工。；《柏林报》的标题说，又一轮谈判“没有进展”地结束，IG Metall 扩大警告性罢工。WirtschaftsWoche 的标题是“新的解决方案应终结争端”，只有标题，看不出内容。NDR 的标题是“先罢工、现在谈判”。；多特蒙德的 Vitesco 警告性罢工现场有“面对一片废墟”的说法（Osthessen|News 标题）。WAZ 报道，波鸿（Bochum）的欧宝（Opel）仓库叉车也停了。；WSWS 称，全国超过2000个工作场所有警告性罢工，但认为 IG Metall 领导层与企业配合，把警告性罢工限制在狭窄范围内，避免全面罢工。；IG Metall 号召数万人参加警告性罢工（DIE ZEIT 经 IG Metall 汇总的标题）。；tagesschau.de 的新闻汇总同样把“IG Metall 号召警告性罢工”放进了头条。；Radio Oberland 写到，奥伯兰（Oberland）地区的警告性罢工浪潮暂时结束，之后还计划多场集会。；IG Metall 在巴伐利亚周五有 105 家企业参加警告性罢工（Augsburger Allgemeine 标题）。昨天的数字是 81 家。；WELT 称 IG Metall 号召“数万人”参加警告性罢工；Merkur 引用的口号是“雇主不应忽视这些信号”。；北威州：梅赛德斯-奔驰位于杜塞尔多夫（Düsseldorf）的 Sprinter 工厂受到警告性罢工影响（Finanztrends 标题，以梅赛德斯股票为角度）。</li><li><b>11-05</b>比勒费尔德（Bielefeld）的 IG Metall 罢工声势很大，《新威斯特法伦报》（Neue Westfälische）标题引用了“这是一记耳光”。；多特蒙德 Vitesco 罢工现场，AfD 领导人把手机扔向现场，随后被刑事报案（Ruhr Nachrichten）。；埃姆斯兰（Emsland）的 Krone、Storm、Benteler 将有行动；兰茨胡特（Landshut）的 BMW 预计有 650 名员工参加警告性罢工（IG Metall 汇总的剪报）。；第三轮谈判之前，IG Metall 主席要求雇主提高报价（Tagesspiegel 标题）。；罢工浪潮继续扩大：奥迪内卡尔苏姆（Neckarsulm）有抗议，英戈尔施塔特和马兴（Manching）、米尔海姆（Mülheim）、萨奥尔兰（Sauerland）都有警告性罢工或集会，北部的罢工浪潮“接近目前的高峰”（IG Metall 汇总的剪报）。；n-tv 的标题提到 IG Metall 提出了 5% 的涨薪要求，一位叫 Reitz 的人警告这可能是“自摆乌龙”，并质问“当真吗”。这个人是谁、立场如何，条目里没说。；junge Welt 刊出评论，标题是“IG Metall, bitte aufwachen”（IG Metall 请醒醒），只有标题。；警告性罢工继续扩大：IG Metall 汇总的剪报显示，巴登-符腾堡的奥迪（Audi）有警告性罢工和抗议（tagesschau.de 标题）。；东威斯特法伦-利珀（OWL，即比勒费尔德一带）有多家企业罢工（Neue Westfälische）。；巴伐利亚周四有 81 家企业的员工停工（Augsburger Allgemeine）。</li></ul>
+    <p>11 月 12 日 IG Metall 决定开展多年来首次全天警告罢工；11 月 13 日梅赛德斯董事会冻结在德国所有厂址的投资并考虑关厂，理由是没有与职工委员会就更长工时、更低工资达成一致。</p>
+    <ul class="persp"><li><b>WELT</b>引语把工会写成损害自身根基的一方，站在雇主和就业风险的叙事上。</li><li><b>Merkur</b>突出企业家的“愤怒”与对德国前景的悲观，用个人情绪带动报道。</li><li><b>junge Welt</b>标题称汽车老板“进攻”，把雇主施压框成资方攻势，立场偏工会。</li><li><b>IG Metall</b>汇总的剪报里同时出现“备战”和“限期偏离”两个信号，说明工会既加压也留出妥协选项。</li></ul>
+    <p><b>研判：</b>研判：24 小时罢工很可能先在谈判最僵的大区落地，同时“偏离条款”会成为双方讨价还价的缓冲。梅赛德斯冻结投资会被雇主用作“涨工资会丢工作”的论据，也让汽车业的氛围更紧张。</p>
+    <p class="signals">观察信号：首批 24 小时罢工的企业名单和日期 · 北威州下一轮谈判的结果 · “限期偏离”的具体条件有没有被披露 · 梅赛德斯和职工委员会是否重新谈判</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMixgFBVV95cUxQNUJ1Z202X0Z4cFJOaWYzS0xsTHA1dHlwUUFNTXEyVzlvWmhPQTZvbXRiRTY1aXdlTGZqVEF5RFNZUmVMUzFWVlZBbmtBZTFTMlBnelhxMlEyNWl2Nl80YmpBR3BHenJTaTRFaGVfbDRNdEtDM3kzal9MbThUVWdlcmhvUEZqVUZUN3BZandZRTZ5VkhEOEl0TzZiUWhTOEF6Z2QwQTIxdElLX1YxeFZaMjhZUk5wcEtHb2xyYno2dFF3UVlBVmc?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi0AFBVV95cUxNSXdVRXNZRktncXVDSFRteG00aTZsc1JVSnNDN0k3RDRiR0J4RUZ0RjMzVUdEZ29FMEVORm12RDJqMi1PdTJVM1NJMUlLWFY3RU82cGFyZ0F0eEFjRkpCMHd5WmdZcGtsUl9VWFpVWExTRkFFRGVNNFFDN1NweGhsYkk5M25QMWRDMndyZXNrZmUwUy02RTd1WF9QalF6RGtzbHlqd3ZSOVo1MXZEU2l3QmJDZHJmOW5Eb0pfYjZSdzNVcEtIVjJsTENhZWNtcmlS?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMingFBVV95cUxNNDZSdG5adDc5VlMwM2N0Q1M0ai02cjRCYTU1Y0xFNk8tbVJTSTBOajNsajIyQU9kck9VN0luVGhJVm9HQk5qRWprVXpHb19RaFA3aFU4LWJxWjY5cDZrOERYV2plcVVuTENWR190RmR0TzFLZDRnd3U4eTZ2dkJvSmRidUlnNk1WY21mSG1oc2JZRUkxSlk0THg5STdZUQ?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiswFBVV95cUxPVXBhMVBxb2V6UENySHdTWWhtS0FDUHF5MWx0bm1VQ2JkRW93TTFFQld4NUJjbU5UQ0tjVzZFYURzX3cycWdQNUJnc0E2UWdjMEhpVnNVWnhyVnMwaEhkRWp2SnFONlFMQ05DS1dLVmdqSWx5cmVLRkRIUGlRaTFTSjNDTnR2S2x2eUFpVFZldjJmeW1vYlAtY08xbGJqT2NTTVV4OTZaalZYQkxQVmpPNzJMVQ?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQYzFtdmFsYkF6a3hCZ3J0WDZfNXhPbFNkbFBPNE9NcXluN2xOYkhDY05tdHh6YnRLT3FxMTA1dXlZYUtmN2xudGk3YzBFTUhnc3ItbExzQ3U0WWlkakpmaGNDbUM2WmlrdnhJZDFQWWMyU1Z0OGFmdkdwTC1CdFhGeGcwdmVnd1djQkpaa2NBVU1KVkVPcktWR05QNjRzMllBZGJILTA0anVCS3NSY0ZTUkhZSQ?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi0AFBVV95cUxOcUM2V3hwM2VZOTNRQ1NqTTlsRFhsSkpBbUVLcU1wWnhsLU5GdnRSb1NVcXYwWnROZjRidDh1ZWttNkxOVmJGRmd4NndjMGxKZlZDaXhEbFY5V2tEZTJHdko1S0RsWnZvdy1qUFpfX0x6UFB6TXJtRkk0d0hPbEg3VVhQYTlWRWZ2T0JOcjhzZkJ0Yk1VbklVU2ZIaVhPR3F1b3NxaW9UdndrOE9FWk5rSTJySERLUGpZNEJjZ0xtMzhPRDVGVlJ3cHR3WDVFNzNB?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi1AFBVV95cUxPREN6bWdZOHdSR0Q5UkU0bFNZR1dlQXBwcUJQNVo1R1QxMFkyc3hpQXFtaHVya0tSZUc1WVRsU3FHZ2pPbGJwdG1jaHViZG9BVXdDemlRNGw2ZV9nYVR4WW5oVW9CTTlhU2g2c19JeVRmQ2RYak1ZMHpZMENXZ2o0VElOeUdMdzRhS2JwOW5yS25lTndnUGRjdTFLMW5IbWFVRjExTTVvVmk4VUlmNGF3MllFNGhJY2cwcml3VU11TEhxNHVjNy1OSnJfUE5BbUpNbG01eA?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMie0FVX3lxTE1yd3pYUGJ4RXJyNXNmRzJsajg3OTlBN1pfal9qRVhfdkZDV3g1cnY4azdxNHVpWEZpQ0RpM09zZkxfcThQcm00R19PbV91V2FoT0JmSWQxZXh6TVZCVjF5aF8tQzdNS2NsNk1BcktvUDdlQkQzMDB6b0EzOA?oc=5" target="_blank" rel="noopener">junge Welt ↗</a></div>
+  
+<div class="acts" data-key="atbfb27f1895" data-title="金属电器行业劳资谈判与警告罢工" data-text="IG Metall 的 24 小时警告罢工在扩大：top agrar 标题称农机厂 Fendt 和 John Deere 也在备战；Neue Westfälische 说比勒费尔德（Bielefeld）的 IG Metall 正准备 24 小时罢工。；Oldenburger Online Zeitung 的标题称，IG Metall 提出“限期的集体合同偏离”。条目只有标题，没说内容，一般指困难企业可临时偏离合同，具体条件不明。；雇主一侧反击：WELT 的标题引语是“IG Metall 在锯自己坐的树枝”；Merkur 报道隧道掘进机企业家赫伦克内希特（Martin Herrenknecht）怒斥罢工；BILD 引他说“德国必须再多干点”。；SWR 在问梅赛德斯（Mercedes）的工厂会不会被关；junge Welt 用《汽车老板进攻》的标题，把汽车业雇主的施压写成攻势。以上都只有标题。" data-src="IG Metall" data-link="https://news.google.com/rss/articles/CBMixgFBVV95cUxQNUJ1Z202X0Z4cFJOaWYzS0xsTHA1dHlwUUFNTXEyVzlvWmhPQTZvbXRiRTY1aXdlTGZqVEF5RFNZUmVMUzFWVlZBbmtBZTFTMlBnelhxMlEyNWl2Nl80YmpBR3BHenJTaTRFaGVfbDRNdEtDM3kzal9MbThUVWdlcmhvUEZqVUZUN3BZandZRTZ5VkhEOEl0TzZiUWhTOEF6Z2QwQTIxdElLX1YxeFZaMjhZUk5wcEtHb2xyYno2dFF3UVlBVmc?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="t7401773f5f" data-ts="1794656298">
+  <span class="label">主线 · 蒂森克虏伯钢铁裁员与杜伊斯堡</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>WAZ：蒂森克虏伯（Thyssenkrupp）一个职工委员会（成员）就警告处分（Abmahnung）提起的诉讼，终审判决已下。条目只有标题，没写结果，也没说是不是钢铁部门，与钢铁裁员主线的关系无法确认。</li>
+    
+  </ul>
+  
+  <details><summary>来龙去脉 · 各方视角 · 研判</summary>
+    
+    <p>这条主线还没有记录，今天的条目太少，只能算观察点。</p>
+    
+    <p><b>研判：</b>研判：信息不足，暂不判断。</p>
+    <p class="signals">观察信号：判决结果与理由 · 是否涉及钢铁部门的裁员争议</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMizgFBVV95cUxPUGR0R3Y5ZzdqVW5OVG1KOUpFZWdrb19jRnpIWlNvNld1QlcyS1daQjI5ZGJleXVhazVIaHRIUGhzSndxWXVvc3puS21kMHMzYlR6X2VLX2pFMGlsWFljVzBpOFg0ZVRONEViNUFKelV2bDBlS19LNVdhYkxRMHNWNlB2aUNIb1VkQzRkcFhRNFAwZUtEemIyaF9TdWk2OC1WM0R0UlAxMFU3S0V1R1g3bll1UnI1b1lLdG83aENrbWRzYS1ZeEZfTDFLXzloUQ?oc=5" target="_blank" rel="noopener">WAZ ↗</a></div>
+  
+<div class="acts" data-key="at7401773f5f" data-title="蒂森克虏伯钢铁裁员与杜伊斯堡" data-text="WAZ：蒂森克虏伯（Thyssenkrupp）一个职工委员会（成员）就警告处分（Abmahnung）提起的诉讼，终审判决已下。条目只有标题，没写结果，也没说是不是钢铁部门，与钢铁裁员主线的关系无法确认。" data-src="WAZ" data-link="https://news.google.com/rss/articles/CBMizgFBVV95cUxPUGR0R3Y5ZzdqVW5OVG1KOUpFZWdrb19jRnpIWlNvNld1QlcyS1daQjI5ZGJleXVhazVIaHRIUGhzSndxWXVvc3puS21kMHMzYlR6X2VLX2pFMGlsWFljVzBpOFg0ZVRONEViNUFKelV2bDBlS19LNVdhYkxRMHNWNlB2aUNIb1VkQzRkcFhRNFAwZUtEemIyaF9TdWk2OC1WM0R0UlAxMFU3S0V1R1g3bll1UnI1b1lLdG83aENrbWRzYS1ZeEZfTDFLXzloUQ?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="tc413d2dee4" data-ts="1794656298">
+  <span class="label">主线 · 法国生活成本抗议与罢工<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>今天是连续第五个周六：France 24 说竞选团体、学生和黄背心将在巴黎合流成一场游行，诉求包括工资、教育和公民自由；摘要被截断，工会领导人的警告内容看不到。</li><li class="today"><b>今天</b>L&#39;Humanité：全国有 300 多场游行；巴黎从共和国广场出发，经巴士底到民族广场，为带孩子的家庭留出离场口，以避免与警察冲突。</li><li class="today"><b>今天</b>France 24：各地校长周五集体示威，说近两个月学生封校以来，威胁和暴力“难以忍受”，许多教师同情学生但感到疲惫和孤立。</li><li class="today"><b>今天</b>暴力与警务的争论：L&#39;Humanité 说谢勒（Chelles）高中有人向 LR 的大区议员扔汽油瓶，一位教师讲述了“媒体炒作”；洛林大学校长报警称遭到网上威胁；一个团体收集了催泪瓦斯对女性健康影响的证词。</li><li class="today"><b>今天</b>Reuters 的标题是《法国暴动：反政府抗议如何失控》；DW 标题是《法国，你的共和国走上街头》；The Militant 说数千人在工会号召总罢工时游行。</li>
+    <li><b>11-13</b>DW 的标题称法国「罢工和学生抗议在升级」，条目只有标题。；ADAC 向去法国的旅行者提醒，巴黎等城市的抗议会带来影响，只有标题。；接下来的节点：按此前记录，公共部门工会今天（11 月 13 日）才在总理府被接见，Solidaires 号召 11 月 17 日大罢工。今天的条目没有这两件事的结果。；L&#39;Humanité：法国国营铁路（SNCF）的 CGT、Sud 和 CFDT 周五发联合声明，号召铁路工人参加 11 月 17 日（周二）的罢工，诉求是反紧缩、涨工资、保就业和公共服务。；L&#39;Humanité 采访神经外科医生洛朗·蒂内斯（Laurent Thinès）。他长期反对警察暴力，说中学生行动开始以来一个月内已统计到超过 100 起致残。这是一名医生的统计，由左翼报纸刊出，条目里没有官方数字对照。；The Real News Network 刊出标题「法国起义内部：学生、工人和一代人的反抗」，条目只有标题。；公共部门工会今天在总理府的接见结果，今天的条目仍然没有。</li><li><b>11-12</b>NYT 的标题称，学生抗议已扩大到法国40多个城市。NZZ 做了一篇概览，说示威在扩大。KONTEXT 的标题是“Verstärkt zurück aus den Herbstferien”（秋假后更强势地回来）。；L&#39;Humanité 写道，街头的工资、通胀、教育诉求已经进入总统竞选议程，削弱了马克龙派继承者，也让左翼重新回到牌桌上，但这股热度能否转成选票还不清楚。；L&#39;Humanité 还批评11月11日的纪念仪式被马克龙和右翼“工具化”。；特拉普（Trappes）袭击案：据《世界报》和 BFM 转述，在嫌疑人凯文·T.（Kévin T.）家中发现一份左翼人士名单，他称这些是“左派分子”和“法国的敌人”（经 L&#39;Humanité 转述）。；DW 标题写法国学生抗议者要求更好的教学条件（条目只有标题）。；Countercurrents 的标题称，学生罢课在谈判陷入僵局之后继续。条目只有标题，没说是哪场谈判，该媒体是左翼立场。</li>
+  </ul>
+  <div class="foryou">如果你近期要去法国或经法国转车，11 月 17 日前后注意铁路罢工。对比德国：Jacobin DE 在问为什么德国的“Gen Z regelt”远低于预期，可以做成对照选题。</div>
+  <details><summary>更早 7 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-11</b>周二（11 月 10 日）巴黎再次游行：高中生、家长、教师和公务员参加。L&#39;Humanité 引用一名参与者的话：“我透支了 600 欧，25 欧有什么用？”该报称 Smic 的预期上调和审计法院（Cour des comptes）的建议加剧了怒气，下一次是 17 日的罢工。；Zeit 的标题说，法国因抗议提前上调最低工资；WELT 说工会仍不满意。；SANA 的标题称学生封锁了 49 所学校，教师也加入抗议，条目没有写日期。Workers.org 的标题则称周末是“斗争的第四个周末”。；WSWS 写 11 月 7 日周六：高中生、大学生、工人和黄背心在全国游行，同时指控工会在与马克龙协调罢工。；WSWS 标题：法国青年和黄背心游行，而工会在与马克龙“协调”罢工。这是托派媒体对工会的批评框架，条目只有标题。；米歇尔·泽克勒（Michel Zecler）案进入第二天。L&#39;Humanité 说他在庭上讲述了2020年被殴打的经过和后遗症，再次确认自己遭到种族辱骂；被告否认种族主义动机。；L&#39;Humanité 另有两篇：一篇采访在动员现场的吉尔达·兰迪尼（Gilda Landini），一篇说教育界对学校强制举行11月11日纪念仪式的做法表示不满。仪式要求小学四年级到高三，包括默哀、唱《马赛曲》和佩戴矢车菊徽章。；France 24 和 Al Jazeera 报道西班牙14年来首次总罢工，扰乱了公共交通和工业，诉求包括住房改革，11月29日大选前三周举行。这是西班牙，与法国的罢工没有直接关系，但同属欧洲生活成本抗议的一波（Al Jazeera 此前统计，九月中旬以来31国有1700多场相关示威）。</li><li><b>11-10</b>Stern：总理勒科尔尼（Lecornu）周一与工会和雇主组织磋商。；WELT：法国在抗议之后上调最低工资，约多 24 欧元，工会仍不满意。上午已记录 12 月 1 日起 Smic 上调 1.6%，L&#39;Humanité 说每月增加不到十欧。两家数字差距很大，条目没说明口径是税前还是税后。；RFI：第四波抗议之后，工会誓言继续向政府施压。；DW：超过 60 万人上街，生活成本引发的怒气在增长。条目没写是哪一天、谁统计的。；Monthly Review：160 万人参加反紧缩总罢工。这和此前 L&#39;Humanité 引用的工会（CGT）数字相同，是工会口径。；Nachrichten.fr 的标题称中小学生、大学生和教师呼吁继续抗议，只有标题。</li><li><b>11-09</b>今天（周一）总理府召集雇主组织和工会开「社会会议」，谈工资和购买力（此前已定于 11 月 9 日）。公共部门工会没有被邀请，要到 11 月 13 日才在总理府（Matignon）被接见。；法国教师工会联盟 FSU 总书记卡罗琳·舍韦（Caroline Chevé）批评说，「公共服务只能捡到社会会议的残羹」。；L&#39;Humanité 写道，「我有两个爱好：乐队、革命」成了当前社会运动非正式的队歌，游行时大家一边喊一边跳。；米歇尔·泽克勒（Michel Zecler）案今天在巴黎刑事法院开庭：三名警察被控 2020 年 11 月殴打这位音乐制作人，罪名是「故意暴力」和「在公文书上造假」。该报称，种族主义性质被被告否认，司法部门没有采信。；L&#39;Humanité 还报道，一个团体收集了超过一万份证词，称催泪瓦斯会影响月经周期，并导致严重疼痛甚至流产，同时缺乏针对女性身体的毒理学研究。；周一总理勒科尔尼（Lecornu）在总理府（Matignon）召开社会会议，谈工资和购买力。会后，据 L&#39;Humanité 转述，政府宣布 12 月 1 日起最低工资（Smic）上调 1.6%。；CFDT 说 1.6% 不够，但肯定“首次”有部分企业补贴与工资谈判挂钩。FO 的苏约（Souillot）说，答复和期待不符，但“首次打破了不给最低工资额外加薪的教条”。；政府把企业可发的燃油补贴（prime carburant）上限定为 1000 欧，并提出修正案让该上限 2027 年继续。该报把这归因于霍尔木兹海峡危机。此前上限只有 300 欧。；Solidaires 号召 11 月 17 日（周二）大罢工并争取延续，批评政府的措施是“小打小闹（mesurettes）”。；公共部门工会没有被邀请，要到周五（11 月 13 日）才被接见。教师工会联盟 FSU 的舍韦（Caroline Chevé）称这种政府做法“难以为继”。；总工会（CGT）的比内（Binet）会后说“我不和 CNews 说话”，称波洛莱（Bolloré）旗下频道在挑衅。；米歇尔·泽克勒（Michel Zecler）案今天在巴黎开庭：三名警察被控 2020 年殴打这位黑人音乐制作人，起因是他没戴口罩。France 24 称这是罕见走到法庭的警暴案。；L&#39;Humanité 标题称周一社会会议只放出“碎屑”：最低工资（Smic）小幅上调，每月不到十欧（该报的说法）。；该报写道，下一次动员日已定在 11 月 17 日。nd 的标题是抗议带来最低工资上调，但工会觉得不够。teleSUR 的标题是工会号召因工资措施举行全国罢工。；France 24 做了解释型报道：为什么全球第七大经济体会有“买不起”的问题。；泽克勒案：三名警察 2020 年殴打黑人音乐制作人，周一开庭，开庭当天就被“种族主义动机”的问题占据（L&#39;Humanité）。；L&#39;Humanité 还报道，两名女子 10 月 17 日在马赛被警方驱散用的手榴弹致残，周一提起诉讼。</li><li><b>11-08</b>周六（11 月 7 日）是连续第四个周末的抗议。Spiegel 引用官方数字说近 15 万人上街，一位法国学生代表说要把压力保持下去。；L&#39;Humanité 的播客说周六有 25 万人，条目没写这个数字是谁统计的。官方数字和左翼媒体数字差得很远。；总理勒科尔尼（Lecornu）定于周一（11 月 9 日）谈判（Spiegel）。L&#39;Humanité 的直播结尾预告，下一次集结是 11 月 10 日（周二）。；Al Jazeera：自 9 月中旬以来，31 个欧洲国家出现了 1700 多场反生活成本示威，法国领头。；梅朗雄（Mélenchon）在勒布尔热（Le Bourget）向约 2 万人发布 2027 年总统竞选纲领。France 24 说，纲领包括提高最低工资、限价基本食品、把退休年龄调回 60 岁，这是他第四次竞选。；L&#39;Humanité 另有一篇讨论电视新闻的文章：电视台把大量时间给了燃烧的垃圾桶，而不是诉求；还批评「警署式新闻」（journalisme de préfecture）照搬官方说法。</li><li><b>11-07</b>11 月 7 日（周六）是「第四幕」：黄背心和学生、高中生联合会号召再次上街，抗议生活成本高、要求改善教学条件（L&#39;Humanité）。France 24 说，黄背心计划在巴黎市中心集会，当局已经禁止，运动在号召「大规模不服从」。；nd 把这天写成工会、学生和黄背心「并肩」反对紧缩政策。；L&#39;Humanité 的一篇文章称，高中生赢得了「大胜利」，政府已宣布取消 Parcoursup 平台。这是评论性文章，条目里没有官方来源。；11 月 7 日（周六）是连续第四个周末的抗议，L&#39;Humanité 称之为“社会愤怒第四幕”。工会和学生组织号召上街，抗议政府对社会不满“充耳不闻”，黄背心也加入进来，该报做了直播。；L&#39;Humanité 的专栏批评 2027 年预算的审议是一场“闹剧”：49.3 条款（政府绕过议会强推）、行政命令、数字税等议题上，议会空荡荡，只有寥寥几名议员表决，给人无力感。；L&#39;Humanité 还报道了教育部长（条目写作 Édouard Geffray）的紧急计划：为了让每个班都有老师，代课教师被仓促派往远地，甚至被要求教自己不熟悉的科目。该报把这归结为多年来对公共服务的破坏。</li><li><b>11-06</b>11月5日全国行动日规模极大：Tagesschau 称“数十万人”上街，大体和平，局部有冲突。L&#39;Humanité 引用法国总工会（CGT）数字说有160万人，称为纪录，但这是工会统计，未经独立核实。；Spiegel 报道有448人被捕，称示威者和警察双方都有暴力。SZ 说高中生、大学生和“黄背心”都在要求提高工资、降低生活成本，现场口号是“马克龙，你完了”。；总理府在工会和青年组织的压力下，召集雇主组织和工会，定于11月9日（周一）谈工资和购买力。L&#39;Humanité 说政府同时继续削减开支。；导火索与诉求：Tagesschau 提到提高工资、税收公平、增加教育经费，Spiegel 提到反对削减社会福利，France 24 采访的 Solidaires 官员说是“公共服务、低工资、学校破败”。；L&#39;Humanité 称示威队伍中有人要求关闭极右翼频道 CNews，原因是特拉普（Trappes）的种族主义袭击。Jacobin 说警察工会趁机争取加薪和法律特权。；WSWS 称，11 月 5 日的一日全国罢工是法国工会在今秋欧洲社会抗议浪潮中举行的第一次，还有学生和“黄背心”参加，罢工影响了公共部门。；WSWS 报道巴黎北站的工会“全体大会”，认为这次经验说明工人必须脱离工会官僚、通过基层行动委员会组织起来，才能继续罢工。；junge Welt 的标题是“钱拿来，警察滚”（Geld her, Cops raus），把示威概括为要钱和反警察暴力两个诉求，只有标题。；L&#39;Humanité 刊出两篇评论：一篇说马克龙十年来的国家暴力“前所未有地强硬”，在资本主义危机下镇压社会运动；另一篇说把警察塑造成英雄会让人更容忍警察滥权。</li><li><b>11-05</b>BBC：法国五大工会加入了这轮罢工和抗议，今天是全国行动日。；L&#39;Humanité：巴黎第七区的维克多·迪吕伊（Victor-Duruy）中学早上约 8 点，学生封校时遭到警察“空前强硬”的镇压（目击者说法）。该报记者在采访学生时还被警察多次推搡。；瓦朗斯（Valence）的中学生说，他们从 10 月初就开始行动，抱怨学习条件，也抱怨警察镇压。；UNSA 在 BFMTV 上要求提高公务员的基点指数（point d&#39;indice），理由是通胀下购买力下降。瓜德罗普（Guadeloupe）的工会联盟则号召 11 月 11 日大动员，要“比 2009 年做得更好”。；WSWS：这次全国罢工之前已有六周升级的罢工和青年斗争，号召建立行动委员会，准备欧洲总罢工。；今天是全国行动日。据法国总工会（CGT）中午 13 点的统计，73 个城市有超过 25 万人上街；马赛约 15 万人（CGT 数字，未经独立核实）。；铁路工人加入：CGT 秘书长索菲·比内（Sophie Binet）在巴黎蒙帕纳斯火车站说，该站 97% 的铁路工人参加罢工（工会说法）。；高中生再次封校：France 24 称，学生认为政府的回应“毫无意义”，继续封锁学校和大学。；Al Jazeera 写出诉求：提高最低工资，给所有劳动者加薪，等等。；L&#39;Humanité 写道，示威者在巴黎把极右翼频道 CNews 的采访组赶出高中生游行，并援引特拉普（Trappes）的种族主义袭击；条目被截断，细节需另查。</li></ul>
+    <p>上周的社会会议只给出 Smic 上调 1.6%，工会不满，Solidaires 号召 11 月 17 日大罢工，SNCF 的 CGT、Sud、CFDT 在 11 月 13 日发联合声明参加。今天条目里仍没有公共部门工会 11 月 13 日在总理府被接见的结果。条目显示这波抗议围绕生活成本、工资、教育条件和警察执法。</p>
+    <ul class="persp"><li><b>Reuters</b>标题用“暴动”“失控”，把重点放在暴力与秩序。</li><li><b>L&#39;Humanité</b>强调街头力量、警察暴力和催泪瓦斯对女性的伤害，把暴力的讨论拉回政府的责任，引用 160 万人的工会口径。</li><li><b>France 24</b>同时写合流的游行和校长们的疲惫与恐惧，给出教育系统内部的矛盾视角。</li><li><b>DW.com</b>标题用“共和国走上街头”，是较宏大的叙述，只有标题。</li></ul>
+    <p><b>研判：</b>研判：下一个节点是 11 月 17 日（周二）罢工，铁路工人加入后，交通中断概率上升。学校里的暴力争议可能被政府用来重新定义这场运动，也可能让更多教师站到学生一边。</p>
+    <p class="signals">观察信号：11 月 17 日罢工的参与规模和铁路停运范围 · 公共部门工会与总理府会面的结果 · 校长和教师工会对政府的下一步要求 · 官方与工会的人数统计差距</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.france24.com/en/france-protests-for-fifth-saturday-against-living-costs-and-heavy-handed-policing" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://www.france24.com/en/france-s-school-principals-say-threats-and-violence-have-become-unbearable" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://www.humanite.fr/societe/chronique/face-la-force-de-la-rue-devoile-la-tartuferie-du-pouvoir" target="_blank" rel="noopener">L&#39;Humanité ↗</a><a class="src" href="https://www.humanite.fr/societe/chelles/bouteille-dessence-a-chelles-le-recit-dun-enseignant-face-a-lemballement-mediatique" target="_blank" rel="noopener">L&#39;Humanité ↗</a><a class="src" href="https://www.humanite.fr/-/-/plus-de-300-manifestations-aujourdhui-encore" target="_blank" rel="noopener">L&#39;Humanité ↗</a><a class="src" href="https://www.humanite.fr/-/-/la-presidente-de-luniversite-de-lorraine-porte-plainte-pour-menaces" target="_blank" rel="noopener">L&#39;Humanité ↗</a><a class="src" href="https://www.humanite.fr/vie-quotidienne/gaz-lacrymogenes/fausses-couches-crampes-regles-douloureuses-le-gaz-lacrymogene-une-arme-chimique-devastatrice-pour-les-femmes" target="_blank" rel="noopener">L&#39;Humanité ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMisgFBVV95cUxOa3F1XzJUQTItaTJpX1hvYTBuU1J0Z2tnX0d2a0ZPTHBUQ1JlYk1FODF4QnFreUdRQm81d2MxeGdXTm5XV25EdDFPXy0yQkNmMTduYXRiMjlrXzFYd0RISjRZbzhuazYySERDU1pXN0hadDZpdXdTTjlxQnJWQ1VJNmVwUWlwUmR1VW1FV0pfMkZROHY3R1dUNnlEVFlxX0RzdDRNVjBJNGlqQ2NXZU5hc2JR?oc=5" target="_blank" rel="noopener">Reuters ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMimgFBVV95cUxPc1cwaF9xSnF4R0w5SFRUeDNlWmhjbnhJWEptaFIta2hsVVZEc3RfUm5KeHlKTkg1UEJYVXA4VjdrU1piV05tLVFtR0R0SE9RT2VwUGlOUTRiTWdabUZ1SHUwaVBoT2JtN0pkVUcyRTlsckw4RjQ5UGxyQ2x6YzdKTjg1YlFMQ0NIdFp3NUFpNExKTVl1OE5WbVZ3?oc=5" target="_blank" rel="noopener">DW.com ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMijAFBVV95cUxPUFFsLU5HRzk3MU9XNi04QmNvZzNhZlFFLUdpVk1fZ0tLSDRraFpxTUhRcGVIMW9NV1FMU003SE1KNVZVbXBIQUFnZ1ZzSlY5eG9pRVRuUlpEc2RxYlhlM0NNS3FsTjlNT0ZicEVOYVVOTkZOaUJtUGtRZzAzU2pUZ0tVTWdUazRGTVoxWQ?oc=5" target="_blank" rel="noopener">The Militant ↗</a></div>
+  
+<div class="acts" data-key="atc413d2dee4" data-title="法国生活成本抗议与罢工" data-text="今天是连续第五个周六：France 24 说竞选团体、学生和黄背心将在巴黎合流成一场游行，诉求包括工资、教育和公民自由；摘要被截断，工会领导人的警告内容看不到。；L&#39;Humanité：全国有 300 多场游行；巴黎从共和国广场出发，经巴士底到民族广场，为带孩子的家庭留出离场口，以避免与警察冲突。；France 24：各地校长周五集体示威，说近两个月学生封校以来，威胁和暴力“难以忍受”，许多教师同情学生但感到疲惫和孤立。；暴力与警务的争论：L&#39;Humanité 说谢勒（Chelles）高中有人向 LR 的大区议员扔汽油瓶，一位教师讲述了“媒体炒作”；洛林大学校长报警称遭到网上威胁；一个团体收集了催泪瓦斯对女性健康影响的证词。；Reuters 的标题是《法国暴动：反政府抗议如何失控》；DW 标题是《法国，你的共和国走上街头》；The Militant 说数千人在工会号召总罢工时游行。" data-src="France 24" data-link="https://www.france24.com/en/france-protests-for-fifth-saturday-against-living-costs-and-heavy-handed-policing">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="t891891ca81" data-ts="1794656298">
+  <span class="label">主线 · 驾照改革联邦议院表决<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>今天的条目仍然没有联邦议院的表决结果。</li><li class="today"><b>今天</b>新说明稿：ka-news 讲家长怎么变成“外行教练”（Laienausbildung），以及与父母练车为什么有争议；Augsburger Allgemeine 的标题引用教练的话：“请别这么激进”，问改革是否真的减负；Gegen Hartz IV 的标题提到“2027 年起”驾照变化对退休者和祖父母的影响。以上都只有标题。</li>
+    <li><b>11-13</b>ZDFheute 的标题称女学员讲述遭遇骚扰和性侵，条目只有标题，没写发生在哪些驾校、涉及什么人，与改革法案的关系不明。；今天的条目仍然没有联邦议院的表决结果，也没有生效时间。</li><li><b>11-12</b>ka-news 又刊出说明稿：驾照改革后考试和驾驶课「将会」怎么变。条目仍没有联邦议院的表决结果和生效时间。</li>
+  </ul>
+  <div class="foryou">如果你还没考德国驾照，这套改革关系到费用和学习方式（理论课可能不用强制到场），但在生效时间明确之前，不要为了等改革而推迟计划。</div>
+  <details><summary>更早 3 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-11</b>techbook、ka-news、Netz Trends 都做了说明稿：改革后要改哪些、“最多省 1000 欧”从什么时候开始。条目只有标题，没有写联邦议院的表决结果和生效时间。；ka-news 又出了一篇说明稿：“学员最多能省1000欧，驾照从什么时候开始变便宜？”条目只有标题，仍没有联邦议院的表决结果，也没有生效时间。</li><li><b>11-10</b>Frankenpost 的标题称，驾校教练批评联邦政府计划的驾照改革，只有标题。；ka-news、Netz Trends 做了说明稿：考试和驾驶课以后会怎么变，以及「最多省 1000 欧」从什么时候开始。条目只有标题，没有生效时间，也没有写联邦议院的表决结果。</li><li><b>11-06</b>taz 评论认为，这次改革可让驾照最多便宜约1000欧元，但质问：连房租和日常采购都负担不起时，谁在乎这个？标题说这不是“出于对年轻人的好意”。</li></ul>
+    <p>此前的报道说，改革目标是减少特殊行驶课时、理论课不再强制到场，使驾照最多便宜约 1000 欧；驾校教练批评，taz 评论质疑谁在乎这个。“2027 年”只出现在一个标题里，不能当作确切生效时间。</p>
+    <ul class="persp"><li><b>Augsburger Allgemeine</b>引用驾校教练的“别这么激进”，质疑改革是否真让学员轻松，立场偏行业方。</li><li><b>ka-news</b>以说明稿方式讲家长参与练车，把改革写成可操作的变化，也点出争议。</li></ul>
+    <p><b>研判：</b>研判：改革会不会如期落地，取决于联邦议院的表决结果和后续程序，条目里没写。教练行业的反对会成为后续争论的主线。</p>
+    <p class="signals">观察信号：联邦议院的表决结果 · 生效时间 · 家长练车的具体条件和保险问题</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMirwFBVV95cUxNUWJucnVRcTlISVBEazE0ZDZyOWpHWUZDXzRoT2VNaXhaazJKWC12cV92bzNja1VNQVFwN3NIdVFRM2dZcFRGSENGNmJXYUUtVF8zQnFsVl9ualJJTDBCdVo4Y3lzWHpLZDd1MTU1Vy1Nbm90VmtvamRuV3ROaVVYQlR3STJFbHNtNzRNdkxxMDdJc1U3RFBzOVF1cURza0dfZEdVNzNRd1ZGcVJKams4?oc=5" target="_blank" rel="noopener">ka-news ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi1gFBVV95cUxNRzUxNG1HaUFwdjFaVFZHZDdxeTZaazJqcjJZZlFWcXpuOEVORlMyLUtfU0wxNmZxel9Td3FSWDJGQzNmdXExMERCRTN0VWxrVjl5T1FzVTczV1VrNVYyX1pCTXlmcnBCZXFOc2pSMXBmdDkwZTFSS2d2TFpmcl9yWkZ4UGlINHNNcTZPZnMxMm1ZQXNaYVU1eGROb19tdlB4Vlc3WXVILUxrMlJXb3lyS0xJRkZGdUE2SUEtNHpZSUxHaXJPY1k0dXRaUGNTdzJrLXJRYWR3?oc=5" target="_blank" rel="noopener">Augsburger Allgemeine ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMixgFBVV95cUxObmhrdmQ2MnphSGhXdk9nd2h6dUpoS0pOSU5XZ0ppNG42RkgxS0ZCSzJZcnFMVFdjMkd6dDcyV3NlOF9jZ1BYdGt1QW8tTmJXeEF2WFlWMWladXp3dzVhVEtlbkFhQlJhdjRGcUpKZUF4THF5d1FuNnBxWmFnT3NoQmJsVUZNZEZvT3lNU1Q2UVQ0ZUFWMlNINFZtS1gzeTh5MEQyMVpKTk4zOTZUSUtPaWJ0dzlWcWN0SkdIMEF3UHg2bnl6QWc?oc=5" target="_blank" rel="noopener">Gegen Hartz IV ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMivgFBVV95cUxNZ0t4NUY5TFoxeXVvYm9uM3pfNlBVT1pNYnpXaG1RMS1PcURidElTSTFDZm56bVgwV0IxWDJ0MjZ4NkJQQlNHVE5GdHcxbmoyalU5WXctYXNWd01qQW5KMFFzVVhydlcwcjBmekF1MExiWjM3cnNka1hla1NTcnlRTV85SkZ0Vjg3cF9jTnhsdWk0S2pqQ0VITmtuSU16Tk01Y0pzVm5ZV1llX0tKcDBLV2hPSGZoU1FKQ1VBSWtR?oc=5" target="_blank" rel="noopener">ka-news ↗</a></div>
+  
+<div class="acts" data-key="at891891ca81" data-title="驾照改革联邦议院表决" data-text="今天的条目仍然没有联邦议院的表决结果。；新说明稿：ka-news 讲家长怎么变成“外行教练”（Laienausbildung），以及与父母练车为什么有争议；Augsburger Allgemeine 的标题引用教练的话：“请别这么激进”，问改革是否真的减负；Gegen Hartz IV 的标题提到“2027 年起”驾照变化对退休者和祖父母的影响。以上都只有标题。" data-src="ka-news" data-link="https://news.google.com/rss/articles/CBMirwFBVV95cUxNUWJucnVRcTlISVBEazE0ZDZyOWpHWUZDXzRoT2VNaXhaazJKWC12cV92bzNja1VNQVFwN3NIdVFRM2dZcFRGSENGNmJXYUUtVF8zQnFsVl9ualJJTDBCdVo4Y3lzWHpLZDd1MTU1Vy1Nbm90VmtvamRuV3ROaVVYQlR3STJFbHNtNzRNdkxxMDdJc1U3RFBzOVF1cURza0dfZEdVNzNRd1ZGcVJKams4?oc=5">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article><article class="card thread" data-key="t69bd54e7fc" data-ts="1794656298">
+  <span class="label">主线 · Gen Z regelt 青年抗议<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>Zeit、BZ、Stern：“Gen Z regelt” 再次号召在柏林游行。Tagesspiegel：柏林警方筹备大规模行动，同一时间有乌克兰峰会和 Gen Z 大游行。条目没写具体日期。</li><li class="today"><b>今天</b>杜塞尔多夫的 Kö 又有 Gen Z 抗议，伍珀塔尔（Wuppertal）也有（Zeit）；比勒费尔德据说没有游行，警方仍在加强准备（Mindener Tageblatt）；法兰克福警方在 Gen Z 骚乱之后封锁了 Zeil 的所有入口（fnp.de）。</li><li class="today"><b>今天</b>taz 的播客：这个运动分成激进和温和两派，在争论“要成为谁”。Jacobin DE 评论：为什么德国的 Gen Z 没有像法国那样“regelt”，实际规模远低于预期。</li><li class="today"><b>今天</b>Klasse Gegen Klasse：柏林夏里特（Charité）罢工里讨论了 11 月 20 日的青年罢工，并刊出一位法国活动者给德国青年的“教训”；WSWS：法兰克福歌德大学计划裁撤 60 个教授席位、合并院系，学生抗议。以上两家是托派立场。</li>
+    <li><b>11-13</b>MDR 称「GenZ regelt」将在 11 月 20 日再次抗议，同时回顾 10 月底首次抗议后的骚乱。拜罗伊特（Bayreuth）也有 11 月 20 日反义务兵役游行，从瓦恩弗里德庄园（Haus Wahnfried）出发。；NRZ：杜塞尔多夫周六又有 Gen Z 游行。；DW 的数据文章指出，老一代也受危机拖累，这在反驳「婴儿潮一代都过得更好」的说法。；Klasse Gegen Klasse 报道慕尼黑大学（LMU）11 月 16 日全校罢课，反对非欧盟学生学费。WSWS 号召「准备欧洲总罢工」，两家都是托派立场。；RP Online：杜塞尔多夫周末有多场游行，包括 Gen Z、Prüf NRW 和伊朗人的游行；条目没说 Prüf NRW 是什么。；柏林晨邮报（Morgenpost）的标题称，下一场 Gen-Z 抗议已定在库达姆（Kurfürstendamm），标题问「会不会有暴力」，强调风险。</li><li><b>11-12</b>明斯特：Klasse Gegen Klasse 报道，约80人参加“Gen Z regelt”行动大会，讨论运动的政治方向，通过共同诉求并选出了协调小组。这家是托派媒体，只有它报了这条。；柏林教育与科学工会（GEW Berlin）号召会员参加11月20日的 Youth Strike，并给出实际操作建议（Klasse Gegen Klasse）。；英戈尔施塔特（Ingolstadt）的学生罢课委员会宣布调整罢课策略，Klasse Gegen Klasse 转载了声明。；德共《我们的时代》以“Schulstreiks wirken”（罢课有效）为题，称国防部长皮斯托留斯（Pistorius）周六对 Funke 媒体集团说，现在没有必要重新引入义务兵役。这与11月9日只有 Klasse Gegen Klasse 的“据称”说法互相印证，但该报称他为“战争准备部长”，措辞带明显立场。；DW 引报纸报道：预防性拒服兵役的人数急剧上升。；WELT：警察把柏林的圣马丁游行（Martinszug）当成 Gen-Z 示威叫停，反映出警方的紧绷。；taz 刊出对青年的采访，标题引语是「我们作为年轻人对这种政治又气又怒」。条目只有标题。；junge Welt 写斯图加特的 Gen Z 抗议，标题引用参与者的话「青年和我们立场一致」，立场偏同情。；WELT 称警方在柏林叫停了一场 Gen-Z 游行，现场有木棍和火。条目没写日期，可能就是 11 月 8 日 SZ 报道的那次，也可能是新事件。</li>
+  </ul>
+  
+  <details><summary>更早 6 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-11</b>WDR：“Gen Z regelt” 周六再次在杜塞尔多夫游行。；hessenschau：黑森州的 Poseck 为自己关于“移民背景”的说法辩护，起因是法兰克福的 Gen Z 骚乱。；Schwäbische Post：警察工会就“移民背景的社会环境（migrantisches Milieu）”的说法与国防部长皮斯托留斯（Pistorius）争执升级，标题称给了他“黄牌”。；黑森州内政部长波塞克（Poseck）宣布后续抗议将有更多警力、更强硬的手段（FAZ）；hessenschau 报道他为自己谈“移民背景”的说法辩护。；NRZ：下一场 Gen Z 抗议已在杜塞尔多夫登记，同时有其他游行并行。条目只有标题。；nd：到10月底，今年已有约17,000份拒服兵役申请，数字继续明显上升，FAZ 直播栏也提到了这个趋势。这是义务兵役争论的一个背景数据。；WSWS 报道：卡塞尔大学取消了禁止军事研究的“民用条款”，并叫警察清场和平的讲堂占领。这是托派媒体的单一说法，今天没有其他来源。</li><li><b>11-10</b>SZ.de 的标题：Gen Z regelt 的青年抗议计划在 30 多个城市举行。；Journal Frankfurt 的标题：Gen Z regelt 和 Fridays for Future 联合号召游行。条目只有标题，没有日期和路线，不能确认是否就是 11 月 20 日那场。</li><li><b>11-09</b>taz：「Gen Z regelt Studis」宣布 11 月 20 日也要让大学停摆，许多城市将召开全体大会（Vollversammlung）筹备。；Klasse Gegen Klasse 称，10 月 31 日有约 12 万人上街，国防部长皮斯托留斯（Pistorius）现在想安抚抗议者：尽管问卷反馈很少有积极的，他「据称」已认为不一定需要义务兵役。这个数字和说法只来自这家托派媒体。；RP Online：Gen Z 向警方登记了周末在杜塞尔多夫的游行，条目没写具体日期。；Klasse Gegen Klasse 称，黑森州 CDU 政客在 GenZ 抗议后发表“种族主义煽动”言论，并讨论限制示威权。这是托派媒体的说法，其他媒体今天没有印证。；Jacobin DE 评论《统治阶级害怕 Gen Z》，把从法国到印度的青年抗议归因于高房租、义务兵役、战争、气候与 AI 影响。</li><li><b>11-08</b>SZ.de 标题：警察在柏林叫停了“Gen Z hat genug!”（Gen Z 受够了）游行，现场有扔石头和烟火。条目只有标题。</li><li><b>11-07</b>FAZ 的「骚乱后续」文章引用了一位受访者的话「那些抢劫，我真想在场」，并提出：怎么讨论移民背景的犯罪者，又不让无辜者被误伤？文章认为最有用的是看事实和数据里的规律。</li><li><b>11-06</b>taz 评论《Halbstarke in Turnschuhen》说，从联盟党到 AfD 的政客都强调周末闹事者的出身，但更关键的似乎是闹事者的性别。；FAZ 的一篇文章采访了在德国长大却被贴上“移民”标签的人，问这个标签是否永远摆脱不了。FAZ 把这篇放在“法兰克福骚乱”的标题下。</li></ul>
+    <p>10 月 31 日首次大游行后出现骚乱；11 月 12 日皮斯托留斯（Pistorius）据报道说暂时没必要重新引入义务兵役。11 月 20 日是下一个节点，多个城市在筹备罢课和游行。</p>
+    <ul class="persp"><li><b>Tagesspiegel</b>把警方的“大规模部署”作为重点，强调与乌克兰峰会同时发生的安保压力。</li><li><b>taz</b>走进运动内部，写出激进和温和两派的分歧，同情但不回避矛盾。</li><li><b>Jacobin DE</b>拿德国和法国对比，批评运动规模低于预期，从左翼立场分析动员难题。</li><li><b>Klasse Gegen Klasse</b>把青年罢工与工会斗争（夏里特罢工）连接起来，主张扩大到工人，托派立场。</li></ul>
+    
+    
+  </details>
+  <div class="srcs"></div>
+  
+<div class="acts" data-key="at69bd54e7fc" data-title="Gen Z regelt 青年抗议" data-text="Zeit、BZ、Stern：“Gen Z regelt” 再次号召在柏林游行。Tagesspiegel：柏林警方筹备大规模行动，同一时间有乌克兰峰会和 Gen Z 大游行。条目没写具体日期。；杜塞尔多夫的 Kö 又有 Gen Z 抗议，伍珀塔尔（Wuppertal）也有（Zeit）；比勒费尔德据说没有游行，警方仍在加强准备（Mindener Tageblatt）；法兰克福警方在 Gen Z 骚乱之后封锁了 Zeil 的所有入口（fnp.de）。；taz 的播客：这个运动分成激进和温和两派，在争论“要成为谁”。Jacobin DE 评论：为什么德国的 Gen Z 没有像法国那样“regelt”，实际规模远低于预期。；Klasse Gegen Klasse：柏林夏里特（Charité）罢工里讨论了 11 月 20 日的青年罢工，并刊出一位法国活动者给德国青年的“教训”；WSWS：法兰克福歌德大学计划裁撤 60 个教授席位、合并院系，学生抗议。以上两家是托派立场。" data-src="" data-link="">
+  <button class="act" data-act="like">♡ 赞</button>
+</div>
+</article>
+  <div class="end"><span class="dot">·</span>主线看完了</div>
+</section>
+
+<section class="panel" id="briefs">
+  <div class="chips" id="chips">
+    <button class="chip on" data-s="">全部</button>
+    
+  </div>
+  
+  <div class="end"><span class="dot">·</span>简讯就这些</div>
+</section>
+
+<section class="panel" id="video">
+  
+  
+  <div class="end">今天没有新视频</div>
+</section>
+
+<section class="panel" id="art">
+  <div class="favbar"><button class="favtab on" data-v="today">今日作品</button><button class="favtab" data-v="fav">★ 我的收藏 <span id="favCount">0</span></button></div>
+  <div id="favList" style="display:none"></div>
+  <div id="artToday">
+  <div class="end">今天的作品赏析在早间版里</div>
+  </div>
+  
+  
+  <div class="end"><span class="dot">·</span>艺术看完了</div>
+</section>
+
+<section class="panel" id="de">
+  <h3 class="sub">今日德语</h3>
+  
+  <h3 class="sub">创作素材</h3>
+  
+  <div class="end"><span class="dot">·</span>今天就到这里</div>
+</section>
+</main>
+<footer>
+  <p style="margin-bottom:8px"><a href="reader/" style="text-decoration:underline">📖 阅读器</a></p>
+  <details><summary>来源状态：75 个正常，1 个失败</summary>
+    <div>✕ Unsere Zeit：HTTPSConnectionPool(host=&#39;www.unsere-zeit.de&#39;, port=443): Read timed out. (read timeout=20)</div>
+  </details>
+  <p style="margin-top:8px">往期：<a href="2026-11-13.html" style="text-decoration:underline">11-13</a> · <a href="2026-11-12.html" style="text-decoration:underline">11-12</a> · <a href="2026-11-11.html" style="text-decoration:underline">11-11</a> · <a href="2026-11-10.html" style="text-decoration:underline">11-10</a> · <a href="2026-11-09.html" style="text-decoration:underline">11-09</a> · <a href="2026-11-08.html" style="text-decoration:underline">11-08</a> · <a href="2026-11-07.html" style="text-decoration:underline">11-07</a> · <a href="2026-11-06.html" style="text-decoration:underline">11-06</a> · <a href="2026-11-05.html" style="text-decoration:underline">11-05</a> · <a href="2026-11-04.html" style="text-decoration:underline">11-04</a></p>
+</footer>
+<script>
+const tabs=[...document.querySelectorAll('.tab')],panels=[...document.querySelectorAll('.panel')];
+function show(id){tabs.forEach(t=>t.classList.toggle('on',t.dataset.p===id));panels.forEach(p=>p.classList.toggle('on',p.id===id));window.scrollTo({top:0});try{sessionStorage.setItem('tab',id)}catch(e){}}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.p));
+try{const s=sessionStorage.getItem('tab');if(s)show(s)}catch(e){}
+const order=tabs.map(t=>t.dataset.p);let sx=0,sy=0;
+document.querySelector('main').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.querySelector('main').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const cur=order.indexOf(document.querySelector('.tab.on').dataset.p);
+ const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+ document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
+
+document.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})});
+
+/* ===== 工作安排：加密存放，在手机上解密 ===== */
+(()=>{
+const ENC=(location.pathname.includes('/archive/')?'../':'')+'work.enc';
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const b64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+async function dec(box,pw){const k0=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+ const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(box.salt),iterations:box.iter,hash:'SHA-256'},k0,{name:'AES-GCM',length:256},false,['decrypt']);
+ return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(box.iv)},k,b64(box.ct))))}
+const todayStr=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+const days=d=>Math.round((new Date(d+'T12:00')-new Date(todayStr+'T12:00'))/864e5);
+const md=d=>{const[y,m,dd]=d.split('-');return (+m)+'月'+(+dd)+'日'};
+let done={};try{done=JSON.parse(localStorage.getItem('workDone'))||{}}catch(e){}
+const saveDone=()=>{try{localStorage.setItem('workDone',JSON.stringify(done))}catch(e){}};
+const kid=(l,i)=>l.id+'|'+(i.date||'')+'|'+i.text;
+const LVN={red:'最优先',yellow:'有固定时间点',green:'持续推进',later:'以后再开',paused:'暂停'};
+function todo(list,inLine){return '<ul class="todo">'+list.map(([l,i])=>{const k=kid(l,i),d=done[k];
+  const tag=i.date&&i.date<todayStr?'<span class="tag">逾期 '+(-days(i.date))+' 天</span>':(i.kind==='wait'?'<span class="tag">等待中</span>':'');
+  return '<li class="'+(d?'done':'')+'"><input type="checkbox" data-k="'+esc(k)+'"'+(d?' checked':'')+'><span>'+esc(i.text)+(inLine?'':'<span class="tag">'+esc(l.title)+'</span>')+tag+'</span></li>'}).join('')+'</ul>'}
+function render(plan){
+ const all=[];plan.lines.forEach(l=>(l.items||[]).forEach(i=>all.push([l,i])));
+ const today=all.filter(([l,i])=>i.date===todayStr&&i.kind!=='deadline'&&i.kind!=='read');
+ const overdue=all.filter(([l,i])=>i.date&&i.date<todayStr&&!done[kid(l,i)]&&i.kind!=='deadline'&&i.kind!=='read');
+ const order=plan.today_order||[];
+ today.sort((a,b)=>{const ia=order.findIndex(o=>a[1].text.includes(o.slice(-4))),ib=order.findIndex(o=>b[1].text.includes(o.slice(-4)));return (ia<0?99:ia)-(ib<0?99:ib)});
+ const soon=all.filter(([l,i])=>i.date&&i.date>todayStr&&days(i.date)<=14&&i.kind!=='read').sort((a,b)=>a[1].date<b[1].date?-1:1);
+ let h='';
+ const reads=all.filter(([l,i])=>i.kind==='read'&&i.date&&i.date>=todayStr&&days(i.date)<=6);
+ if(reads.length){const left=reads.filter(([l,i])=>!done[kid(l,i)]);h+='<p class="wnote">本周阅读还剩 '+left.length+' / '+reads.length+' 项'+(left[0]?'，下一项：'+esc(left[0][1].text.replace(/^第.周 · .：/,'')):'')+'</p>'}
+ if(order.length)h+='<p class="wnote">今天的顺序：'+order.map(esc).join(' → ')+'</p>';
+ h+=today.length||overdue.length?todo([...overdue,...today]):'<p class="wstat">今天没有排定的事。</p>';
+ if(soon.length)h+='<h3 class="sub" style="margin:14px 0 4px">接下来两周</h3>'+soon.map(([l,i])=>'<div class="due'+(i.kind==='key'||i.kind==='deadline'?' key':'')+'"><span>'+md(i.date)+' · '+esc(i.text)+'</span><b>'+(days(i.date)===1?'明天':days(i.date)+' 天后')+'</b></div>').join('');
+ h+='<p class="wnote" style="margin-top:10px">安排更新于 '+md(plan.updated)+'。完成情况记在这台手机上；有变化直接告诉 Claude。</p>';
+ document.getElementById('todayBody').innerHTML=h;
+ let w='';
+ if(plan.principle)w+='<div class="card work"><p class="wnote" style="margin:0">'+esc(plan.principle)+'</p></div>';
+ plan.lines.forEach(l=>{
+  const last=(l.log||[]).map(x=>x.date).sort().pop();const idle=last?-days(last):null;
+  const open=(l.items||[]).filter(i=>!done[kid(l,i)]);
+  w+='<article class="card work"><span class="label"><span class="lv lv-'+l.level+'"></span>'+esc(LVN[l.level]||'')+'</span>'
+   +'<h2>'+esc(l.title)+(idle!==null&&idle>=5&&['red','yellow','green'].includes(l.level)?'<span class="stale">'+idle+' 天没进展</span>':'')+'</h2>'
+   +(l.goal?'<p class="wnote" style="margin-top:0">目标：'+esc(l.goal)+'</p>':'')
+   +(l.status?'<p class="wstat">'+esc(l.status)+'</p>':'')
+   +(open.length?todo(open.map(i=>[l,i]),true):'')
+   +(l.note?'<p class="wnote">'+esc(l.note)+'</p>':'')
+   +((l.log||[]).length?'<details><summary>进展记录</summary><ul class="tl">'+l.log.slice().reverse().map(x=>'<li><b>'+md(x.date)+'</b>'+esc(x.text)+'</li>').join('')+'</ul></details>':'')
+   +'</article>'});
+ w+='<div class="end"><span class="dot">·</span>工作安排就这些</div>';
+ document.getElementById('workBody').innerHTML=w;
+ document.querySelectorAll('.todo input').forEach(c=>c.onchange=()=>{if(c.checked)done[c.dataset.k]=todayStr;else delete done[c.dataset.k];saveDone();render(plan)});
+}
+async function unlock(pw,silent){
+ try{const box=await (await fetch(ENC,{cache:'no-store'})).json();const plan=await dec(box,pw);
+  try{localStorage.setItem('workPass',pw)}catch(e){};render(plan)}
+ catch(e){if(!silent){const i=document.getElementById('lockPw');i.value='';i.placeholder='密码不对，再试一次'}}
+}
+const f=document.getElementById('lockForm');
+if(f)f.onsubmit=e=>{e.preventDefault();unlock(document.getElementById('lockPw').value.trim())};
+let saved='';try{saved=localStorage.getItem('workPass')||''}catch(e){}
+if(saved)unlock(saved,true);
+})();
+/* 刷新：主屏幕 App 没有下拉刷新，回到前台时自动检查有没有新一期 */
+(()=>{const cur=+document.body.dataset.latest;let busy=false;
+ async function check(force){if(busy)return;busy=true;
+  try{const t=await (await fetch(location.pathname+'?t='+Date.now(),{cache:'no-store'})).text();
+   const m=t.match(/data-latest="(\d+)"/);if(force||(m&&+m[1]>cur))location.reload()}catch(e){if(force)location.reload()}busy=false}
+ document.getElementById('reload').onclick=()=>check(true);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check(false)});
+ window.addEventListener('pageshow',e=>{if(e.persisted)check(false)});
+ check(false)})();
+/* 抓取：开一个预填好的 Issue，点"Submit"后约 3 分钟出新内容 */
+(()=>{const go=()=>{const t=new Date();const stamp=t.getMonth()+1+'/'+t.getDate()+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+  window.open('https://github.com/prima-bottle/info-feed/issues/new?title='+encodeURIComponent('抓取 '+stamp)+'&body='+encodeURIComponent('点 Submit 后大约 3 分钟出新内容，回到信息台点 ↻ 刷新。'),'_blank')};
+ document.getElementById('fetchNow').onclick=go;document.querySelectorAll('.fetchbtn').forEach(b=>b.onclick=go);
+ const d=new Date(),today=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const pageDate=document.body.dataset.date;
+ if(pageDate&&pageDate<today&&d.getHours()>=5){const bar=document.getElementById('stalebar');bar.style.display='flex';
+  const[,m,dd]=pageDate.split('-');document.getElementById('staletext').textContent='这还是'+(+m)+'月'+(+dd)+'日的内容，今天的还没生成'}
+})();
+
+/* 艺术收藏：存在这台手机的浏览器里 */
+(()=>{const K='artFav';let fav={};try{fav=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+ const save=()=>{try{localStorage.setItem(K,JSON.stringify(fav))}catch(e){}};
+ const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const idOf=a=>(a.work||'')+'|'+(a.creator||'');
+ function count(){document.getElementById('favCount').textContent=Object.keys(fav).length}
+ function sync(){document.querySelectorAll('#artToday .art').forEach(c=>{let a;try{a=JSON.parse(c.dataset.art)}catch(e){return}
+   const b=c.querySelector('.favbtn'),on=!!fav[idOf(a)];b.classList.toggle('on',on);b.textContent=on?'★ 已收藏':'☆ 收藏'});count()}
+ function list(){const box=document.getElementById('favList');const xs=Object.values(fav).sort((x,y)=>y.saved-x.saved);
+  if(!xs.length){box.innerHTML='<div class="end">还没有收藏。在作品卡片右上角点 ☆ 收藏。</div>';return}
+  box.innerHTML=xs.map(a=>'<article class="card art"><button class="favbtn on" data-id="'+esc(idOf(a))+'">★ 取消收藏</button>'
+   +(a.image?'<img class="artimg" src="'+esc(a.image)+'" loading="lazy">':'')
+   +'<h2>'+esc(a.work)+'</h2><div class="by">'+esc(a.creator)+(a.year?' · '+esc(a.year):'')+'</div>'
+   +(a.brief?'<h4>它要解决什么问题</h4><p>'+esc(a.brief)+'</p>':'')
+   +((a.decisions||[]).length?'<h4>创作者的关键决定</h4><ol>'+a.decisions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')
+   +(a.symbols?'<h4>符号怎么用</h4><p>'+esc(a.symbols)+'</p>':'')
+   +((a.takeaway||[]).length?'<h4>你可以借用的手法</h4><ul>'+a.takeaway.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')
+   +(a.ai_prompt?'<h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>'+esc(a.ai_prompt)+'</div>':'')
+   +(a.ai_tips?'<p style="margin-top:8px;font-size:14px;color:var(--muted)">'+esc(a.ai_tips)+'</p>':'')
+   +'<div class="favdate">收藏于 '+new Date(a.saved).toLocaleDateString('zh-CN')+'</div></article>').join('');
+  box.querySelectorAll('.favbtn').forEach(b=>b.onclick=()=>{delete fav[b.dataset.id];save();list();sync()});
+  box.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+   (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})})}
+ document.querySelectorAll('#artToday .favbtn').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();
+  const a=JSON.parse(b.closest('.art').dataset.art),id=idOf(a);if(fav[id])delete fav[id];else fav[id]={...a,saved:Date.now()};save();sync()});
+ document.querySelectorAll('.favtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.favtab').forEach(x=>x.classList.toggle('on',x===t));
+  const f=t.dataset.v==='fav';document.getElementById('favList').style.display=f?'':'none';document.getElementById('artToday').style.display=f?'none':'';if(f)list()});
+ sync()})();
+/* 夜间模式：自动 → 夜间 → 日间 */
+(()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
+ let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
+ const apply=()=>{if(cur==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=cur;b.textContent='◐ '+names[cur]};
+ apply();b.onclick=()=>{cur=next[cur];try{localStorage.setItem('theme',cur)}catch(e){};apply()}})();
+/* 已读记录：只存在这台手机的浏览器里 */
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const latest=+document.body.dataset.latest, prevSeen=LS.get('seenRun',0);
+let read=LS.get('read',{});
+const cutoff=Date.now()/1000-3*86400; for(const k in read){if(read[k]<cutoff)delete read[k]}
+const cards=[...document.querySelectorAll('[data-key]')];
+// 1. 上次打开后新增的内容标"新"
+if(prevSeen&&latest>prevSeen){cards.forEach(c=>{if(+c.dataset.ts>prevSeen&&!read[c.dataset.key]){
+  const b=document.createElement('span');b.className='new';b.textContent='新';
+  (c.querySelector('.label,h2,.meta,.t')||c).prepend(b)}})}
+LS.set('seenRun',latest);
+// 2. 之前看过的收进每个板块底部的"已看过"
+panels.forEach(p=>{const old=[...p.querySelectorAll(':scope > [data-key], :scope > a[data-key]')].filter(c=>read[c.dataset.key]);
+  if(!old.length)return;const d=document.createElement('details');d.className='folded';
+  d.innerHTML='<summary>已看过 '+old.length+' 条</summary>';old.forEach(c=>{c.classList.add('read');d.appendChild(c)});
+  const end=p.querySelector(':scope > .end');p.insertBefore(d,end)});
+cards.forEach(c=>{if(read[c.dataset.key])c.classList.add('read')});
+// 3. 在屏幕上停留超过 1.5 秒或点开过，算看过
+const timers=new Map();
+const io=new IntersectionObserver(es=>es.forEach(e=>{const k=e.target.dataset.key;
+  if(e.isIntersecting){timers.set(k,setTimeout(()=>{read[k]=Date.now()/1000;LS.set('read',read);io.unobserve(e.target)},1500))}
+  else{clearTimeout(timers.get(k))}}),{threshold:.6});
+cards.forEach(c=>{if(!read[c.dataset.key]){io.observe(c);c.addEventListener('click',()=>{read[c.dataset.key]=Date.now()/1000;LS.set('read',read)})}});
+
+/* 赞 / 追踪：打开预填好的 GitHub Issue，你点"Submit"就生效 */
+const REPO='prima-bottle/info-feed';let acted=LS.get('acted',{});
+document.querySelectorAll('.acts').forEach(box=>{
+  box.querySelectorAll('.act').forEach(btn=>{
+    const k=box.dataset.key+':'+btn.dataset.act;
+    if(acted[k]){btn.classList.add('done');btn.textContent=btn.dataset.act==='like'?'♥ 已赞':'✓ 追踪中'}
+    btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();
+      const like=btn.dataset.act==='like';
+      const title=(like?'赞：':'追踪：')+box.dataset.title.slice(0,80);
+      const body=[box.dataset.text,box.dataset.src&&('来源：'+box.dataset.src),box.dataset.link,'','（来自信息台 '+document.body.dataset.date+'。想取消就把这个 Issue 关掉。）'].filter(x=>x!==undefined&&x!==null).join('\n');
+      window.open('https://github.com/'+REPO+'/issues/new?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body),'_blank');
+      acted[k]=Date.now();LS.set('acted',acted);btn.classList.add('done');btn.textContent=like?'♥ 已赞':'✓ 追踪中';
+    })})});
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
