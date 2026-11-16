@@ -47,7 +47,7 @@ def load_signals() -> tuple[list[dict], list[str]]:
     return tracked[-MAX_TRACKED:], likes[-MAX_LIKES:]
 
 
-def ensure_queries(tracked: list[dict], likes: list[str], data_dir) -> dict:
+def ensure_queries(tracked: list[dict], likes: list[str], data_dir, use_ai: bool = True) -> dict:
     """给每条追踪和每个赞生成搜索词（新闻 + 视频），结果缓存，只为新出现的条目调用一次 AI。"""
     import hashlib
     import json
@@ -59,7 +59,7 @@ def ensure_queries(tracked: list[dict], likes: list[str], data_dir) -> dict:
     for x in likes:
         want["l" + hashlib.sha1(x.encode()).hexdigest()[:8]] = x[:300]
     missing = {k: v for k, v in want.items() if k not in cache}
-    if missing:
+    if missing and use_ai:
         import anthropic
         prompt = ("下面是读者在新闻页上点了「追踪」或「赞」的条目。为每条生成搜索词，用来之后自动去找后续新闻和相关视频。\n"
                   "要求：news 给 2 个新闻搜索词，3到6个词的关键词式短语，用最可能有报道的语言（德国的事用德语，中国的事用中文，国际的事用英语）；"

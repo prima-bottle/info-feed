@@ -45,7 +45,7 @@ def wiki_image(title: str) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sample", action="store_true")
-    ap.add_argument("--mode", choices=["auto", "full", "update", "test"], default=os.environ.get("RUN_MODE") or "auto")
+    ap.add_argument("--mode", choices=["auto", "full", "update", "test", "fetch"], default=os.environ.get("RUN_MODE") or "auto")
     ap.add_argument("--force", action="store_true", default=os.environ.get("FORCE_RUN") == "true")
     args = ap.parse_args()
 
@@ -63,6 +63,24 @@ def main() -> int:
     mode = args.mode
     if mode == "auto":
         mode = "full" if now.hour < 10 or "full" not in done else "update"
+    if mode == "fetch":  # 只抓取、不调用 AI：API 额度用完时，把原始条目存下来交给对话里的 Claude 编辑
+        from feed.fetch import fetch_all
+        from feed.signals import ensure_queries, load_signals
+        try:
+            tracked, likes = load_signals()
+            cfg["signal_queries"] = ensure_queries(tracked, likes, DATA, use_ai=False)
+            (DATA / "user_threads.json").write_text(json.dumps(tracked, ensure_ascii=False, indent=1))
+        except Exception as ex:  # noqa: BLE001
+            print(f"读取追踪失败：{ex}")
+        items, status = fetch_all(cfg, DATA)
+        seen = load_json(DATA / "seen.json", {})
+        items = [it for it in items if it["id"] not in seen]
+        raw = DATA / "raw"
+        raw.mkdir(exist_ok=True)
+        out = raw / f"{date}-{now.strftime('%H%M')}.json"
+        out.write_text(json.dumps({"items": items, "status": status}, ensure_ascii=False))
+        print(f"已保存 {len(items)} 条原始条目到 {out.name}")
+        return 0
     if mode == "test":  # 只检查来源能不能抓到，不调用 AI、不改网页
         from feed.fetch import fetch_all
         _, status = fetch_all(cfg, DATA)

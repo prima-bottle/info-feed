@@ -17,7 +17,7 @@ on:
         description: "auto 按时间判断 / full 完整版 / update 午间增量 / test 只检查来源"
         default: auto
         type: choice
-        options: [auto, full, update, test]
+        options: [auto, full, update, test, fetch]
       force:
         description: "这个时段已经跑过也重新跑"
         default: true
