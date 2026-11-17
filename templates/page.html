@@ -85,6 +85,7 @@ h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;let
 footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
 footer details{border:0}
 .acts{display:flex;gap:8px;margin-top:10px}
+.ask{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
 .act{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
 .act.done{border-color:var(--accent);color:var(--accent)}
 .brief .acts,.vid .acts{margin-top:6px}
@@ -161,7 +162,7 @@ footer details{border:0}
 {% macro acts(key, title, text, ids, track=True) -%}
 {% set first = items[ids[0]] if ids and ids[0] in items else None %}
 <div class="acts" data-key="{{ key }}" data-title="{{ title }}" data-text="{{ text }}" data-src="{{ first.source if first else '' }}" data-link="{{ first.link if first else '' }}">
-  <button class="act" data-act="like">♡ 赞</button>{% if track %}<button class="act" data-act="track">＋ 追踪</button>{% endif %}
+  <button class="act" data-act="like">♡ 赞</button>{% if track %}<button class="act" data-act="track">＋ 追踪</button>{% endif %}<button class="ask">问 Claude</button>
 </div>
 {%- endmacro %}
 
@@ -464,6 +465,14 @@ document.querySelectorAll('.acts').forEach(box=>{
       window.open('https://github.com/'+REPO+'/issues/new?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body),'_blank');
       acted[k]=Date.now();LS.set('acted',acted);btn.classList.add('done');btn.textContent=like?'♥ 已赞':'✓ 追踪中';
     })})});
+/* 问 Claude：把这条整理成提问，交给手机上的 Claude App（走订阅，不花 API） */
+document.querySelectorAll('.acts .ask').forEach(btn=>btn.addEventListener('click',async ev=>{ev.preventDefault();ev.stopPropagation();
+  const b=btn.parentNode;
+  const text=['这是我信息台里的一条内容，请帮我：','1. 用几句话讲清楚发生了什么、来龙去脉；','2. 不同立场的媒体（左翼、主流、保守、中国官方）分别会怎么看；','3. 接下来值得关注什么。','',
+    '标题：'+b.dataset.title,'内容：'+b.dataset.text,b.dataset.src&&('来源：'+b.dataset.src),b.dataset.link&&('链接：'+b.dataset.link)].filter(Boolean).join('\n');
+  try{await navigator.clipboard.writeText(text)}catch(e){}
+  if(navigator.share){try{await navigator.share({text});return}catch(e){if(e.name==='AbortError')return}}
+  window.open('https://claude.ai/new?q='+encodeURIComponent(text),'_blank')}));
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>

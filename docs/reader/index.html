@@ -167,6 +167,9 @@ abbr.gl{text-decoration:underline dotted var(--blue);text-decoration-thickness:2
 .cref{font-size:13px;color:var(--muted);margin-top:4px}
 .zh{font-size:14.5px;margin-top:6px;padding:6px 10px;background:var(--blue-soft);border-radius:8px;white-space:pre-wrap}
 details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);font-weight:700;cursor:pointer}
+#hand{position:fixed;inset:0;z-index:58;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+#hand .hb{background:var(--bg);width:100%;max-width:720px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto}
+#hand textarea{width:100%;min-height:150px;margin-top:8px;font:inherit;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:60;max-width:90vw}
 </style>
 </head>
@@ -254,7 +257,44 @@ async function getLines(){return (await dget('meta','lines'))||['YouTube频道',
 
 /* ---------- Claude ---------- */
 const MODELS=[['claude-sonnet-5-5','Sonnet 5.5（推荐）'],['claude-opus-5-5','Opus 5.5（更强，更贵）'],['claude-haiku-5-5','Haiku 5.5（快，便宜）']];
+/* 不用 API 时：把提问交给手机上的 Claude App（走订阅），回答可以粘贴回来存进笔记 */
+const useApp=()=>ls.get('aimode','')==='app'||(!ls.get('key','')&&ls.get('aimode','')!=='api');
+function promptText(system,messages){
+  const flat=c=>typeof c==='string'?c:c.filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  const ms=messages.filter(m=>flat(m.content).trim());
+  let t=system?system.trim()+'\n\n':'';
+  if(ms.length>1)t+=ms.map(m=>(m.role==='user'?'【我】':'【你之前的回答】')+'\n'+flat(m.content)).join('\n\n')+'\n\n请回答最后一个【我】的问题。';
+  else if(ms.length)t+=flat(ms[0].content);
+  return t.trim()}
+function b64File(data,type,name){const b=atob(data),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new File([u],name,{type})}
+async function sendToClaude(text,files){
+  try{await navigator.clipboard.writeText(text)}catch(e){}
+  const data={text};if(files.length)data.files=files;
+  if(navigator.share&&(!files.length||(navigator.canShare&&navigator.canShare(data)))){
+    try{await navigator.share(data);return 'shared'}catch(e){if(e.name==='AbortError')return 'abort'}}
+  window.open(text.length<1800?'https://claude.ai/new?q='+encodeURIComponent(text):'https://claude.ai/new','_blank');return 'opened'}
+function claudeApp({system,messages}){
+  const text=promptText(system,messages);
+  const files=[];messages.forEach(m=>Array.isArray(m.content)&&m.content.forEach(b=>{if(b.type==='image'&&b.source&&b.source.data)files.push(b64File(b.source.data,b.source.media_type,'page'+(files.length+1)+'.jpg'))}));
+  return new Promise((res,rej)=>{
+    const d=document.createElement('div');d.id='hand';
+    d.innerHTML=`<div class="hb"><h3 style="font-size:17px;margin-bottom:6px">交给 Claude App</h3>
+      <p class="muted" style="font-size:14px">问题已经整理好${files.length?'（含 '+files.length+' 张图）':''}，也已复制。点「发给 Claude」，在分享菜单里选 Claude；如果没有出现，就会打开 claude.ai，粘贴即可。</p>
+      <details style="margin:8px 0"><summary class="muted" style="font-size:13px">看看发出去的内容</summary><div class="msg" style="white-space:pre-wrap;font-size:13px;max-height:30vh;overflow:auto">${esc(text)}</div></details>
+      <div class="row"><button class="btn pri" id="hGo">发给 Claude</button><button class="btn" id="hCp">再复制一次</button></div>
+      <div class="lbl" style="margin-top:12px">把 Claude 的回答粘贴回来（可选，会存进笔记或对谈）</div>
+      <textarea id="hAns" placeholder="在 Claude 里长按回答 → 复制，回到这里粘贴"></textarea>
+      <div class="row"><button class="btn pri" id="hOk">保存回答</button><button class="btn" id="hPaste">从剪贴板粘贴</button><div style="flex:1"></div><button class="btn" id="hX">关闭</button></div></div>`;
+    document.body.append(d);
+    const close=()=>d.remove();
+    d.querySelector('#hGo').onclick=async()=>{const r=await sendToClaude(text,files);if(r==='opened')toast('已复制，在 Claude 里粘贴',3000)};
+    d.querySelector('#hCp').onclick=async()=>{try{await navigator.clipboard.writeText(text);toast('已复制')}catch(e){toast('复制失败，展开上面的内容手动复制')}};
+    d.querySelector('#hPaste').onclick=async()=>{try{d.querySelector('#hAns').value=await navigator.clipboard.readText()}catch(e){toast('读不到剪贴板，请长按输入框粘贴')}};
+    d.querySelector('#hOk').onclick=()=>{const v=d.querySelector('#hAns').value.trim();if(!v){toast('还没粘贴回答');return}close();res(v)};
+    d.querySelector('#hX').onclick=()=>{close();rej(new Error('已交给 Claude App，没有保存回答'))};
+  })}
 async function claude({system,messages,max=1600,onText}){
+  if(useApp()){const out=await claudeApp({system,messages});onText&&onText(out);return out}
   const key=ls.get('key','');if(!key)throw new Error('还没有填 Claude API 密钥：回到书库点右上角 ⚙︎ 设置');
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:ls.get('model',MODELS[0][0]),max_tokens:max,system,messages,stream:true})});
@@ -721,12 +761,14 @@ $('#restore').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(
 
 /* ---------- 设置 ---------- */
 $('#bSet').onclick=()=>{
-  sheet('设置',`<div class="lbl">Claude API 密钥</div><input id="kIn" type="password" placeholder="sk-ant-…" value="${esc(ls.get('key',''))}" autocomplete="off">
+  sheet('设置',`<div class="lbl">AI 调用方式</div><select id="aIn"><option value="app" ${useApp()?'selected':''}>Claude App（用订阅，不花 API）</option><option value="api" ${useApp()?'':'selected'}>API 密钥（结果直接回到阅读器）</option></select>
+    <p class="muted" style="font-size:13px;margin-top:6px">选 Claude App 时，问题会通过分享菜单交给手机上的 Claude，回答可以粘贴回来保存。</p>
+    <div class="lbl">Claude API 密钥</div><input id="kIn" type="password" placeholder="sk-ant-…" value="${esc(ls.get('key',''))}" autocomplete="off">
     <p class="muted" style="font-size:13px;margin-top:6px">密钥只保存在这台设备的浏览器里，不会上传到仓库。AI 请求从手机直接发给 Anthropic。</p>
     <div class="lbl">模型</div><select id="mIn">${MODELS.map(([k,v])=>`<option value="${k}" ${ls.get('model',MODELS[0][0])===k?'selected':''}>${v}</option>`).join('')}</select>
     <div class="row"><button class="btn pri" id="kSave">保存</button><button class="btn" id="kTest">测试连接</button></div><div id="kOut" class="msg"></div>`);
-  $('#kSave').onclick=()=>{ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);toast('已保存')};
-  $('#kTest').onclick=async()=>{ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);$('#kOut').textContent='连接中…';
+  $('#kSave').onclick=()=>{ls.set('aimode',$('#aIn').value);ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);toast('已保存')};
+  $('#kTest').onclick=async()=>{ls.set('aimode','api');$('#aIn').value='api';ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);$('#kOut').textContent='连接中…';
     try{await claude({max:30,messages:[{role:'user',content:'回复“连接正常”四个字。'}],onText:t=>{$('#kOut').textContent=t}})}catch(e){$('#kOut').textContent=e.message}}};
 
 /* ---------- 对谈档案 ---------- */
