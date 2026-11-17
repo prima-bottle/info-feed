@@ -269,7 +269,7 @@ footer details{border:0}
     {% if a.ai_prompt %}<h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>{{ a.ai_prompt }}</div>{% endif %}
     {% if a.ai_tips %}<p style="margin-top:8px;font-size:14px;color:var(--muted)">{{ a.ai_tips }}</p>{% endif %}
     {{ sources(a.item_ids or []) }}
-    <div class="srcs"><a class="src" href="https://commons.wikimedia.org/w/index.php?search={{ (a.work ~ ' ' ~ a.creator)|urlencode }}" target="_blank" rel="noopener">找高清图 ↗</a></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q={{ (a.work ~ ' ' ~ a.creator)|urlencode }}" target="_blank" rel="noopener">找高清图 ↗</a></div>
   </article>
   {% else %}<div class="end">今天的作品赏析在早间版里</div>{% endfor %}
   </div>
