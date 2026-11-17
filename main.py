@@ -61,6 +61,8 @@ def main() -> int:
         edition = {"date": date, "runs": []}
     done = {r["mode"] for r in edition["runs"]}
     mode = args.mode
+    if mode in ("auto", "full", "update") and not args.sample and not cfg["settings"].get("ai_enabled", True):
+        mode = "fetch"  # API 额度用完时：定时任务和网页上的抓取按钮都只抓原始内容，交给对话里的 Claude 编辑
     if mode == "auto":
         mode = "full" if now.hour < 10 or "full" not in done else "update"
     if mode == "fetch":  # 只抓取、不调用 AI：API 额度用完时，把原始条目存下来交给对话里的 Claude 编辑

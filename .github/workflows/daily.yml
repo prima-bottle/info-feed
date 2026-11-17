@@ -61,7 +61,7 @@ jobs:
         if: github.event_name == 'issues'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }} -c "已抓取，刷新网页即可" || true
+        run: gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }} -c "已运行完成。如果是只抓取模式，到对话里让 Claude 编辑后再刷新网页" || true
       - name: 保存结果
         run: |
           git config user.name "info-feed bot"
