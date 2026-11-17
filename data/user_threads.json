@@ -1,26 +1,5 @@
 [
  {
-  "id": "u4",
-  "title": "法国：抗议之后工会号召罢工，学生也加入",
-  "keywords": [],
-  "context": "Tagesschau 报道，法国主要工会号召今天举行罢工和全国抗议，中学生和大学生的抗议也加入进来，标题问“这能奏效吗”。条目没有写明这次抗议的具体导火索，需要另外查。\n来源：Tagesschau\nhttps://www.tagesschau.de/ausland/europa/proteste-streiks-frankreich-100.html\n\n（来自信息台 2026-11-05。想取消就把这个 Issue 关掉。）",
-  "user": true
- },
- {
-  "id": "u5",
-  "title": "驾照改革今天在联邦议院表决",
-  "keywords": [],
-  "context": "联邦议院今天表决驾照改革法案：减少特殊行驶课时，理论课不再强制到场，目标是让驾照更便宜、驾校培训更现代。Zeit 比较了法国，那里的驾照可能只要 1800 欧，但德国不会降到那个水平。\n来源：Tagesschau\nhttps://www.tagesschau.de/inland/innenpolitik/bundestag-fuehrerschein-reform-100.html\n\n（来自信息台 2026-11-05。想取消就把这个 Issue 关掉。）",
-  "user": true
- },
- {
-  "id": "u9",
-  "title": "德国失业保险缺钱：5亿欧元之外，是削减还是借贷",
-  "keywords": [],
-  "context": "FAZ 报道，联邦劳动署（Bundesagentur für Arbeit）需要50亿欧元的应急贷款，因为失业金支出上升，职业介绍中心（Jobcenter）和养老金账户也需要联邦政府短期追加资金。SZ 说新任劳动部长面临一个越来越大的问题：失业保险出现数十亿的缺口，只靠经济增长解决不了，政府要考虑缩减老年人的失业金。\n来源：FAZ\nhttps://www.faz.net/aktuell/wirtschaft/mehr-wirtschaft/milliardenluecke-bundesagentur-fuer-arbeit-braucht-5-milliarden-euro-notkredit-201654491.html\n\n（来自信息台 2026-11-06。想取消就把这个 Issue 关掉。）",
-  "user": true
- },
- {
   "id": "u11",
   "title": "柏林自由大学的学生在一处讲堂抗议，同时在泽伦多夫的高校有封锁行动。条目只有标题，诉求不明。",
   "keywords": [],
@@ -67,6 +46,27 @@
   "title": "西班牙14年来首次总罢工：住房成为大选前的主题",
   "keywords": [],
   "context": "西班牙今天开始自14年来首次总罢工，公共交通和多个行业受到影响。Al Jazeera 写明诉求包括住房改革，时间在11月29日大选前三周。France 24 的报道把住房危机放到选举的中心位置。条目都很短，没有说明由哪些工会发起、参与人数或具体要求。\n来源：Al Jazeera\nhttps://www.aljazeera.com/news/2026/11/11/spains-first-general-strike-in-14-years-begins?traffic_source=rss\n\n（来自信息台 2026-11-11。想取消就把这个 Issue 关掉。）",
+  "user": true
+ },
+ {
+  "id": "u31",
+  "title": "德国等五国要把被拒难民送去卢旺达",
+  "keywords": [],
+  "context": "德国、丹麦、奥地利、希腊、荷兰宣布在卢旺达设立'遣返中心'，被拒绝的庇护申请人即使和卢旺达毫无关系，也可能被送过去。卫报说这项政策被批评为'严重的道德失败'，而且很可能面临法律挑战。\n来源：BBC World\nhttps://www.bbc.co.uk/news/articles/cw987343352go?at_medium=RSS&at_campaign=rss\n\n（来自信息台 2026-11-17。想取消就把这个 Issue 关掉。）",
+  "user": true
+ },
+ {
+  "id": "u32",
+  "title": "联合执政委员会没谈拢电力税下调，默茨还在推，德国经济研究所所长弗拉彻尔公开批评",
+  "keywords": [],
+  "context": "联合执政委员会没谈拢电力税下调，默茨还在推，德国经济研究所所长弗拉彻尔公开批评\n来源：Spiegel\nhttps://www.spiegel.de/politik/deutschland/marcel-fratzscher-kritisiert-friedrich-merz-fuer-plan-die-stromsteuer-noch-zu-senken-a-446a0dce-88c1-41fc-a0a7-177eae446dd3#ref=rss\n\n（来自信息台 2026-11-17。想取消就把这个 Issue 关掉。）",
+  "user": true
+ },
+ {
+  "id": "u33",
+  "title": "nd：不来梅宪法保卫局在监视非暴力的政治活动者，自己还屡次越权",
+  "keywords": [],
+  "context": "nd：不来梅宪法保卫局在监视非暴力的政治活动者，自己还屡次越权\n来源：nd\nhttps://www.nd-aktuell.de/artikel/1203913.verfassungsschutz-bremen-freundlich-im-auftritt-antidemokratisch-im-kern.html\n\n（来自信息台 2026-11-17。想取消就把这个 Issue 关掉。）",
   "user": true
  }
 ]
