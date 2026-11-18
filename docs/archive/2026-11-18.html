@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="信息台">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>信息台 · 2026-11-18</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --thread:#2f5d8a; --thread-soft:#e2ecf5;
+  --chip:#efe9e0; --radius:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}}
+:root[data-theme=dark]{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37; --chip:#2a2825;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header{padding:20px 16px 4px;max-width:680px;margin:0 auto}
+.date{font-size:13px;color:var(--muted);letter-spacing:.04em}
+.headline{font-size:21px;font-weight:700;line-height:1.4;margin-top:4px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;max-width:680px;margin:0 auto;padding:10px 12px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:6px 14px;border-radius:999px;font-size:15px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit}
+.tab.on{background:var(--ink);color:var(--bg);font-weight:600}
+main{max-width:680px;margin:0 auto;padding:12px 12px 40px}
+section.panel{display:none}section.panel.on{display:block}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.label{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+.card h2{font-size:18px;line-height:1.45;margin-bottom:6px}
+.card p{font-size:15px;color:var(--ink)}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+summary{font-size:14px;color:var(--muted);cursor:pointer;list-style:none}
+summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+details p{margin-top:6px;font-size:14.5px}
+.foryou{margin-top:10px;font-size:14.5px;padding:8px 10px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+.srcs{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.src{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.thread{border-left:4px solid var(--thread)}
+.thread .label{color:var(--thread);background:var(--thread-soft)}
+.tl{margin-top:10px;padding-left:14px;border-left:2px solid var(--line)}
+.tl li{list-style:none;position:relative;font-size:14px;color:var(--muted);margin-bottom:6px}
+.tl li::before{content:"";position:absolute;left:-19px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.tl li.today{color:var(--ink)}.tl li.today::before{background:var(--thread)}
+.tl b{font-weight:600;color:var(--thread);margin-right:4px}
+.persp li{list-style:none;font-size:14px;margin-top:6px}.persp b{margin-right:4px}
+.signals{margin-top:6px;font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:13.5px;padding:5px 12px;border-radius:999px;background:var(--chip);border:0;color:var(--muted);font-family:inherit;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff}
+.brief{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:15px}
+.brief .meta{font-size:12px;color:var(--muted);margin-bottom:2px}
+.vid{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.thumb{aspect-ratio:16/9;background:var(--chip) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted)}
+.vid .body{padding:12px 14px}
+.vid .t{font-weight:600;font-size:15.5px;line-height:1.45}
+.vid .h{font-size:14px;color:var(--muted);margin-top:4px}
+.shorts{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px;padding-bottom:4px}
+.shorts::-webkit-scrollbar{display:none}
+.short{flex:none;width:130px}
+.short .thumb{aspect-ratio:9/16;border-radius:12px}
+.short .t{font-size:13px;margin-top:6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+.word{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.word b{font-size:17px}.word span{color:var(--muted);font-size:14px}
+.ex{font-size:14px;color:var(--muted);font-style:italic;margin-top:4px}
+.end{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 8px}
+.end .dot{font-size:22px;display:block;margin-bottom:4px}
+footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
+footer details{border:0}
+.acts{display:flex;gap:8px;margin-top:10px}
+.ask{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
+.act{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
+.act.done{border-color:var(--accent);color:var(--accent)}
+.brief .acts,.vid .acts{margin-top:6px}
+.thread .label .mine{margin-left:4px}
+.topline{display:flex;justify-content:space-between;align-items:center}
+.theme{font:inherit;font-size:13px;color:var(--muted);background:var(--chip);border:0;border-radius:999px;padding:4px 11px;cursor:pointer}
+.artimg{display:block;width:100%;max-height:420px;object-fit:contain;background:var(--chip);border-radius:10px;margin:4px 0 12px}
+.art h2{font-size:20px}.art .by{font-size:13.5px;color:var(--muted);margin-bottom:10px}
+.art h4{font-size:14px;margin:14px 0 4px;color:var(--accent)}
+.art ol,.art ul{padding-left:20px;font-size:14.5px}.art li{margin-bottom:6px}
+.prompt{font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;background:var(--chip);border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-word;position:relative}
+.copy{position:absolute;top:6px;right:6px;font:inherit;font-size:12px;border:0;border-radius:6px;padding:2px 8px;background:var(--card);color:var(--muted);cursor:pointer}
+.work .lv{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.lv-red{background:#d0453a}.lv-yellow{background:#d9a21b}.lv-green{background:#3f9a5c}.lv-later{background:#8a8f99}.lv-paused{background:var(--line)}
+.todo{list-style:none;margin-top:6px}.todo li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.todo li:last-child{border-bottom:0}.todo input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.todo li.done span{text-decoration:line-through;color:var(--muted)}
+.todo .tag{font-size:12px;color:var(--muted);margin-left:4px;white-space:nowrap}
+.due{display:flex;justify-content:space-between;font-size:14.5px;padding:5px 0}.due b{color:var(--accent);white-space:nowrap;margin-left:10px}
+.due.key b{color:#d0453a}
+.wstat{font-size:14.5px;margin-top:4px}.wnote{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stale{font-size:12px;color:#d0453a;margin-left:6px}
+.lock{display:flex;gap:8px;margin-top:10px}.lock input{flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.lock button{font:inherit;padding:8px 14px;border:0;border-radius:10px;background:var(--ink);color:var(--bg)}
+.wlog{font-size:13.5px;color:var(--muted);margin-top:6px}
+.stalebar{display:none;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14.5px;align-items:center;justify-content:space-between;gap:10px}
+.stalebar button{font:inherit;font-size:14px;border:0;border-radius:999px;padding:6px 12px;background:var(--accent);color:#fff;white-space:nowrap}
+.flow{column-count:2;column-gap:8px}
+.tile{display:block;break-inside:avoid;margin-bottom:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile img{display:block;width:100%;height:auto;min-height:80px;background:var(--chip)}
+.tile .play{position:relative}.tile .play::after{content:"▶";position:absolute;right:8px;bottom:8px;font-size:12px;color:#fff;background:rgba(0,0,0,.55);border-radius:999px;padding:3px 7px}
+.tile .tt{font-size:14px;line-height:1.4;padding:8px 9px 2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tile .ts{font-size:12px;color:var(--muted);padding:2px 9px 9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.favbar{display:flex;gap:6px;margin-bottom:10px}
+.favtab{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:0;background:var(--chip);color:var(--muted)}
+.favtab.on{background:var(--ink);color:var(--bg);font-weight:600}
+.art{position:relative}
+.favbtn{position:absolute;top:12px;right:12px;font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;z-index:1}
+.favbtn.on{border-color:#d9a21b;color:#d9a21b}
+.favbtn+h2{padding-right:104px}
+.favdate{font-size:12px;color:var(--muted);margin-top:8px}
+.runs{font-size:12.5px;color:var(--muted);margin-top:4px}
+.new{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:6px;vertical-align:2px}
+[data-key].read{opacity:.55}
+.folded{margin:14px 0 4px;border:0;padding:0}
+.folded>summary{font-size:13.5px;color:var(--muted);padding:8px 4px}
+.vgroup{margin:0;border:0;padding:0}
+.vgroup>summary{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;letter-spacing:.05em}
+</style>
+<script>try{const t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body data-latest="1794991389" data-date="2026-11-18">
+<header>
+  <div class="topline"><div class="date">11月18日 周三</div><span><button class="theme" id="reload">↻ 刷新</button> <button class="theme" id="fetchNow">⤓ 抓取</button> <button class="theme" id="theme">自动</button></span></div>
+  <div class="headline">联合政府谈拢：2027年电力税全民下调，再加油价上限；习近平和普京在深圳会面，特朗普今天到；英伟达拒绝让黄仁勋回来，停供中国 Hopper 芯片</div>
+  <div class="runs">早间 09:43 手动</div>
+</header>
+<nav><div class="tabs" id="tabs">
+  <button class="tab on" data-p="rec">推荐</button>
+  <button class="tab" data-p="work">工作</button>
+  <button class="tab" data-p="threads">主线</button>
+  <button class="tab" data-p="briefs">简讯</button>
+  
+  <button class="tab" data-p="art">艺术</button>
+  <button class="tab" data-p="de">德语·创作</button>
+</div></nav>
+<main>
+<div class="stalebar" id="stalebar"><span id="staletext">这是旧的一期，今天的还没生成</span><button class="fetchbtn">⤓ 现在抓取</button></div>
+
+
+
+
+
+
+
+
+
+<section class="panel on" id="rec">
+  <article class="card work" id="today"><span class="label">今日安排</span>
+    <div id="todayBody"><p style="font-size:14.5px;color:var(--muted)">工作安排已加密，输入密码后这台手机会记住。</p>
+    <form class="lock" id="lockForm"><input type="password" id="lockPw" placeholder="密码" autocomplete="current-password"><button>解锁</button></form></div>
+  </article>
+  
+  <article class="card" data-key="p7543530713" data-ts="1794991389">
+    <span class="label">精选</span>
+    <h2>联合政府谈拢：2027年电力税全民下调，再加油价上限</h2>
+    <p>经过长时间争吵，联合执政委员会终于达成一致：电力税对所有人下调，但暂时只限2027年一年；同时设一个油价上限，也是有期限的。默茨松了一口气；绿党的布兰特纳批评这是联邦政府的&#39;贫困证明&#39;。</p>
+    <div class="foryou">2027年你的电费会便宜一点，但只是一年，不是长期改革。</div>
+    <details><summary>来龙去脉</summary><p>之前企业已经享受电力税减免，争论焦点是要不要扩大到普通家庭；社福团体 SoVD 反对拿它和母亲养老金互相抵扣。</p></details>
+    <div class="srcs"><a class="src" href="https://www.zeit.de/video/2026-11/koalition-einigt-sich-auf-senkung-der-stromsteuer" target="_blank" rel="noopener">Zeit Online ↗</a><a class="src" href="https://www.sueddeutsche.de/politik/bundeshaushalt-stromsteuer-koalitionsausschuss-ergebnis-2027-li.3581995" target="_blank" rel="noopener">Süddeutsche ↗</a><a class="src" href="https://www.tagesschau.de/inland/innenpolitik/was-bringt-stromsteuer-senkung-koalitionsausschuss-100.html" target="_blank" rel="noopener">Tagesschau ↗</a><a class="src" href="https://www.faz.net/aktuell/wirtschaft/friedrich-merz-und-die-stromsteuer-was-der-koalitionsausschuss-beschlossen-hat-accg-201693703.html" target="_blank" rel="noopener">FAZ ↗</a><a class="src" href="https://www.faz.net/aktuell/politik/inland/liveticker-bundespolitik-brantner-einigung-ist-armutszeugnis-fuer-eine-bundesregierung-faz-110093143.html" target="_blank" rel="noopener">FAZ ↗</a><a class="src" href="https://taz.de/Stromsteuer/!6231014/" target="_blank" rel="noopener">taz ↗</a></div>
+    
+<div class="acts" data-key="ap7543530713" data-title="联合政府谈拢：2027年电力税全民下调，再加油价上限" data-text="经过长时间争吵，联合执政委员会终于达成一致：电力税对所有人下调，但暂时只限2027年一年；同时设一个油价上限，也是有期限的。默茨松了一口气；绿党的布兰特纳批评这是联邦政府的&#39;贫困证明&#39;。" data-src="Zeit Online" data-link="https://www.zeit.de/video/2026-11/koalition-einigt-sich-auf-senkung-der-stromsteuer">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="p337d45117c" data-ts="1794991389">
+    <span class="label">精选</span>
+    <h2>习近平和普京在深圳会面，特朗普今天到</h2>
+    <p>普京抵达深圳，获得最高规格的机场迎接，蔡奇亲自去接。中俄两国元首在三方会面前先见面，称关系&#39;坚如磐石&#39;，要一起推动&#39;更公平的国际秩序&#39;。习近平在 APEC 工商峰会上强调自由贸易和 AI 合作。特朗普结束菲律宾行程后今天抵达。</p>
+    
+    <details><summary>来龙去脉</summary><p>这是首次中美俄三方元首会面。外交部称之为&#39;开创性&#39;；西方媒体多半认为象征意义大于实质。</p></details>
+    <div class="srcs"><a class="src" href="https://tass.com/politics/2220191" target="_blank" rel="noopener">TASS ↗</a><a class="src" href="https://www.scmp.com/news/china/diplomacy/article/3374831/putin-gets-highest-level-airport-welcome-shenzhen-he-arrives-apec" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://www.scmp.com/news/china/diplomacy/article/3374840/xi-and-putin-say-they-will-maintain-stable-ties-seek-more-fair-multipolar-world-order" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://www.france24.com/en/asia-pacific/20261118-xi-jinping-calls-for-global-cooperation-on-ai-and-free-trade-at-apec-summit" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiYkFVX3lxTFBwNXNPbGlKVnBidEVRdzMwYkZyc25qTFA2akZYNUQ5MjR6RVQ4bGdnOFFyRUkyanRBWmlKVW5kakNIXzNzUW1nTW5Hb3g0bEJzM3JEMGZudEFWZWdyYUY0Mkt3?oc=5" target="_blank" rel="noopener">财新 ↗</a><a class="src" href="https://www.france24.com/en/asia-pacific/20261118-xi-putin-meet-ahead-of-historic-trump-trilateral-summit" target="_blank" rel="noopener">France 24 ↗</a></div>
+    
+<div class="acts" data-key="ap337d45117c" data-title="习近平和普京在深圳会面，特朗普今天到" data-text="普京抵达深圳，获得最高规格的机场迎接，蔡奇亲自去接。中俄两国元首在三方会面前先见面，称关系&#39;坚如磐石&#39;，要一起推动&#39;更公平的国际秩序&#39;。习近平在 APEC 工商峰会上强调自由贸易和 AI 合作。特朗普结束菲律宾行程后今天抵达。" data-src="TASS" data-link="https://tass.com/politics/2220191">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="pb351e98d62" data-ts="1794991389">
+    <span class="label">精选</span>
+    <h2>英伟达不让黄仁勋回来，还停供中国 Hopper 芯片</h2>
+    <p>英伟达董事会说没有让黄仁勋复职的计划，这和特朗普的公开支持相反。同时公布的季度营收和利润翻倍，超出预期。公司宣布停止向中国供应 Hopper 芯片，第四季度预测不再计入这部分收入。美国还确认，对丑闻核心公司 Megaspeed 的调查仍在继续。</p>
+    
+    <details><summary>来龙去脉</summary><p>端传媒整理了中国绕过美国 AI 芯片出口管制的几种办法；BBC 说这起间谍丑闻恰好撞上习特会，成了中国 AI 雄心的意外障碍。</p></details>
+    <div class="srcs"><a class="src" href="https://www.bbc.co.uk/news/articles/cm2kl50vkwkdo?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a><a class="src" href="https://elpais.com/us/economia/2026-11-17/jensen-huang-dice-que-esta-dispuesto-a-regresar-como-consejero-delegado-de-nvidia.html" target="_blank" rel="noopener">El País América ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMib0FVX3lxTE1aUzNwM3JvdVRDeXlNTkFBS1BFTjJTWUVXU094SzZlaWhuZFBUcTRUU2FJLU5pYnZ1VVBFbWdVcjRkZVJXdmM4LTYwMDByck9kdzJZa2JtQk54Q3hHWFY4Z0pCOUxhU1dNc2pNRkdkaw?oc=5" target="_blank" rel="noopener">知新聞 ↗</a><a class="src" href="https://elpais.com/us/economia/2026-11-17/estados-unidos-confirma-que-continua-su-investigacion-a-megaspeed-la-empresa-en-el-centro-del-escandalo-de-nvidia.html" target="_blank" rel="noopener">El País América ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMijwFBVV95cUxOSmxsRGVEZ1RmSi1JRGpQY05IYUhxeTBlNTFnbTJzNzBlekJvdDlQcGlfdHNibXc1emZmbGgyaGNUOTd5UE4zNlVBVEdzSlpET1hFTThYR2V6dnZoZzZoWGo1b1dEYllZdUFhM3ZZbE1Ka1VCTEg5aG9HSDRyMFZMQzFKY2laQUdlcFZzaGdSYw?oc=5" target="_blank" rel="noopener">端传媒 ↗</a><a class="src" href="https://www.bbc.co.uk/news/articles/c5vg23g92rj4o?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">BBC World ↗</a></div>
+    
+<div class="acts" data-key="apb351e98d62" data-title="英伟达不让黄仁勋回来，还停供中国 Hopper 芯片" data-text="英伟达董事会说没有让黄仁勋复职的计划，这和特朗普的公开支持相反。同时公布的季度营收和利润翻倍，超出预期。公司宣布停止向中国供应 Hopper 芯片，第四季度预测不再计入这部分收入。美国还确认，对丑闻核心公司 Megaspeed 的调查仍在继续。" data-src="BBC World" data-link="https://www.bbc.co.uk/news/articles/cm2kl50vkwkdo?at_medium=RSS&amp;at_campaign=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="p73a1a00e6b" data-ts="1794991389">
+    <span class="label">精选</span>
+    <h2>德意志银行泄露文件：怎么想办法给军火商融资</h2>
+    <p>《明镜》等媒体公开的德意志银行内部文件显示，这家银行为了给军火商提供资金做了各种腾挪。CEO 泽温已经承认犯了错。《南德》另外报道，德银子公司 DWS 有120亿欧元资产处在&#39;阴影&#39;之中。</p>
+    <div class="foryou">军备扩张背后的金融链条，可以作为左翼内容的选题。</div>
+    
+    <div class="srcs"><a class="src" href="https://www.lemonde.fr/les-decodeurs/article/2026/11/18/inside-deutsche-bank-les-contorsions-du-geant-bancaire-pour-financer-les-marchands-d-armes_6813080_4355770.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://www.zeit.de/news/2026-11/18/deutsche-bank-chef-sewing-raeumt-nach-datenleck-fehler-ein" target="_blank" rel="noopener">Zeit Online ↗</a><a class="src" href="https://www.dw.com/de/datenleak-bringt-deutsche-bank-ins-stolpern/a-79970605?maca=de-rss-de-all-1119-rdf" target="_blank" rel="noopener">DW ↗</a><a class="src" href="https://www.sueddeutsche.de/wirtschaft/dws-deutsche-bank-sanktionen-betriebsrenten-geldwaesche-sanktionen-li.3540387" target="_blank" rel="noopener">Süddeutsche ↗</a></div>
+    
+<div class="acts" data-key="ap73a1a00e6b" data-title="德意志银行泄露文件：怎么想办法给军火商融资" data-text="《明镜》等媒体公开的德意志银行内部文件显示，这家银行为了给军火商提供资金做了各种腾挪。CEO 泽温已经承认犯了错。《南德》另外报道，德银子公司 DWS 有120亿欧元资产处在&#39;阴影&#39;之中。" data-src="Le Monde" data-link="https://www.lemonde.fr/les-decodeurs/article/2026/11/18/inside-deutsche-bank-les-contorsions-du-geant-bancaire-pour-financer-les-marchands-d-armes_6813080_4355770.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </article>
+  
+  <article class="card" data-key="p5a5c14641a" data-ts="1794991389">
+    <span class="label">精选</span>
+    <h2>周五（20日）：青年罢课和巴伐利亚24小时罢工撞在同一天</h2>
+    <p>&#39;Gen Z regelt&#39;周五进入抗议第二阶段，反对恢复义务兵役，法兰克福这次放弃市中心游行，强调和平。同一天，IG Metall 在巴伐利亚举行24小时警告罢工。托派网站 WSWS 呼吁工人和青年联合起来。</p>
+    <div class="foryou">可以做一条德语帖子，把两件事放在一起讲：同一天，年轻人反对兵役，工人争取工资，背后都是&#39;谁来为危机买单&#39;。</div>
+    
+    <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMi-wFBVV95cUxOQW43Q0dKWUxVOTBxUS0xMW90MHRRTU8tSXNETFNFa3FsZVM0cXE4N3dEVDJtT1ByMXhsWTVlT3Q3THNwUElBRkpoc2lVQVQwcWMtZXJfczdsS1E4MUxmWEp3clc0RkQxYzA1SFM4MGFlcFBCTl80NzBUUWpCQk15bEJ0c01zUlhEOXZiVi1UUTZUdEowU1FORExEU0JVRklCdG5JbEpjX1dnTXlPMzFSazItRVkwRWEyRlNaNWV3eTFHRnNjLVkzblNybXlCSXE1SFRIOUpuTkdVQklId3MzeC1qQ3JLcmJMdExXaktDclhtSlVLNHcyZ01xTQ?oc=5" target="_blank" rel="noopener">MDR.de ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi3AFBVV95cUxORzVmRUhxWkpqMGkxTkV6THRMTGI2VEpnWkpoLTNfcEZFVDdQQkw0SGcyY3FqUURfaEdfcmx6ZjA5V0UwdWNkZWNCU1R0SGhEd0FIMzJib01QejFrcm1ZM0wzdmVXVEx1M2I3MVVQNnFMZnhCRW5lMmZiNnhhTnptQ003engzSGNLam9mZHUtOW11N1BZVGxndGFIZUdXeXAxVHNFQkRreDA1QzFId0Q4aVpXdzdBTkNPcWdCUnFrZGZ4WHR4V2lQbDU2bnByUUptbTdfZzZ2aGJWZ1Nw?oc=5" target="_blank" rel="noopener">FAZ ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMixgFBVV95cUxNQXJ0UHNNZ01mXzJ5OGR1QWY5bTRrWm5fWWN3Q3l6VzZha2lFbVY2cWxPSW5YSHk4d1dfcTFWZ2RET3U0elJDTVV3SGhKNW9EYjNJMzY5dVRjMlBlbFBuVTNmN09feVk5cXg1SG9HVHZaWGpjbGRKX0RrLXI4V3ZhaGw3LWxXV2FOcGVIbzBvT0FoMllEQ01SdlRHVTg3MDRKX0JZQkpjeExnV2plemlKNnRqcmJvYlE0cVo1cXhIY19GSVhkTFE?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://www.wsws.org/en/articles/2026/11/18/uqkx-n18.html" target="_blank" rel="noopener">WSWS ↗</a></div>
+    
+<div class="acts" data-key="ap5a5c14641a" data-title="周五（20日）：青年罢课和巴伐利亚24小时罢工撞在同一天" data-text="&#39;Gen Z regelt&#39;周五进入抗议第二阶段，反对恢复义务兵役，法兰克福这次放弃市中心游行，强调和平。同一天，IG Metall 在巴伐利亚举行24小时警告罢工。托派网站 WSWS 呼吁工人和青年联合起来。" data-src="MDR.de" data-link="https://news.google.com/rss/articles/CBMi-wFBVV95cUxOQW43Q0dKWUxVOTBxUS0xMW90MHRRTU8tSXNETFNFa3FsZVM0cXE4N3dEVDJtT1ByMXhsWTVlT3Q3THNwUElBRkpoc2lVQVQwcWMtZXJfczdsS1E4MUxmWEp3clc0RkQxYzA1SFM4MGFlcFBCTl80NzBUUWpCQk15bEJ0c01zUlhEOXZiVi1UUTZUdEowU1FORExEU0JVRklCdG5JbEpjX1dnTXlPMzFSazItRVkwRWEyRlNaNWV3eTFHRnNjLVkzblNybXlCSXE1SFRIOUpuTkdVQklId3MzeC1qQ3JLcmJMdExXaktDclhtSlVLNHcyZ01xTQ?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </article>
+  
+  <div class="end"><span class="dot">·</span>精选看完了，往右滑看主线和简讯</div>
+</section>
+
+<section class="panel" id="work"><div id="workBody"><div class="end">先在「推荐」页最上面输入密码</div></div></section>
+
+<section class="panel" id="threads">
+  <article class="card thread" data-key="ta193f4a7ef" data-ts="1794991389">
+  <span class="label">主线 · 柏林左翼党组阁</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>左翼党议会党团领导层正式申请开除议员 Vanessa Emde</li><li class="today"><b>今天</b>Emde 本人公开质疑竞选承诺&#39;让柏林住得起&#39;能不能兑现</li><li class="today"><b>今天</b>另一位左翼议员 Martha Kleedörfer 接受采访：&#39;我不是反犹主义者，句号&#39;</li>
+    <li><b>11-17</b>左翼党议会党团讨论是否开除议员 Vanessa Emde；nd 评论呼吁&#39;认真对待恐惧者&#39;，也就是把对左翼执政心存疑虑的人争取过来；《星期五报》采访：上一次左翼参政时，很多市民在日常里没感觉到有什么变化</li>
+  </ul>
+  
+  <details><summary>更早 11 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-14</b>Zeit：左翼党州主席为处理议员瓦内萨·恩德（Vanessa Emde）的“漫长程序”辩护。条目只有标题，没有具体理由。；FAZ 长文《Migrantifa: Der Pakt von Neukölln》：称左翼党在柏林选举中的胜利，也是“极左与移民伊斯兰主义者携手”的结果，并问他们是否面临“骤然坠落”。这是 FAZ 对左翼党的框架，摘要里没有给出具体证据。</li><li><b>11-13</b>taz 的评论标题《Von Wagenknecht zu Emde: Veni, Vedi, Vici》写道，柏林左翼党对议员瓦内萨·恩德（Vanessa Emde）「竖起了刺」，但瓦根克内希特（Wagenknecht）分裂党的先例应让各方警惕分裂。标题里也写作 Vedi，和 Klasse Gegen Klasse 此前的拼写一致。；nd 刊出《柏林和钱》，说红绿红谈判是在预算缺口的压力下进行的，但回旋余地可能被低估了。；德共《我们的时代》（UZ）刊出德共柏林组织的声援声明，称恩德这位直选议员遭到「大规模攻击」，其中也有来自她自己党内的。；FAZ 刊出评论《Emde und Co.》，写道否认国家存在就是背叛人权，主张边界可以和平改变，但不应有「灭绝幻想」。摘要没点名以色列，标题点了恩德（Emde）。；FAZ 另有一篇评论质疑埃拉尔普（Eralp）谈保护犹太人生活时总要同时提到其他受害群体，认为这种说法遮蔽多于说明。；Tagesspiegel 的标题把柏林和梅克伦堡-前波莫瑞（MV）的左翼党放在一起：柏林是「老问题」，MV 是「撑得起国家」。nd 同时报道 MV 红红绿政府的部长分配，左翼党拿到两个部长职位。</li><li><b>11-12</b>FAZ：左翼党新克尔恩（Neukölln）区执委会站到议员瓦内萨·恩德（Vanessa Emde）一边，与昨天党团领导层起草开除动议的方向相反。；Spiegel 刊出对谈，左翼党政治家扬妮娜·维斯勒（Janine Wissler）和居纳·巴尔奇（Güner Balci）谈“左翼党是反犹主义的温床？这太荒谬了”。条目只有标题，看不到内容。；Zeit 的柏林评论标题是“Aus dieser Rettungsboje ist die Luft raus”（这个救生圈漏了气），讲柏林左翼党，只有标题，不清楚“救生圈”指什么。；nd 的另一篇评论拿落败的柏林 CDU 候选人埃弗斯（Evers）开涮，说他“最后一刻才发现自己是文化参议员”。这是左翼媒体的嘲讽，与组阁谈判没有直接关系。；ZDFheute 的标题问：柏林左翼党是不是要违背选举承诺（讲租金）。这是 11 月 9、10 日联邦主席施韦特纳「征收后租金仍可能上涨」那场争论的延续，条目只有标题。；DIE ZEIT 报道，在全体会议（Plenarsitzung）上，埃利夫·埃拉尔普（Elif Eralp）表示要让柏林的犹太人生活更可见。条目只有标题，没有背景。恩德（Emde）风波也牵涉反犹主义争论，但这条标题本身没有提到恩德。</li><li><b>11-11</b>柏林左翼党议会党团的领导层决定起草开除瓦内萨·恩德（Vanessa Emde）出党团的动议（SZ）。Deutschlandfunk 说动议将在下周提出，Jüdische Allgemeine 的标题是“左翼党在商议把恩德踢出去”。；nd 的标题称这是“恩德风波的最后一幕”，并称她为“亲巴勒斯坦的议员”。；FAZ 评论：即使开除恩德，社民党（SPD）和绿党的问题也没有解决，因为她只是“冰山一角”。；另有一条租户相关消息：Gaebler 要求降低对付租金暴利的门槛（tagesschau.de，条目只有标题，没写他的职务）。；WELT 的视频标题：左翼党议会党团领导层“着手推动”开除瓦内萨·恩德（Vanessa Emde）。这与上午 SZ 的“起草开除动议”是同一进展。；FAZ 直播栏：左翼党新克尔恩（Neukölln）区执委会为恩德辩护。她是新克尔恩的直选议员，说明基层和党团领导层的态度不一致。；Tagesschau：左翼党要求对军工企业征收暴利税，这是联邦层面的另一条议题线。；T-Online 的标题是《征收之后租金还会涨？左翼党主席施韦特纳（Schwerdtner）这样解释她的话》。条目只有标题，没有她解释的内容。</li><li><b>11-10</b>rbb24：瓦内萨·恩德（Vanessa Emde）再次拒绝党方要她交出议席的要求。；Zeit 的标题称“如今连左翼党也要涨租金”，讲的是被征收（社会化）的住房，对应联邦主席施韦特纳（Ines Schwerdtner）此前“征收后租金仍可能上涨”的说法。；junge Welt 把施韦特纳写成“今日租户代言人”，口吻偏友善；另有一篇采访标题《左翼党正在失去变革潜力》，条目只有标题，看不出是否专指柏林。</li><li><b>11-09</b>议员瓦内萨·恩德（Vanessa Emde）拒绝交出议席，这一点今天又被多家媒体确认。Handelsblatt 的标题是「恩德想保留议席，柏林左翼党承压」，Zeit 的标题是「恩德想保住柏林市议会议席」，FAZ 直播栏写「恩德拒绝放弃议席」。；评论层面出现分歧：SZ 评论说恩德一案「现在是柏林左翼党的一次机会」；FAZ 刊出「左翼的诱惑：社民党与柏林组阁」，把社民党的选择写成对左翼党的「诱惑」；junge Welt 的标题是「恩德不想倒下」，口吻明显同情她。；《柏林晨邮报》（Berliner Morgenpost）出了解读文章，讲红绿红探索文件是组阁谈判的「密码」。；BILD 和 WELT 都报道了左翼党联邦主席施韦特纳（Schwerdtner）的说法：她认为即使对大房东实行征收，柏林租金仍可能上涨。条目只有标题，没有具体条件和幅度。；关于“征收（Vergesellschaftung）”的争论转到租金上：BZ Berlin 的标题是左翼党联邦主席施韦特纳（Ines Schwerdtner）说“征收之后租金仍会上涨”。RP Online 的标题引语是“我无法向任何一位租户保证租金会下降”，条目没标明说话人，应是同一话题。；taz 评论《Alles besser als Vonovia》承认这个说法“引发轩然大波”，但认为征收大房东“依然有意义”。；左翼内部：Klasse Gegen Klasse 转载了 Linksjugend [&#39;solid] Salzgitter 的声明，要求柏林左翼党执委会辞职，理由是为了入阁而配合针对瓦内萨（该报写作 Vedi）·恩德（Emde）和亲巴勒斯坦派的“镇压运动”。这是运动左翼一侧的声音。</li><li><b>11-08</b>Zeit：左翼党议员瓦内萨·恩德（Vanessa Emde）拒绝了州执委会要她退回议席的要求。；nd：党的领导层要求恩德交还议席，如果她不照办，会面临被开除出议会党团。；nd 评论《Emde, Abed und Marg | Die Linke springt über jedes Stöckchen – und verliert trotzdem》：一些媒体在对柏林左翼党搞「运动式攻击」，党靠牺牲自己的成员躲不开压力。条目没解释「Abed」是谁。；柏林左翼党议员瓦内萨·恩德（Vanessa Emde）公开拒绝交出议席。Spiegel 的标题引用她的话，说会“当然”继续履职；Tagesschau 称她看起来也没有在对以色列的立场上让步。；FAZ 直播栏引用左翼党州主席：“我们不再信任她。”；FAZ 直播栏还提到：BSW 领导层批评其州级组织提名康斯坦丁·施赖伯（Constantin Schreiber），这条另有来龙去脉，条目只有标题。；ZDFheute 做了一篇街头采访：柏林人对埃利夫·埃拉尔普（Elif Eralp）有“对变化的希望”，也有对治安和经济的担忧。</li><li><b>11-07</b>柏林左翼党州执委会要求议员瓦内萨·恩德（Vanessa Emde）交出议席（SZ、ZDFheute）。SZ 称原因是她关于中东冲突的争议言论，她是否真的交出议席还不确定。Tagesspiegel 和 Stern 的标题是「恩德必须决定是否放弃议席」。；junge Welt 的标题是「恩德面临被击倒」，Klasse Gegen Klasse 则号召「声援恩德」。后者写的名字是「Vedi Emde」，与此前的「Vanessa」拼写不一致，条目没说明原因。它称她是新克尔恩（Neukölln）直选议员，并说此前居西（Gysi）已要求开除她。；SZ 同时提到，左翼党批评联盟党推艾格纳竞选联邦总统的过程，这属于另一条线。；Zeit Online 的标题称，左翼党女党首希望瓦内萨·恩德（Vanessa Emde）“让步”（Einlenken）。这是在州执委会上午要求她交出议席之后，党的领导层释放出的软化信号。条目里没有正文，不清楚“让步”具体指什么。；taz 刊出评论称，柏林选举的获胜者埃拉尔普（Elif Eralp）“几周来一直遭到攻击”，背后也有对“左翼女性”的恐惧。评论呼吁媒体“多一点尊重”。</li><li><b>11-06</b>Spiegel 采访了在柏林选举中败选的 CDU 的埃弗斯（Stefan Evers）。他把败选归咎于左翼党“有诱惑力的承诺”，说柏林“现在就已为左翼党的胜利付出高昂代价”，并探讨 CDU 如何回应人们对“社会化（Vergesellschaftung，指征收大房东）”的向往。；nd 的评论《Die Linke kann von den Grünen lernen》围绕开除瓦内萨·恩德（Vanessa Emde）展开，认为议会党团里需要对国家持批评态度的人作为“健康的纠偏者”。《犹太人总汇报》（Jüdische Allgemeine）的标题则说，恩德带着一名激进反以色列活动人士参加了党团会议。；德共的《我们的时代》（Unsere Zeit）指出，红绿红探索性文件的最后一章“稳健财政与未来投资”把所有项目都放在“财政保留（Finanzierungsvorbehalt）”之下。；nd 报道，交通和环保团体称赞红绿红探索文件中的交通目标，并作了补充。；WELT 的标题称，德国趋势调查（Deutschlandtrend）显示，对左翼党和 AfD 的计划执政“大面积拒绝”。条目只有标题，没有数字。；Spiegel 晨间新闻摘要写到，一些著名社民党（SPD）政治家想阻止首都的红绿红联盟。；Augsburger Allgemeine 的标题是“谁来买单？”，写租户怎么看征收大房东；上午已记录，今天条目依旧只有标题。；Zeit 的标题引用左翼党元老居西（Gysi）谈议员恩德（Emde）：“我希望我们开除她。”这是党内资深人物的明确表态。；三家媒体报道左翼党议员卡特琳娜·马尔格（Katharina Marg）出席了反对遣返“家族犯罪（Clan）成员”或“警方熟知的巴勒斯坦人”的抗议：Spiegel 标题写“Clan-Mitgliedern”，WELT 写“polizeibekannter Palästinenser”，BILD 标题称“下一个麻烦左翼”和“激进派”。条目都只有标题。</li><li><b>11-05</b>Deutschlandfunk：柏林左翼党投票同意与绿党、社民党开始组阁谈判。；《柏林报》（Berliner Zeitung）的评论标题称左翼党“完全疯了”，对柏林“很不好”，起因是“CO2 赔偿”。目前只有标题，看不到具体内容。；《奥格斯堡汇报》（Augsburger Allgemeine）的标题是“谁来买单？”，写租户怎么看对柏林大房东的征收。同样只有标题。；柏林左翼党、绿党和社民党计划在 1 月提交联合执政协议（tagesschau.de）。；Jungle.World 刊出标题为“Emde Gelände”的文章，FAZ 刊出“左翼党与青年军官（Jugendoffiziere）”一文，目前都只有标题。；WEB.DE 标题：社民党（SPD）左翼派为柏林“有争议的联盟”辩护。只有标题，应是指与左翼党的合作，但条目没有明说。</li><li><b>11-04</b>nd 报道，柏林左翼党年轻化、执政经验少，议员文克·克里斯托夫（Wenke Christoph）被看好出任参议员（Senatorin，即柏林州政府部长）。；nd 报道，柏林社会事务部门计划在 2027 年 2 月推出数字化的社会票“Fairgnügen-Pass”，用作资格证明。；taz 报道，左翼党联邦议员加伦堡（Katalin Gennburg）要求同党议员瓦内萨·恩德（Vanessa Emde）交出议席，理由是需要对“美化恐怖主义”划清界限。</li></ul>
+    <p>左翼党9月成为柏林第一大党，正与绿党、社民党组阁。</p>
+    <ul class="persp"><li><b>nd</b>党内程序问题，就事论事</li><li><b>WELT</b>突出党内对核心承诺的怀疑</li><li><b>STERN</b>反犹指控是组阁的另一个压力点</li></ul>
+    <p><b>研判：</b>开除申请说明领导层要在组阁前统一口径；但 Emde 的质疑击中了要害：住房承诺兑现不了，左翼执政的合法性就会受损。</p>
+    <p class="signals">观察信号：党团表决结果 · 联合协议里住房部分的写法</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMi1gFBVV95cUxQUUl2dUttRnJvcjJfSjNIZXpNZGdkaVZOYXlkajB2SW91YzcyQjhTbG5vSGNjYVV3aTA0c1FlM2pCZ1VyOTZySVZ2eFFpQmZYRUlYUmZmSjdzOVl0X1JUa0hrNHJrNldwYkVCWXczX0E0b0hiVWhZbVBKVUVTVnN2dzFOWmczWDNzcEZydVJTcDByNnRmT25MZFB5S1BXOXVodXFrUDlBM2ZDYUtxUksyVGRNMmhNSmhqaC1qZ3FWSzdDY3REOC1DN3RKSXQ5b1NUNjhkcGhB?oc=5" target="_blank" rel="noopener">Tagesspiegel ↗</a><a class="src" href="https://www.nd-aktuell.de/artikel/1203947.die-linke-ausschluss-von-vanessa-emde-aus-berliner-linksfraktion-beantragt.html" target="_blank" rel="noopener">nd ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi8gFBVV95cUxQVmVCUXJzVVk1Ukg5bk56dElBeC1nSks1azEzRzFQdjZyZ296Yng1WmVIM2ZKOE1XUUM5eVpRdEZKMWhacUgxellHbmNUTnBaSWgxbTRNUVl0MjRIZnplVkZNb1JLdHc1UnhLUlFqM2NoWmg4dTF3OHFlM2lJWmdsTENlbXo2d3A5YVJ0cmZkeG5jeEdlcWIxUGwtOEN3UWd5UDVETzloQ1hVdzREc1plTnVSOXhQQktpYzZ5OTFYdUhreGZaMHY4LVNjd05JYmpqWWFJaHczbmpfZ3BKS3pJajQ1aHJJYVMwNmwxcjhtZ2cwUQ?oc=5" target="_blank" rel="noopener">WELT ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMisgFBVV95cUxPYTMzblQwZ1NBQ2VlcTNSQkZiV1BZdUFoUnNmSkFKRURZRWxqM3VoeU00cWRIYXd4YmFJZWN6bFBQNlMwdDBVcnAtMm94QWVIRUh3c3hIWUlRVU9QblJPYVlZOXQwMjAzRVJFVEhKeUZ1SVJjZDFMdTJrQlJfdjBtcFVXNi1TaEtHNEhRWDgwQ21pcm5uUTZoVjJSMEtxaG9fM3hlTV9OVHNWTjhNR0lnM2V3?oc=5" target="_blank" rel="noopener">STERN.de ↗</a></div>
+  
+<div class="acts" data-key="ata193f4a7ef" data-title="柏林左翼党组阁" data-text="左翼党议会党团领导层正式申请开除议员 Vanessa Emde；Emde 本人公开质疑竞选承诺&#39;让柏林住得起&#39;能不能兑现；另一位左翼议员 Martha Kleedörfer 接受采访：&#39;我不是反犹主义者，句号&#39;" data-src="Tagesspiegel" data-link="https://news.google.com/rss/articles/CBMi1gFBVV95cUxQUUl2dUttRnJvcjJfSjNIZXpNZGdkaVZOYXlkajB2SW91YzcyQjhTbG5vSGNjYVV3aTA0c1FlM2pCZ1VyOTZySVZ2eFFpQmZYRUlYUmZmSjdzOVl0X1JUa0hrNHJrNldwYkVCWXczX0E0b0hiVWhZbVBKVUVTVnN2dzFOWmczWDNzcEZydVJTcDByNnRmT25MZFB5S1BXOXVodXFrUDlBM2ZDYUtxUksyVGRNMmhNSmhqaC1qZ3FWSzdDY3REOC1DN3RKSXQ5b1NUNjhkcGhB?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="ask">问 Claude</button>
+</div>
+</article><article class="card thread" data-key="t67aa5b926a" data-ts="1794991389">
+  <span class="label">主线 · 金属电器行业劳资谈判与警告罢工</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>巴伐利亚周五举行24小时警告罢工，IG Metall 公布了具体安排</li><li class="today"><b>今天</b>北威州绍尔兰地区的 Märkischer Kreis，99%会员赞成，计划24小时罢工；周一还有全天警告罢工</li><li class="today"><b>今天</b>《南德》评论：双方该走出战壕、回到谈判桌</li>
+    <li><b>11-17</b>IG Metall 计划在金属电气行业劳资争议中组织全天警告罢工，上巴伐利亚地区首次号召24小时罢工；巴伐利亚金属业雇主协会负责人说自己对全天罢工&#39;感到震惊&#39;；西门子 CEO 布施给德国打&#39;五减&#39;，IG Metall 回应他&#39;完全颠倒是非&#39;</li>
+  </ul>
+  <div class="foryou">Märkischer Kreis 也在北威州；大众的厂内协议不在这一轮，但会参照这轮结果。</div>
+  <details><summary>更早 10 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-14</b>IG Metall 的 24 小时警告罢工在扩大：top agrar 标题称农机厂 Fendt 和 John Deere 也在备战；Neue Westfälische 说比勒费尔德（Bielefeld）的 IG Metall 正准备 24 小时罢工。；Oldenburger Online Zeitung 的标题称，IG Metall 提出“限期的集体合同偏离”。条目只有标题，没说内容，一般指困难企业可临时偏离合同，具体条件不明。；雇主一侧反击：WELT 的标题引语是“IG Metall 在锯自己坐的树枝”；Merkur 报道隧道掘进机企业家赫伦克内希特（Martin Herrenknecht）怒斥罢工；BILD 引他说“德国必须再多干点”。；SWR 在问梅赛德斯（Mercedes）的工厂会不会被关；junge Welt 用《汽车老板进攻》的标题，把汽车业雇主的施压写成攻势。以上都只有标题。</li><li><b>11-13</b>IG Metall 号召多年来首次的全天警告罢工：FAZ 标题写「自 2018 年以来首次」。Sat.1 巴伐利亚的节目标题是「24 小时罢工？IG Metall 让职工投票」，具体怎么投、投什么，条目没写。；梅赛德斯（Mercedes）董事会冻结在德国所有厂址的投资，并考虑关厂（SZ、Tagesschau）。SZ 写明董事会给出的理由：没有和职工委员会就更长工时、更低工资达成一致。；WELT 标题称「汽车业大权力斗争开始了」，把梅赛德斯和大众都写成与 IG Metall 对抗，条目只有标题。；梅赛德斯冻结德国投资一事，工会作出回应：IG Metall 要求就投资停止与公司谈判（Zeit、n-tv 转载）。n-tv 的标题写「梅赛德斯威胁关厂」。；SZ 的标题是「对职工委员会施压：梅赛德斯威胁关厂并停止投资」，把这件事框成压力手段。junge Welt 只用平实的标题报道「梅赛德斯停止在德国的投资」。；FAZ 商业快讯的标题是「梅赛德斯停止所有对德国厂址的新投资」，同一条里还有「一半员工拿到圣诞奖金」，条目没说是哪家公司。；不来梅（Bremen）的 buten un binnen 在问，当地是否也会出现 24 小时警告罢工（只有标题）。</li><li><b>11-12</b>IG Metall 筹备全天警告罢工：SZ.de 的标题称这是“多年来首次”（erstmals seit Jahren）。多家媒体经 IG Metall 汇总：北威州已申请24小时警告罢工（n-tv），黑森中部地区要求同样做法（FAZ），多个大区也想这样做（Stern）。；RP Online：北威州金属电气行业谈判又一轮没有结果，标题说周三可能升级。这条应是昨天的稿，今天条目没有更新结果。；巴伐利亚明德尔海姆（Mindelheim）的格罗布（Grob）工厂周一有职工放下工作（Augsburger Allgemeine）。；德共的《我们的时代》（UZ）称，雇主给全行业370万职工的报价看起来只是几百欧的一次性补贴，条目摘要被截断。UZ 还采访了一位工会人士，舍弗勒（Schaeffler）在谈判期间宣布关四家工厂，对方称“预计会是更长的对抗”。；IG Metall 决定在金属电气行业数百家企业开展 24 小时警告罢工。SZ 和 n-tv 都强调这是「多年来首次」，n-tv 写「八年来第一次」（NDR、BILD、ZDFheute、WELT、Zeit、Manager Magazin 同步报道）。；SZ 的标题引语是「现在我们让企业整天停摆」，条目没标说话人，语气应来自工会一方。该报同时写雇主方「fassungslos」（目瞪口呆、难以接受）。；各家措辞有差别：BILD、Zeit、NDR 写「beschließt」（已决定），SZ、WELT 写「plant」（计划）。标题里都没有具体企业名单和罢工日期。</li><li><b>11-11</b>巴伐利亚周二继续有多家企业停工（Augsburger Allgemeine 经 IG Metall 汇总）。洛尔（Lohr）谈判没有结果，警告性罢工继续（Radio Gong Würzburg）。；Badische Zeitung 的标题说，IG Metall 正在商讨“升级”警告性罢工。具体怎么升级，条目没说。；Telepolis 的标题把局面概括为“5% 对上一个很小的雇主报价”，没有给出报价数字。；WAZ：北威州雇主方警告，金属电气行业面临罢工升级。Rosenheim24 也在问，罗森海姆一带的大企业罢工之后，劳资冲突会不会升级。；职位流失的消息同时出现：汽车零部件商 WKW 被投资人收购后仍要减少 450 个岗位（WDR）。IG Metall 古特斯洛-奥尔德（Gütersloh-Oelde）分会则回应了米勒（Miele）在邻县的计划，具体内容条目没写。；L&#39;Humanité 向法国读者解释：德国金属工人罢工是因为雇主想在谈判里压低实际工资，并且与默茨政府的“反社会改革”同向。；IG Metall 沿海大区（Bezirk Küste）发出第二期谈判通讯“TARIFINFO #2”，条目只有标题，看不到内容。；IG Metall 就居特斯洛（Gütersloh）的洗衣护理产线表态：结束生产将是“严重错误”（Die Glocke）。条目没写细节，很可能与上午提到的米勒（Miele）计划有关。；FAZ 做了一篇测算：企业裁员给的补偿金够不够撑到退休。</li><li><b>11-10</b>IG Metall 在汇总里的标题是“金属电气行业集体谈判 2026：IG Metall 商讨升级”，只有标题，具体升级方式条目没说。；Augsburger Allgemeine：巴伐利亚警告罢工“达到高潮”。</li><li><b>11-09</b>警告性罢工继续：纽伦堡的博世（Bosch）、西门子（Siemens）、曼恩（MAN）又有罢工游行，唐沃特（Donauwörth）有中央集会，比勒费尔德的罢工也在延续。；FAZ 的标题称，集体谈判的「预先决定」将在杜塞尔多夫做出，意味着北威州区域谈判被当作风向标（条目只有标题）。；SZ 标题：金属行业雇主警告会有职位流失。雇主这边的叙事是「涨工资会丢工作」。；Klasse Gegen Klasse 写英戈尔施塔特（Ingolstadt）：奥迪老板德尔纳（Döllner）在特朗普的竞选活动上为美国新厂游说，而雇主协会在谈判中要职工承担汽车业危机。这是托派媒体的框架。；WSWS：舍弗勒（Schaeffler）在欧洲削减 3460 个岗位，同时家族在 2025 财年拿了 2.24 亿欧元分红，批评 IG Metall 把职工交出去。；周一警告性罢工继续：巴伐利亚有一批企业停工（Augsburger Allgemeine），奥格斯堡与唐沃特（Donauwörth）设了中央罢工日。；吕贝克（Lübeck）的 Vestas 多个厂区被警告性罢工瘫痪（Lübecker Nachrichten 标题）。；杜伊斯堡/下莱茵地区，雇主方公开批评警告性罢工（Antenne Niederrhein）。；勃兰登堡路德维希斯费尔德（Ludwigsfelde）的梅赛德斯和 Gestamp 也有警告性罢工（tagesschau.de）。；IG Metall 汇总里还有“下一轮谈判”的预告，但只有标题，没有时间和地点。；IG Metall 汇总的剪报显示，巴伐利亚和北威州的谈判都“没有靠近”（WirtschaftsWoche 标题）。巴伐利亚雇主协会 vbw 发声明称，“IG Metall 缺乏妥协意愿，谈判无果延期”。；萨克森州金属电气行业的谈判同样没有进展（MDR）。；英戈尔施塔特的奥迪（Audi）警告性罢工，BR 称参与者有 15,000 人。巴伐利亚电视台报道“数千人停工”。</li><li><b>11-08</b>SZ.de 的标题：IG Metall 计划在 2000 多家企业采取行动。；雇主一方的 Westmetall 警告 IG Metall 不要搞 24 小时罢工；Hasepost 标题称金属行业的集体谈判争端“继续升级”。；梅赛德斯（Mercedes）位于路德维希斯费尔德（Ludwigsfelde）的工厂被号召参加警告性罢工（Tagesspiegel、n-tv 转载）。；IG Metall 汇总的剪报里还有一句职工代表的话：“职工期待他们的付出被认可”（Rhein-Neckar-Zeitung），以及纳德林根（Nördlingen）瓦尔塔（Varta）厂关闭后工会的评论，说“经历职工的震惊很沉重”。</li><li><b>11-07</b>第三轮谈判在多个地区没有结果：tagesschau.de 标题是「IG Metall 与雇主之间没有靠近」，不来梅、莱茵兰-普法尔茨（RLP）的第三轮同样无果，下萨克森与萨克森-安哈尔特地区 11 月 6 日也有谈判。；黑森（Hessen）仍有警告性罢工（hessenschau 标题）。；nd 报道：柏林-勃兰登堡地区金属电气行业的集体谈判仍无结果，IG Metall 表示对“阶段性放弃部分工资”持开放态度。</li><li><b>11-06</b>Zeit 称 IG Metall 号召“数万人”参加警告性罢工；n-tv 说巴伐利亚也有数万人被号召；慕尼黑的 IG Metall 扩大了警告性罢工。；《柏林报》的标题说，又一轮谈判“没有进展”地结束，IG Metall 扩大警告性罢工。WirtschaftsWoche 的标题是“新的解决方案应终结争端”，只有标题，看不出内容。NDR 的标题是“先罢工、现在谈判”。；多特蒙德的 Vitesco 警告性罢工现场有“面对一片废墟”的说法（Osthessen|News 标题）。WAZ 报道，波鸿（Bochum）的欧宝（Opel）仓库叉车也停了。；WSWS 称，全国超过2000个工作场所有警告性罢工，但认为 IG Metall 领导层与企业配合，把警告性罢工限制在狭窄范围内，避免全面罢工。；IG Metall 号召数万人参加警告性罢工（DIE ZEIT 经 IG Metall 汇总的标题）。；tagesschau.de 的新闻汇总同样把“IG Metall 号召警告性罢工”放进了头条。；Radio Oberland 写到，奥伯兰（Oberland）地区的警告性罢工浪潮暂时结束，之后还计划多场集会。；IG Metall 在巴伐利亚周五有 105 家企业参加警告性罢工（Augsburger Allgemeine 标题）。昨天的数字是 81 家。；WELT 称 IG Metall 号召“数万人”参加警告性罢工；Merkur 引用的口号是“雇主不应忽视这些信号”。；北威州：梅赛德斯-奔驰位于杜塞尔多夫（Düsseldorf）的 Sprinter 工厂受到警告性罢工影响（Finanztrends 标题，以梅赛德斯股票为角度）。</li><li><b>11-05</b>比勒费尔德（Bielefeld）的 IG Metall 罢工声势很大，《新威斯特法伦报》（Neue Westfälische）标题引用了“这是一记耳光”。；多特蒙德 Vitesco 罢工现场，AfD 领导人把手机扔向现场，随后被刑事报案（Ruhr Nachrichten）。；埃姆斯兰（Emsland）的 Krone、Storm、Benteler 将有行动；兰茨胡特（Landshut）的 BMW 预计有 650 名员工参加警告性罢工（IG Metall 汇总的剪报）。；第三轮谈判之前，IG Metall 主席要求雇主提高报价（Tagesspiegel 标题）。；罢工浪潮继续扩大：奥迪内卡尔苏姆（Neckarsulm）有抗议，英戈尔施塔特和马兴（Manching）、米尔海姆（Mülheim）、萨奥尔兰（Sauerland）都有警告性罢工或集会，北部的罢工浪潮“接近目前的高峰”（IG Metall 汇总的剪报）。；n-tv 的标题提到 IG Metall 提出了 5% 的涨薪要求，一位叫 Reitz 的人警告这可能是“自摆乌龙”，并质问“当真吗”。这个人是谁、立场如何，条目里没说。；junge Welt 刊出评论，标题是“IG Metall, bitte aufwachen”（IG Metall 请醒醒），只有标题。；警告性罢工继续扩大：IG Metall 汇总的剪报显示，巴登-符腾堡的奥迪（Audi）有警告性罢工和抗议（tagesschau.de 标题）。；东威斯特法伦-利珀（OWL，即比勒费尔德一带）有多家企业罢工（Neue Westfälische）。；巴伐利亚周四有 81 家企业的员工停工（Augsburger Allgemeine）。</li></ul>
+    
+    <ul class="persp"><li><b>IG Metall</b>高赞成率证明会员支持升级</li><li><b>SZ</b>呼吁双方妥协</li></ul>
+    <p><b>研判：</b>罢工从巴伐利亚扩散到北威州，下周可能更多地区跟进。</p>
+    <p class="signals">观察信号：周五罢工参与人数 · 雇主是否提出新报价</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMixgFBVV95cUxNQXJ0UHNNZ01mXzJ5OGR1QWY5bTRrWm5fWWN3Q3l6VzZha2lFbVY2cWxPSW5YSHk4d1dfcTFWZ2RET3U0elJDTVV3SGhKNW9EYjNJMzY5dVRjMlBlbFBuVTNmN09feVk5cXg1SG9HVHZaWGpjbGRKX0RrLXI4V3ZhaGw3LWxXV2FOcGVIbzBvT0FoMllEQ01SdlRHVTg3MDRKX0JZQkpjeExnV2plemlKNnRqcmJvYlE0cVo1cXhIY19GSVhkTFE?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiowFBVV95cUxPbmVBbHJLRWxiZmZWTTZ1RzdCMjlab25FZHdYdDJlQU5GN1J3NVo4RkZPZXNyOFQ3YmxXZkw0RFFqTWllRng2QjYxSHNHQXNGTUpvTjJCUkFGcS1Bb0pVN3hBWXVxWFk1UktfYXBNSkQ3bk1BX0RNM2xRRHpTNVNubnQwdE85X0t5dHpSWktUeWZYM2RQX1hEWmplMjFpb1NDVC1Z?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMikwFBVV95cUxPaEFqRDNoRElBcmlVZEhJVXZ0Q216OGRPc3oxZmQzVWVWYUFwaFJac2lONFNoREMzQ2dwTzVUOU1DTVBoRVhJWUJKeEVKX2ZyYW9SR0hDclA0OWd6UXRha3BJaDFLTnVyQWtDSjlkRXBpeTZ1SFJONkZNX1JwR3NWY3JYRVlaUzhjZWJWOHd1NHVGRE0?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMitgFBVV95cUxQeVFJeW94dEdkUjFudEpXYmk3OUs4ai1pdFJhMzBUWTZqNmJqU1VmWGhzdk1QdDJaQm9oSVJZdy1KRlA5R3pFMGc1MkFqZXFleUNfQzBudTZYdGhQLThFRXZDUFQwMzYyd25FR0R2WDlpZXFHQjVHOUpCRVVlQTM1X2EtVl9qRmVOdTROT192Y1JWcUFSVl9CZXN2TFcxNXo0dzhCVHJPaElybFhLV1JhVDZHRVUtdw?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMirgFBVV95cUxPeFRtVFV0ZkRDVUVHeElfUUh5QUtpOW1KWjdBRTd0d3FSVHFfOGNIVGFRQmtQdXZhSGwwMGhWTHlQMHkxcDltZmswVGxDa2NRWlFDTlFlYzgyZDJRdUtLYkgwZGs1Y0dDdEhfRHV3ZE5EalBsLVNkS1RfZ20wTGpDLTIzekw0TUtQYnVsOF84UzNiSWN2eEY4QkhqWWVMYjNOWi1tVHZtOGt4S0tqUnc?oc=5" target="_blank" rel="noopener">IG Metall ↗</a></div>
+  
+<div class="acts" data-key="at67aa5b926a" data-title="金属电器行业劳资谈判与警告罢工" data-text="巴伐利亚周五举行24小时警告罢工，IG Metall 公布了具体安排；北威州绍尔兰地区的 Märkischer Kreis，99%会员赞成，计划24小时罢工；周一还有全天警告罢工；《南德》评论：双方该走出战壕、回到谈判桌" data-src="IG Metall" data-link="https://news.google.com/rss/articles/CBMixgFBVV95cUxNQXJ0UHNNZ01mXzJ5OGR1QWY5bTRrWm5fWWN3Q3l6VzZha2lFbVY2cWxPSW5YSHk4d1dfcTFWZ2RET3U0elJDTVV3SGhKNW9EYjNJMzY5dVRjMlBlbFBuVTNmN09feVk5cXg1SG9HVHZaWGpjbGRKX0RrLXI4V3ZhaGw3LWxXV2FOcGVIbzBvT0FoMllEQ01SdlRHVTg3MDRKX0JZQkpjeExnV2plemlKNnRqcmJvYlE0cVo1cXhIY19GSVhkTFE?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="ask">问 Claude</button>
+</div>
+</article><article class="card thread" data-key="t5bf0475e4d" data-ts="1794991389">
+  <span class="label">主线 · 大众与 IG Metall 劳资谈判</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>德共党报《我们的时代》：&#39;汽车老板们的进攻&#39;</li><li class="today"><b>今天</b>IG Metall 欢迎特斯拉扩建，称是&#39;改善劳动条件的机会&#39;；nd 则批评特斯拉缺乏能源规划</li>
+    <li><b>11-17</b>IG Metall 汇总：梅赛德斯、大众、博世都在推削减计划，工会以罢工相威胁；工会刊物专题：德国汽车业还有没有救；Walter AG 达成社会劳资协议：高额补偿，转移出去的岗位减少</li>
+  </ul>
+  
+  <details><summary>更早 6 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-13</b>WELT 标题把梅赛德斯和大众并列为与 IG Metall 对抗的对象，条目只有标题，没说大众方面的具体新动作。；梅赛德斯冻结德国投资，是汽车业劳资关系紧张的新信号，可以当作大众谈判的参照，但与大众没有直接关系。</li><li><b>11-11</b>萨克森州长克雷奇默（Kretschmer，CDU）接受 FAZ 采访，为茨维考（Zwickau）大众工厂奋力争取。他说：“实际上存在一场你死我活的厂址竞争（knallharter Standortwettbewerb）。”；他还说沃尔夫斯堡（Wolfsburg）对此保持沉默，并希望柏林为工业厂址多给一些支持。</li><li><b>11-07</b>SZ.de 的标题称：IG Metall 向大众（VW）发出最后通牒，并威胁采取劳动斗争。条目只有标题，没有日期和细节，无法判断是新进展还是旧稿被汇总转载。</li><li><b>11-06</b>Spiegel 报道，奥迪（Audi）据称考虑把在美国佐治亚州（Georgia）计划中的新厂再扩建，可能新增数千个岗位，而在德国则面临关厂风险。；nd 报道，萨克森州州长克雷奇默（Kretschmer）提出拯救茨维考（Zwickau）大众工厂的“Auto-Union”计划，在州议会遭到质疑，联合执政的社民党也警告不要干预集体谈判自主权（Tarifautonomie）。</li><li><b>11-05</b>《下萨克森州报》（noz.de）报道：IG Metall 在奥斯纳布吕克（Osnabrück）的大众（VW）和 KME 举行了警告性罢工和示威。</li><li><b>11-04</b>Deutschlandfunk 的标题是“IG Metall 号召首轮警告性罢工浪潮”，Stern 的标题是“金属电气行业再有数千人参加警告性罢工”。；从 IG Metall 汇总的剪报看，罢工和集会遍及多地：曼海姆费弗塔尔（Käfertal）、锡根（Siegen）、哥廷根（Göttingen，数百人集会）、莱比锡。；雷根斯堡（Regensburg）有上弗兰肯（Oberfranken）的 IG Metall 青年发起学徒警告性罢工（tvo.de）。；NDR 的报道标题引用了一位职工的话：“月底很紧”，诉求是更高的工资。</li></ul>
+    
+    <ul class="persp"><li><b>Unsere Zeit</b>把削减计划看成资方攻势</li><li><b>IG Metall</b>借特斯拉扩建争取进厂、建立劳资协议</li></ul>
+    
+    
+  </details>
+  <div class="srcs"><a class="src" href="https://www.unsere-zeit.de/angriff-der-autobosse-4819921/" target="_blank" rel="noopener">Unsere Zeit ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxNLUNFLXdwMTJaa0tOOUlnd2pleV9EVDNNaFVyaHNXQXhxeUFOTzlJc2RLSlJJZjZ5Z1JVSUlGNDlldnk3M1VpeWgteFJTbUh6M2d6Qi1kMFhFQ3dJUWtwSmhYMk1TT3czaG9GSDEwblJKMEctODlFWVNSNEtRNC0yV3dNM1prZDZtMjZlZk85ZDBPVWthbmtNVWZoTGZ3N1c1SlNVd3ctY0ZGLUFvWUlZSFZuNEJneDRTX1hV?oc=5" target="_blank" rel="noopener">IG Metall ↗</a><a class="src" href="https://www.nd-aktuell.de/artikel/1203946.wirtschaft-kritik-an-tesla-ohne-energie.html" target="_blank" rel="noopener">nd ↗</a></div>
+  
+<div class="acts" data-key="at5bf0475e4d" data-title="大众与 IG Metall 劳资谈判" data-text="德共党报《我们的时代》：&#39;汽车老板们的进攻&#39;；IG Metall 欢迎特斯拉扩建，称是&#39;改善劳动条件的机会&#39;；nd 则批评特斯拉缺乏能源规划" data-src="Unsere Zeit" data-link="https://www.unsere-zeit.de/angriff-der-autobosse-4819921/">
+  <button class="act" data-act="like">♡ 赞</button><button class="ask">问 Claude</button>
+</div>
+</article><article class="card thread" data-key="t930d7e9e17" data-ts="1794991389">
+  <span class="label">主线 · 德国 Gen Z 青年罢课（11月20日）<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>&#39;Gen Z regelt&#39;宣布周五进入抗议&#39;第二阶段&#39;</li><li class="today"><b>今天</b>法兰克福这次不在市中心游行，组织者呼吁和平抗议；上次有商店被抢</li><li class="today"><b>今天</b>《时代》：这一次 Gen Z 想换个做法；shz 则问：运动是不是已经泄气了</li>
+    <li><b>11-17</b>&#34;Gen Z regelt&#34;正在为11月20日的全国青年罢课动员，周六已有数百人上街；法兰克福警方担心罢课日再出冲突；罢课前网上出现一则来路不明的号召，被媒体当作疑点报道；&#39;Gen Z regelt&#39;计划在柏林举行反义务兵役的青年罢课，周六还会再次上街，并呼吁参加者不要带刀；绿党主席为 Gen Z 示威辩护：&#39;代际契约已经被打破&#39;</li>
+  </ul>
+  
+  <details><summary>更早 9 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-14</b>Zeit、BZ、Stern：“Gen Z regelt” 再次号召在柏林游行。Tagesspiegel：柏林警方筹备大规模行动，同一时间有乌克兰峰会和 Gen Z 大游行。条目没写具体日期。；杜塞尔多夫的 Kö 又有 Gen Z 抗议，伍珀塔尔（Wuppertal）也有（Zeit）；比勒费尔德据说没有游行，警方仍在加强准备（Mindener Tageblatt）；法兰克福警方在 Gen Z 骚乱之后封锁了 Zeil 的所有入口（fnp.de）。；taz 的播客：这个运动分成激进和温和两派，在争论“要成为谁”。Jacobin DE 评论：为什么德国的 Gen Z 没有像法国那样“regelt”，实际规模远低于预期。；Klasse Gegen Klasse：柏林夏里特（Charité）罢工里讨论了 11 月 20 日的青年罢工，并刊出一位法国活动者给德国青年的“教训”；WSWS：法兰克福歌德大学计划裁撤 60 个教授席位、合并院系，学生抗议。以上两家是托派立场。</li><li><b>11-13</b>MDR 称「GenZ regelt」将在 11 月 20 日再次抗议，同时回顾 10 月底首次抗议后的骚乱。拜罗伊特（Bayreuth）也有 11 月 20 日反义务兵役游行，从瓦恩弗里德庄园（Haus Wahnfried）出发。；NRZ：杜塞尔多夫周六又有 Gen Z 游行。；DW 的数据文章指出，老一代也受危机拖累，这在反驳「婴儿潮一代都过得更好」的说法。；Klasse Gegen Klasse 报道慕尼黑大学（LMU）11 月 16 日全校罢课，反对非欧盟学生学费。WSWS 号召「准备欧洲总罢工」，两家都是托派立场。；RP Online：杜塞尔多夫周末有多场游行，包括 Gen Z、Prüf NRW 和伊朗人的游行；条目没说 Prüf NRW 是什么。；柏林晨邮报（Morgenpost）的标题称，下一场 Gen-Z 抗议已定在库达姆（Kurfürstendamm），标题问「会不会有暴力」，强调风险。</li><li><b>11-12</b>明斯特：Klasse Gegen Klasse 报道，约80人参加“Gen Z regelt”行动大会，讨论运动的政治方向，通过共同诉求并选出了协调小组。这家是托派媒体，只有它报了这条。；柏林教育与科学工会（GEW Berlin）号召会员参加11月20日的 Youth Strike，并给出实际操作建议（Klasse Gegen Klasse）。；英戈尔施塔特（Ingolstadt）的学生罢课委员会宣布调整罢课策略，Klasse Gegen Klasse 转载了声明。；德共《我们的时代》以“Schulstreiks wirken”（罢课有效）为题，称国防部长皮斯托留斯（Pistorius）周六对 Funke 媒体集团说，现在没有必要重新引入义务兵役。这与11月9日只有 Klasse Gegen Klasse 的“据称”说法互相印证，但该报称他为“战争准备部长”，措辞带明显立场。；DW 引报纸报道：预防性拒服兵役的人数急剧上升。；WELT：警察把柏林的圣马丁游行（Martinszug）当成 Gen-Z 示威叫停，反映出警方的紧绷。；taz 刊出对青年的采访，标题引语是「我们作为年轻人对这种政治又气又怒」。条目只有标题。；junge Welt 写斯图加特的 Gen Z 抗议，标题引用参与者的话「青年和我们立场一致」，立场偏同情。；WELT 称警方在柏林叫停了一场 Gen-Z 游行，现场有木棍和火。条目没写日期，可能就是 11 月 8 日 SZ 报道的那次，也可能是新事件。</li><li><b>11-11</b>WDR：“Gen Z regelt” 周六再次在杜塞尔多夫游行。；hessenschau：黑森州的 Poseck 为自己关于“移民背景”的说法辩护，起因是法兰克福的 Gen Z 骚乱。；Schwäbische Post：警察工会就“移民背景的社会环境（migrantisches Milieu）”的说法与国防部长皮斯托留斯（Pistorius）争执升级，标题称给了他“黄牌”。；黑森州内政部长波塞克（Poseck）宣布后续抗议将有更多警力、更强硬的手段（FAZ）；hessenschau 报道他为自己谈“移民背景”的说法辩护。；NRZ：下一场 Gen Z 抗议已在杜塞尔多夫登记，同时有其他游行并行。条目只有标题。；nd：到10月底，今年已有约17,000份拒服兵役申请，数字继续明显上升，FAZ 直播栏也提到了这个趋势。这是义务兵役争论的一个背景数据。；WSWS 报道：卡塞尔大学取消了禁止军事研究的“民用条款”，并叫警察清场和平的讲堂占领。这是托派媒体的单一说法，今天没有其他来源。</li><li><b>11-10</b>SZ.de 的标题：Gen Z regelt 的青年抗议计划在 30 多个城市举行。；Journal Frankfurt 的标题：Gen Z regelt 和 Fridays for Future 联合号召游行。条目只有标题，没有日期和路线，不能确认是否就是 11 月 20 日那场。</li><li><b>11-09</b>taz：「Gen Z regelt Studis」宣布 11 月 20 日也要让大学停摆，许多城市将召开全体大会（Vollversammlung）筹备。；Klasse Gegen Klasse 称，10 月 31 日有约 12 万人上街，国防部长皮斯托留斯（Pistorius）现在想安抚抗议者：尽管问卷反馈很少有积极的，他「据称」已认为不一定需要义务兵役。这个数字和说法只来自这家托派媒体。；RP Online：Gen Z 向警方登记了周末在杜塞尔多夫的游行，条目没写具体日期。；Klasse Gegen Klasse 称，黑森州 CDU 政客在 GenZ 抗议后发表“种族主义煽动”言论，并讨论限制示威权。这是托派媒体的说法，其他媒体今天没有印证。；Jacobin DE 评论《统治阶级害怕 Gen Z》，把从法国到印度的青年抗议归因于高房租、义务兵役、战争、气候与 AI 影响。</li><li><b>11-08</b>SZ.de 标题：警察在柏林叫停了“Gen Z hat genug!”（Gen Z 受够了）游行，现场有扔石头和烟火。条目只有标题。</li><li><b>11-07</b>FAZ 的「骚乱后续」文章引用了一位受访者的话「那些抢劫，我真想在场」，并提出：怎么讨论移民背景的犯罪者，又不让无辜者被误伤？文章认为最有用的是看事实和数据里的规律。</li><li><b>11-06</b>taz 评论《Halbstarke in Turnschuhen》说，从联盟党到 AfD 的政客都强调周末闹事者的出身，但更关键的似乎是闹事者的性别。；FAZ 的一篇文章采访了在德国长大却被贴上“移民”标签的人，问这个标签是否永远摆脱不了。FAZ 把这篇放在“法兰克福骚乱”的标题下。</li></ul>
+    <p>主题是反对恢复义务兵役，上周规模缩小，柏林有冲突。</p>
+    <ul class="persp"><li><b>ZEIT</b>关注运动在调整策略</li><li><b>shz</b>怀疑运动能否持续</li><li><b>WSWS</b>呼吁工人和青年联合、发动欧洲总罢工</li></ul>
+    <p><b>研判：</b>放弃市中心游行，说明组织者想甩掉&#39;打砸&#39;形象；周五的人数会决定运动的下一步。</p>
+    <p class="signals">观察信号：周五各城市人数 · 有没有工会或学生代表会支持</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMi-wFBVV95cUxOQW43Q0dKWUxVOTBxUS0xMW90MHRRTU8tSXNETFNFa3FsZVM0cXE4N3dEVDJtT1ByMXhsWTVlT3Q3THNwUElBRkpoc2lVQVQwcWMtZXJfczdsS1E4MUxmWEp3clc0RkQxYzA1SFM4MGFlcFBCTl80NzBUUWpCQk15bEJ0c01zUlhEOXZiVi1UUTZUdEowU1FORExEU0JVRklCdG5JbEpjX1dnTXlPMzFSazItRVkwRWEyRlNaNWV3eTFHRnNjLVkzblNybXlCSXE1SFRIOUpuTkdVQklId3MzeC1qQ3JLcmJMdExXaktDclhtSlVLNHcyZ01xTQ?oc=5" target="_blank" rel="noopener">MDR.de ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMi3AFBVV95cUxORzVmRUhxWkpqMGkxTkV6THRMTGI2VEpnWkpoLTNfcEZFVDdQQkw0SGcyY3FqUURfaEdfcmx6ZjA5V0UwdWNkZWNCU1R0SGhEd0FIMzJib01QejFrcm1ZM0wzdmVXVEx1M2I3MVVQNnFMZnhCRW5lMmZiNnhhTnptQ003engzSGNLam9mZHUtOW11N1BZVGxndGFIZUdXeXAxVHNFQkRreDA1QzFId0Q4aVpXdzdBTkNPcWdCUnFrZGZ4WHR4V2lQbDU2bnByUUptbTdfZzZ2aGJWZ1Nw?oc=5" target="_blank" rel="noopener">FAZ ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMiVkFVX3lxTFB2WTdjWDBhNWNVQVF0QVRDdjY4bXhtQ0x6WkNDS0ZNSVFjeVQxTUNBN1gxVm5TVjdDRlczcktHQ3AtWWZVVElfbU0tR0NmN2Y4Q09vVmp3?oc=5" target="_blank" rel="noopener">Instagram ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMikgFBVV95cUxPUDlURERxMEt0UmMwSEhlY0N1SnFEMGxRMTA2ekhqTDVxU2lVdVNxZF9zWDBqT1VOUFU5NW1tajJmM2Z4Z1FHeEQ2bzV6a2s3RUFYRU9DeTlDdHExN3FJNTBoNXJlVGcyT3V1VjhSN0lXekFoNFZiMHNDOE9LYVY1WkJVR0xDQ2oxR05SeENKZ3pCUQ?oc=5" target="_blank" rel="noopener">DIE ZEIT ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMizgFBVV95cUxNWlVpQjVJN240UHN0Wjh4dWpRWUlMOVBwdmpSOUhSSmlyUlhtUUg2MEYwSHpXQ3otcFlGYTI1M0VaZjhRRE9ZWHpQcXdfRElqQm0tdlRqeWxQbW9UbVh6RzJmMnplZmtpOFdpdHB1NUplemlPemVRekljV25FM3JIQmF6MWFTUHQwQVZCVVpEeHZFTHFKSnRfOWdyYXdKQUJvTXYxa1dKcXlnV0FMNWpMZzI3dGZHRGhaU25WQnJPXzZlNFo0WEFwM21rQTNQQQ?oc=5" target="_blank" rel="noopener">shz.de ↗</a><a class="src" href="https://www.wsws.org/en/articles/2026/11/18/uqkx-n18.html" target="_blank" rel="noopener">WSWS ↗</a></div>
+  
+<div class="acts" data-key="at930d7e9e17" data-title="德国 Gen Z 青年罢课（11月20日）" data-text="&#39;Gen Z regelt&#39;宣布周五进入抗议&#39;第二阶段&#39;；法兰克福这次不在市中心游行，组织者呼吁和平抗议；上次有商店被抢；《时代》：这一次 Gen Z 想换个做法；shz 则问：运动是不是已经泄气了" data-src="MDR.de" data-link="https://news.google.com/rss/articles/CBMi-wFBVV95cUxOQW43Q0dKWUxVOTBxUS0xMW90MHRRTU8tSXNETFNFa3FsZVM0cXE4N3dEVDJtT1ByMXhsWTVlT3Q3THNwUElBRkpoc2lVQVQwcWMtZXJfczdsS1E4MUxmWEp3clc0RkQxYzA1SFM4MGFlcFBCTl80NzBUUWpCQk15bEJ0c01zUlhEOXZiVi1UUTZUdEowU1FORExEU0JVRklCdG5JbEpjX1dnTXlPMzFSazItRVkwRWEyRlNaNWV3eTFHRnNjLVkzblNybXlCSXE1SFRIOUpuTkdVQklId3MzeC1qQ3JLcmJMdExXaktDclhtSlVLNHcyZ01xTQ?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="ask">问 Claude</button>
+</div>
+</article><article class="card thread" data-key="t63c049d707" data-ts="1794991389">
+  <span class="label">主线 · 匈牙利档案<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>德国之声：匈牙利开始清算欧尔班16年执政留下的腐败遗产</li>
+    
+  </ul>
+  
+  <details><summary>更早 3 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-12</b>The Tablet：匈牙利主教们在线人名单公开后警告不要“简单下结论”。条目只有标题，没有说明名单里是否有神职人员。</li><li><b>11-11</b>Transitions Online 刊出解释文章，标题问：现在公开的共产党时期秘密机关档案究竟是什么。条目只有标题。</li><li><b>11-10</b>Fakti.bg：匈牙利公开了共产党时期秘密机关的档案。；Слободен печат：标题问「谁为共产党政权当过线人」。；inkl 的专栏把 11 月 7 日写成「共产主义受害者纪念日」。这和档案事件是否直接相关，条目没有说明。</li></ul>
+    
+    
+    
+    
+  </details>
+  <div class="srcs"><a class="src" href="https://www.dw.com/de/ungarn-rechnet-mit-dem-korrupten-erbe-von-16-jahren-der-regierungen-unter-premierminister-viktor-orban-ab/a-79967762?maca=de-rss-de-all-1119-rdf" target="_blank" rel="noopener">DW ↗</a></div>
+  
+<div class="acts" data-key="at63c049d707" data-title="匈牙利档案" data-text="德国之声：匈牙利开始清算欧尔班16年执政留下的腐败遗产" data-src="DW" data-link="https://www.dw.com/de/ungarn-rechnet-mit-dem-korrupten-erbe-von-16-jahren-der-regierungen-unter-premierminister-viktor-orban-ab/a-79967762?maca=de-rss-de-all-1119-rdf">
+  <button class="act" data-act="like">♡ 赞</button><button class="ask">问 Claude</button>
+</div>
+</article><article class="card thread" data-key="t2611ba6c42" data-ts="1794991389">
+  <span class="label">主线 · 中国高层政治</span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>习近平和普京在深圳会面，形容两国关系&#39;坚如磐石&#39;，并说要推动更公平的国际秩序</li><li class="today"><b>今天</b>习近平在 APEC 工商峰会演讲，强调自由贸易、AI 全球合作，并说中俄应引领多极化</li><li class="today"><b>今天</b>特朗普今天抵达深圳；SCMP 引述加拿大总理说，三方会面最初是巴西总统卢拉的主意</li>
+    <li><b>11-17</b>习近平在广东中山考察，官方媒体集中报道&#39;引领大湾区高质量发展&#39;；深圳 APEC：周四习近平、特朗普、普京首次三方会面，北京说要谈&#39;世界和平&#39;；越共总书记苏林已抵深圳；资深核专家顾军被控受贿&#39;数额特别巨大&#39;；中共中央印发《中国共产党地方委员会工作条例》；中联办负责人在 APEC 前说，党的纪律消除了&#39;严重危险&#39;；SCMP：习特普会象征意义远大于实际成果；taz 称三人为&#39;厚颜三人组&#39;</li>
+  </ul>
+  
+  <details><summary>更早 7 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-14</b>财新：湖北原书记王忠林被查，标题概括他从山东基层警察一路做到武汉“抗疫书记”。条目只有标题，没有罪名和通报内容。；巴西左翼媒体 Brasil de Fato 刊出介绍中共反腐的文章，标题引用“自我革命永不停止”。条目只有标题。；SCMP：解放军正在用大数据推行“端到端阳光”征兵，目的是招到更好的兵并杜绝腐败，对着明年的建军百年。</li><li><b>11-11</b>SCMP：解放军信息安全领域的科学家郭世泽（Guo Shize，57 岁）的名字从中国科学院官网上被撤下。他是解放军信息技术安全研究中心的研究员，当选过中科院院士（条目被截断，细节未显示）。条目没有说明原因，也没有官方说法。</li><li><b>11-10</b>RTHK 报道：北京外国语大学马克思主义学院原院长韩强在中国记协的新闻茶座上谈二十届五中全会通过的“全面从严治党”决定，称习近平党建思想标志党建理论进入体系化新阶段，反腐要“半步不退让”。；他给出数字：往年每年查处的中管干部约 60 人，今年至今已查处 69 人，据此说明反腐力度不减。</li><li><b>11-08</b>SCMP：中共发布指导意见，为明年召开的二十一大代表遴选定调，称对贿选等干扰选举行为「零容忍」。该报称这届大会预计有重大人事调整。</li><li><b>11-07</b>中共中央发出通知，部署党的二十一大代表选举工作（中国政府网、人民网同一标题）。条目只有标题，看不到选举办法和代表名额。；苏州新闻刊出「深学细悟全会精神 持之以恒推进全面从严治党」，是地方层级在落实全会精神。</li><li><b>11-06</b>SCMP 称，中共二十届五中全会期间，新的战区领导人在为关键指挥官保留的席位区露面，填补了反腐留下的空缺。这是北京对军队新人事格局的暗示。</li><li><b>11-05</b>前政治局委员、新疆党委书记马兴瑞（Ma Xingrui，67 岁）被起诉，指控涉及受贿，时间最早可追溯到 1990 年代末，官方媒体周四报道（SCMP）。；前武警司令王宁（Wang Ning，71 岁）被免去全国政协常委等职。SCMP 称他是 15 年来连续第三位落马的武警部队首长。；SCMP 还刊出了“五中全会决议”的官方英译节选，条目里只有说明，看不到具体内容。</li></ul>
+    
+    <ul class="persp"><li><b>大公报、新华社</b>主场外交，中国是自由贸易的捍卫者</li><li><b>Al Jazeera</b>关注&#39;多极化&#39;口号</li><li><b>Le Monde</b>&#39;新雅尔塔&#39;的说法站不住</li><li><b>Tagesschau</b>军备和 AI 是议题，还有一个敏感话题</li></ul>
+    <p><b>研判：</b>三方会面实质成果有限，但中俄先见面，是在特朗普到来前展示同盟关系。</p>
+    <p class="signals">观察信号：三方会面后的声明 · AI 芯片会不会上桌</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://tass.com/politics/2220191" target="_blank" rel="noopener">TASS ↗</a><a class="src" href="https://www.scmp.com/news/china/diplomacy/article/3374840/xi-and-putin-say-they-will-maintain-stable-ties-seek-more-fair-multipolar-world-order" target="_blank" rel="noopener">SCMP China ↗</a><a class="src" href="https://www.aljazeera.com/news/2026/11/18/president-xi-says-russia-and-china-should-lead-push-to-multipolar-world?traffic_source=rss" target="_blank" rel="noopener">Al Jazeera ↗</a><a class="src" href="https://www.france24.com/en/asia-pacific/20261118-xi-jinping-calls-for-global-cooperation-on-ai-and-free-trade-at-apec-summit" target="_blank" rel="noopener">France 24 ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMixAFBVV95cUxPdlJBVzNXeU1pa05uMmtmVW5aVkd4SnZKRmRTdHN2ak9EWWswRjhPS2o0ZlRVZ1NJTm5kcXRJdEs1ZWlWc0VGTmFqeG5BUWRCYzliNkVrb0xTZHIxZkNHLTVDZ2pPcllrcmYzRVBQQXh3a1JsVmItd1k2ZUxEWjBpZ2hqc2FxNmJhRGZRc1BGRGpuczhGV0xWamRxR2hhZ01CMDM4aGF1TFNaMjNxcHAtUmk4QS1TR2NVQXBtSmNUNXJ3RGRp0gHEAUFVX3lxTFB1Nml2cVNFSXN0a3FxM1NSLTFMc2xUU0w1VFNPejZXNnJwZ0RfTjE0LVEzRElySjhCU3psOUpJdXJFUm5IeWlrQmdFWlBudDYzUVJQVXA2bFNxMGsyaXdyQWVURGJFUlgtdlBKYjlCbHNfSDdjRzI3ZEZFN2dma2xJY3UtUjNEZnpUSkM1UnBPUzBLMXE5eG1jaTVzVjdlWk1YbGQ2cU55UDBtN2RHUWhfZ0FPNUdNYzR4X3JVRDVWckVIa24?oc=5" target="_blank" rel="noopener">SCMP 大湾区与经济 ↗</a><a class="src" href="https://www.lemonde.fr/idees/article/2026/11/18/l-image-d-un-nouveau-yalta-entre-donald-trump-xi-jinping-et-vladimir-poutine-est-aussi-fausse-que-dangereuse_6813074_3232.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://www.tagesschau.de/ausland/asien/apec-trump-putin-xi-100.html" target="_blank" rel="noopener">Tagesschau ↗</a></div>
+  
+<div class="acts" data-key="at2611ba6c42" data-title="中国高层政治" data-text="习近平和普京在深圳会面，形容两国关系&#39;坚如磐石&#39;，并说要推动更公平的国际秩序；习近平在 APEC 工商峰会演讲，强调自由贸易、AI 全球合作，并说中俄应引领多极化；特朗普今天抵达深圳；SCMP 引述加拿大总理说，三方会面最初是巴西总统卢拉的主意" data-src="TASS" data-link="https://tass.com/politics/2220191">
+  <button class="act" data-act="like">♡ 赞</button><button class="ask">问 Claude</button>
+</div>
+</article><article class="card thread" data-key="t3a6bc94bec" data-ts="1794991389">
+  <span class="label">主线 · 美国政治与美伊战争<span class="mine">· 我追踪的</span></span>
+  <ul class="tl">
+    <li class="today"><b>今天</b>美军轰炸伊朗格什姆岛后，伊朗袭击巴林和科威特境内目标</li><li class="today"><b>今天</b>美国护航有限，船只冒险通过霍尔木兹海峡；一艘阿联酋公司的船遇袭，11人受伤、1人失踪</li><li class="today"><b>今天</b>也门：沙特的盟友阵脚松动，胡塞武装控制力增强</li>
+    <li><b>11-17</b>也门胡塞武装推进，控制红海沿岸要地，BBC 称可能进一步冲击全球经济；特朗普启程亚洲行，分析说中期选举失利后他转向外交；伊朗革命卫队称用无人机击中美军在巴林的雷达；万斯公开点名批评在伊朗战争上的&#39;新保守派&#39;；菲律宾反特朗普抗议数百人被捕，怒火指向伊朗战争和 AI 协议</li>
+  </ul>
+  
+  <details><summary>更早 11 天的进展 · 来龙去脉 · 各方视角 · 研判</summary>
+    <ul class="tl"><li><b>11-14</b>白宫周五确认：特朗普访华行程将以与习近平、普京的首次三方会面收尾，在深圳 APEC 期间，时间为下周四；特朗普想谈“削减核武”（BBC、DW、SCMP、HKFP）。；泽连斯基说，美方谈判代表首次提出“乌克兰让出顿巴斯、换取北约成员资格”，他重申乌克兰不愿撤军（BBC、France 24、Le Monde、Spiegel）。FAZ 直播栏的标题称有五国将代表欧洲参加谈判；大公文汇则说欧洲五国入席后“前景难料”。；BBC 的罗森伯格（Rosenberg）分析：欧洲安全问题现在被放上谈判桌，莫斯科视之为胜利，普京在抬高要价。Meduza 转述 Bild：俄方在非正式会谈中要求芬兰退出北约，莫斯科否认，赫尔辛基愤怒。TASS 转述泽连斯基：乌克兰不会把中立地位写进宪法。；英伟达事件继续：Le Monde 引《纽约时报》称，特朗普早在 5 月就被告知黄仁勋与涉嫌间谍的中国女子的关系带来风险；France 24 引《金融时报》称英伟达已接触 Arm 的 CEO 勒内·哈斯（Rene Haas）物色继任者，部分员工希望黄仁勋回来。HKFP 引 AFP：新加坡的 Megaspeed 公司办公室是空壳。法广标题说丑闻在撕开特朗普政府表面的团结。；Al Jazeera：卡塔尔与土耳其签署共同防御条约，分析人士称，在美伊战争背景下，它旨在威慑而非组建进攻同盟。Le Monde：伊朗与俄罗斯走得更近，里海成了贸易与军事往来的战略轴线，但受限于俄方承诺的限度。；taz：特朗普赴深圳之前，中国在台湾附近举行了规模“空前”的军演，被称作“安静的恐吓”。Tagesschau、Al Jazeera：美国民主党胜选后，一支 1000 多人的移民大篷车从墨西哥出发北上。</li><li><b>11-13</b>黄仁勋（Jensen Huang）辞职的余波进了白宫：Tagesschau 称媒体报道特朗普两次被告知黄仁勋与涉嫌中国间谍的女子有染，特朗普否认知情；El País 则称他曾打电话劝黄仁勋顶住。SCMP 说白宫在讨论是否让商务部长卢特尼克（Lutnick）下台。；伊朗革命卫队（IRGC）称击中了美军在巴林的雷达站，说是报复「敌方」对霍尔木兹甘省（Hormozgan）一座通信塔的空袭（Al Jazeera）。这是伊朗单方说法，条目里没有美方确认。；TASS 转述特朗普：应地区国家请求，美国没有对伊朗采取更严厉措施，否则本可以更进一步。TASS 另称美军中央司令部（CENTCOM）否认曾指示以色列备战对伊战争，称相关报道「纯属猜测」，这对应昨天以色列安全内阁加紧备战的说法。；乌克兰线：库什纳（Kushner）和威特科夫（Witkoff）从莫斯科飞抵都柏林见泽连斯基，称下一轮俄乌谈判欧洲将参加（Tagesschau、SZ、BBC、France 24）。Le Monde 指出莫斯科尚未明确同意，两人带回的新东西很少。；美国国内：民主党参议员范霍伦（Chris Van Hollen）宣布竞选参议院民主党领袖，挑战舒默（Schumer）（Al Jazeera）。特朗普威胁，若墨西哥不收紧边境，就把对墨关税翻倍（Le Monde、El País）。Al Jazeera 称特朗普暗示可能在卸任前对古巴动手。FAZ 直播栏说美国政府宣称一年内遣返近五十万人，并缩减与韩国的军演。；中美：HKFP 称特朗普说中国对黎智英（Jimmy Lai）怀有「极深的恨意」，不大可能放人。SCMP 的评论在说下周深圳 APEC 峰会上习近平和特朗普有哪些「容易摘的果子」。；特朗普公开训斥副总统万斯（Vance）。FAZ 说万斯想结束对伊战争，特朗普不同意。Al Jazeera 的分析把这件事放进美伊「不战不和」的局面，标题引了特朗普的「无需达成协议」。这与昨天 TASS 转述 WSJ 的说法（万斯曾致信伊朗官员）相呼应，但那条没有其他来源印证。；伊拉克外长福阿德·侯赛因（Fuad Hussein）对 France 24 说，美伊「不战不和」的状态「不能继续」。他还说，美国要求关闭伊朗边境除两处之外的所有口岸，「不可能」做到。；黄仁勋（Huang）事件进入国会阶段：参议院银行委员会传唤黄仁勋和商务部长卢特尼克（Lutnick），称不出席可能面临法律行动（Al Jazeera、DW）。Le Monde 说，先进芯片出口管制成了国会的关注中心。El País 说民主党议员在追问他与特朗普的关系。；Guardian 写卢特尼克「面临下台压力」：有警告称那名涉嫌间谍的女子与黄仁勋有关联，同时 Megaspeed 迟迟没被列入贸易黑名单。大公文汇的标题称特朗普说库克是执掌英伟达的「好候选人」，条目没写全名，也没说是谁提出的人选。；HN 转 Forbes：消息人士称黄仁勋与另一名员工也有关系。FAZ 转述 Bloomberg，他在最后几小时骂自己「Stück Sch...」。这些都是匿名消息源或二手转述。；乌克兰线：库什纳（Kushner）见过普京后「谨慎乐观」，DW 说普京想让欧洲人参与谈判，并有大规模换俘的迹象。France 24 的标题则说普京在核心要求上寸步不让。Le Monde 直播引欧盟外交负责人卡拉斯（Kallas）：先把停火放第一位，谈俄方要的「安全架构」就是落入陷阱。taz 问都柏林非正式欧盟峰会上「谁来代表欧洲」。；TASS 引莫斯科大学学者马斯洛夫（Maslov）：深圳的中美俄三方峰会可能为新世界秩序打基础，这是俄方学者的解读。；美国国内：ICE 称一年内遣返近五十万人，Tagesschau 提到数据透明度受质疑。El País 称约 1500 名移民组成的大篷车正徒步穿越墨西哥，特朗普再次威胁把对墨关税翻倍。</li><li><b>11-12</b>伊朗首席谈判代表对 Al Jazeera 说“球在美国一边”，要美方回应伊朗在最新一轮和谈中的立场。；Al Jazeera 引以色列媒体称，以色列安全内阁已命令军方加紧准备可能对伊朗的袭击，伊朗警告会扩大报复。受命组阁的艾森科特（Gadi Eisenkot）则对内塔尼亚胡（Netanyahu）说，新政府上任前不要做有风险的军事决定（Spiegel）。；TASS 转引 WSJ：特朗普不反对万斯（Vance）重启与伊朗的接触，万斯十月曾致信伊朗最高国家安全委员会秘书礼萨伊（Rezaei），提议会面。这是单一来源经俄方转述，其他媒体今天没有印证。；美国国内：Spiegel 说白宫在民主党调查开始前就在用强硬措辞恐吓对方。Le Monde 说民主党准备展开全方位调查，涉及总统个人敛财、ICE 滥权和爱泼斯坦案后续，风险是政府拒绝配合。；TASS 称，弹劾赫格塞思（Hegseth）失败暴露了民主党内的分歧。议员文森特·冈萨雷斯（Vicente Gonzalez）对 WSJ 说，不少民主党人对同僚在表决时缺席感到失望。；民主党在密西西比州拿下参议院席位：斯科特·科洛姆（Scott Colom）击败共和党的海德-史密斯（Hyde-Smith），1月起民主党至少有55席（Tagesschau、FAZ、BBC、France 24）。Spiegel 说他靠挨家挨户拉票和一支走红的竞选视频，还有特朗普“不情愿的帮忙”。；中美：SCMP 和 TASS 说，鲁比奥（Rubio）与王毅通话，谈到下周可能的中美俄三方领导人会谈，要谈和平与无核化。财新转述的中方通稿只写“相互支持办好 APEC 领导人会议和 G20 峰会”。SCMP 说深圳 APEC 峰会定在11月18、19日，将有中美领导人会面。；Le Monde 的播客报道：深陷对美以战争的伊朗，经济在崩溃，民众已疲惫不堪。；Spiegel 分析认为，民主党在中期选举后的第一件大事（弹劾国防部长赫格塞思，Hegseth）搞砸了，原因暴露了党内的领导混乱。WSWS 则说民主党「救了」赫格塞思，反映出两党对特朗普的某种默契。；密西西比州的斯科特·科洛姆（Scott Colom）胜选获更多报道：DW 称这是 40 多年来首个赢得该州参议院席位的民主党人。他是该州首位黑人参议员，不过各家给的年数不一：nd 写 145 年，L&#39;Humanité 写 146 年，Al Jazeera 说「自 1800 年代以来」。nd 说他动员了很多非选民，L&#39;Humanité 说他有桑德斯（Sanders）支持，竞选主打医疗和食品援助。；中美俄三方峰会的讨论升温：SCMP 称美方确认存在这种可能，特朗普下周启程亚洲行。Le Monde 专栏写这场会「要么象征 21 世纪多极化，要么是自由国际秩序的送葬者聚会」。HKFP 担心重演「雅尔塔」式瓜分，乌克兰、欧洲和台湾可能被边缘化。；乌克兰线：阿布扎比三方会谈无果收场。DW 说只谈成了战俘交换。SZ 评论称「普京现在知道特朗普已在他口袋里」。Meduza 引 RBC-Ukraine 的消息源称，俄方在第二天拒绝谈停火、领土、能源和黑海安全，只想谈欧洲安全架构。美国特使库什纳（Kushner）和威特科夫（Witkoff）在莫斯科见了普京，随后要去都柏林见泽连斯基。；大公文汇的标题称伊朗说两艘油轮在霍尔木兹海峡爆炸并停航。条目只有标题，可能就是 11 月 8 日 Tagesschau 记录的「两艘货船起火」，无法确认。</li><li><b>11-11</b>众议院共和党人挡下了弹劾国防部长赫格塞思（Hegseth）的动议。Tagesschau 说他们几乎一致投反对票；El País 给出的数字是 211 比 204，议案被转交委员会，等于搁置。；BBC 加了一句“暂时如此”：民主党明年可以再提。特朗普称赞赫格塞思是“伟大的爱国者”。TASS 转述他指责民主党“滥用国家”，并说“在委内瑞拉和伊朗的胜利”证明了赫格塞思无过。；France 24：吉姆·乔丹（Jim Jordan）以 106 比 73 击败斯卡利斯（Scalise），当选众议院共和党领袖，接替约翰逊（Mike Johnson）。共和党这次同时丢了参众两院。；美国司法部起诉三名被指受伊朗指使的人，指控他们策划包括 9 月英国 RAF Fairford 空军基地事件在内的多起袭击（BBC、France 24）。法国则召见伊朗大使，指伊朗是 10 月攻击超市冷柜系统的幕后黑手（DW）。以上目前都是美国和法国官方的指控，条目里没有伊朗的回应。；teleSUR 的标题称，德黑兰要求先完全解除制裁再谈和平。条目只有标题。Al Jazeera 报道伊朗开设了首个全女性军训营，理由是担心美国再次攻击。；特朗普的“凯旋门”计划又遭阻力：肯尼迪家族（九名成员）加入诉讼，担心这座 250 英尺的建筑遮蔽 JFK 墓和长明火（Spiegel、BBC、Al Jazeera）。；RFI 说特朗普再次指责中期选举有舞弊。Tagesschau 说 DAX 本来几乎收复了周五“AI 崩盘”的跌幅，但“英伟达事件”的新细节让涨势受阻。；美国司法部起诉三名被指受伊朗指使的男子。SZ 写明，他们涉及近二十起袭击和未遂袭击，目标包括欧洲和美国的犹太社区，也包括英国 Fairford 空军基地的未遂袭击（Tagesschau、SZ）。；DW、nd、taz 都确认，共和党在初始阶段就挡下了弹劾赫格塞思（Hegseth）的动议，特朗普“非常高兴”。这与上午的报道一致，没有新数字。；伊朗一侧：TASS 转述伊朗最高国家安全委员会秘书穆赫辛·礼萨伊（Mohsen Rezaei）的话，称浓缩铀是伊朗的“国家资产”，只供国内使用，伊朗无意放弃。这是单一的伊朗官方说法，经俄方转述。；市场：Tagesschau 称 DAX 周中重新“冲击纪录”，科技板块恢复信心，西门子能源（Siemens Energy）业绩亮眼。上午说“英伟达事件”的细节让涨势受阻，下午的报道语气更乐观。；Al Jazeera：美国财长贝森特（Bessent）据报因“伊朗威胁”被转移到军事基地。伊朗据说在一张照片公开后，定位到了他在华盛顿价值1250万美元的住宅。这是该报的转述，条目里没有美方或伊朗方面的正式表态。；俄乌在美国斡旋下的阿布扎比谈判进入第二天（France 24 引乌方首席谈判代表乌梅罗夫（Umerov））。TASS 转述佩斯科夫（Peskov）：俄方代表团随时向普京通报三方谈判进展。TASS 还说，普京和卢卡申科周二谈到了这场谈判。；TASS 转述俄外交部官员德罗比宁（Drobinin）：欧亚安全架构应建立在“平等且不可分割的安全”原则上。条目只有标题和一句摘要。</li><li><b>11-10</b>马西（Thomas Massie）提出的弹劾赫格塞思（Hegseth）动议共八条条款，France 24 称众议院本周预计表决；Spiegel 说这是在逼共和党人做“忠诚度测试”。；SZ 的分析文章《堕落的战争部长》列出对赫格塞思的指控：未经授权的伊朗战争、不当杀戮、滥用权力，并称他的去留可能在 1 月前见分晓。；BBC：特朗普说美国再袭击伊朗“极不可能”，称目前是“维持现状”，但仍“子弹上膛”，一旦中东局势变化随时可动。这与上周“可能要摧毁剩下的部分”的说法不同。；Spiegel：特朗普与 UFC 老板达纳·怀特（Dana White）在白宫一起面对媒体，拿这几天白宫发言人职位的来回打趣，条目没说怀特是否接任。；Al Jazeera 的民调：美国人支持主战候选人的可能性比反战者低三分之一（约 3 比 1），多数人认为“避免物价上涨”比实现特朗普在伊朗的军事目标更重要。；法国外长巴罗（Barrot）周一指控伊朗革命卫队是 10 月攻击法国超市冷柜的幕后黑手，称伊朗将承担后果（France 24）。；七国集团（G7）外长在巴黎首次于中期选举后聚会，欧洲代表担心特朗普为求外交胜利，不加保留地接受克里姆林宫的说法（Le Monde）。；FAZ 早报（Frühdenker）以「赫格塞思（Hegseth）如何应对弹劾程序」为题，同时提到俄乌正与美国谈论可能的结束战争方案。；Al Jazeera：欧洲外交官在巴黎 G7 外长会议上向鲁比奥（Rubio）施压，要求在美国斡旋的俄乌谈判中拥有一席之位。该谈判随后在阿布扎比举行。</li><li><b>11-09</b>特朗普周日宣称要「卷土重来」。民主党新领导层誓言追究政府责任，司法部长则承诺保护官员免于被起诉（France 24）。；特朗普改口，说此前的遣返移民政策「太严厉」（FAZ 直播栏、Le Monde）。Le Monde 指出他没有宣布任何具体措施，只是语气松动。；白宫新闻秘书人选风波：特朗普说请 UFC 老板达纳·怀特（Dana White）当发言人「只是个玩笑」，但周一仍会在华盛顿与怀特见面（SZ、Le Monde、Al Jazeera）。Le Monde 补充说，这个职位自 10 月 16 日凯蒂·扎卡里亚（Katie Zacharia）干了五天被解职后一直空缺。；国务卿鲁比奥（Rubio）说对伊战争不得人心，但为阻止核威胁「有必要」，还称伊朗的谈判条件「荒唐、不现实」（Al Jazeera）。TASS 转述特朗普的话：若不是中期选举，美伊本来已签协议，他仍有信心谈成。；TASS 引伊朗法尔斯通讯社（Fars）称，美国打击了伊朗的格什姆岛（Qeshm），重要设施未受损，目标在居民区之外。这是伊朗一方、经俄方转述的单一说法，今天条目里没有西方媒体证实。；G7 外长会议在巴黎召开，欧洲想就乌克兰和平与可能的新一轮对伊打击向美方施压。鲁比奥这次两天都出席，3 月那次只来一天（France 24）。Le Monde 称，鲁比奥说战后乌克兰「安全架构」有进展，俄乌在美国斡旋下的谈判定于周二、周三在阿布扎比举行。；也门胡塞武装（Houthis）再次袭击，沙特首都利雅得的阿美塔楼（Aramco Tower）受损，BBC Verify 核实了画面。条目没有把这次袭击和美伊战争直接联系起来。；BBC 报道伊朗处决三名一月抗议活动的参与者，罪名是「武装骚乱」，与 Spiegel 11 月 8 日的报道对应。；亚洲股市在上周科技股暴跌后反弹（Al Jazeera）。；Tagesschau、BBC 报道特朗普说向 UFC 老板怀特（Dana White）提出的白宫发言人职位是“玩笑”。Spiegel 另写了一篇，分析怀特多年来对特朗普的政治角色。；Tagesschau 的市场报道称，DAX 收回周五“AI 崩盘”的一部分跌幅，但投资者仍回避风险；出口数据好于预期，给了支撑。；端传媒的标题把亚洲市场联系起来：期中选举引爆 AI 股崩跌，从华尔街到台积电。条目只有标题。；中央社的节目标题称，赫格塞思（Hegseth）可能遭民主党弹劾，特朗普出面力挺。条目只有标题，没有细节。；taz 的中东快讯称，特朗普要与卡塔尔代表谈伊朗冲突。；Hyperallergic 写到，华盛顿有抗议者嘲讽特朗普的“凯旋门”（Arc de Trump）。这与上午法官下令暂停凯旋门工程是同一条线。；SCMP 称，多架美军大型运输机周末降落深圳，被普遍视为在为美国总统出席深圳峰会做准备。；共和党众议员托马斯·马西（Thomas Massie，肯塔基州）周一动议，要在众议院强制就弹劾国防部长赫格塞思（Hegseth）表决（Tagesschau、Spiegel、SZ、BBC、France 24、Le Monde、Zeit、FAZ直播栏都报了）。；Spiegel 写到，理由之一是赫格塞思未经授权下令攻击伊朗。Le Monde 说马西同时批评这场伊朗战争本身和指挥方式。；BBC 认为这个动议大概率会失败，真正用意是在民主党发起自己的弹劾之前，逼特朗普先把赫格塞思换掉。SZ 称马西是即将离任的议员。；特朗普周一在 Truth Social 上质疑期中选举的公正性，没有给出证据（BBC、Spiegel、SZ、Al Jazeera）。Spiegel 的措辞是，他认输之后的“醒悟期”显然结束了。舒默（Schumer）批评这是毫无根据的老调重弹。；TASS 转述特朗普：必要时美国准备再次打击伊朗，卡塔尔和沙特更希望和平解决。；TASS 引一家电视台称，若达成协议，美国将解冻最多 90 亿美元伊朗资产，同时开放霍尔木兹海峡、立即解除海上封锁。这是单一来源，条目没说是哪家电视台，其他媒体今天没有印证。；埃及外长对 France 24 说，“我们认为”美伊双方都想谈，但需要一份“具体协议”防止再次升级。；SCMP 引分析人士称，特朗普提过由中美俄三方峰会来促成伊朗战争的收场。这是分析人士的解读，不是官方宣布。；Spiegel 称，特朗普说乌克兰在与俄罗斯达成协议后会有“稍微不同的形态”，欧洲人因此警觉；外长瓦德富尔（Wadephul）已与国务卿鲁比奥（Rubio）通话，后者的回答仍然含糊。；相关事件：法国指控伊朗革命卫队（IRGC）的网络部队 Shahid Kaveh 是 10 月攻击法国超市冷柜的幕后黑手（见简讯），这是伊朗战争在欧洲社会层面的一个新侧面。</li><li><b>11-08</b>美军在阿曼湾向一艘被指违反美国海上封锁的货船开火并使其丧失行动能力，该船悬挂圣基茨和尼维斯旗（Tagesschau、Al Jazeera、ms-aktuell）。；伊朗同时称有两艘货船在霍尔木兹海峡起火（Tagesschau）。条目没说起火原因，也不清楚是否就是 11 月 5 日说的那两艘油轮。；BBC：美国悬赏 2000 万美元征集伊朗核计划的情报，并提到特朗普多次提出再次打击伊朗核设施。；FAZ 直播栏标题：特朗普让司法部盯上民主党人，并缩减与韩国的军演。条目只有标题，没有细节。；特朗普提出请 UFC 老板达纳·怀特（Dana White）当白宫新闻秘书（France 24、El País）。据 CNN，怀特拒绝；据 TMZ，两人下周会面再谈。；中美：SCMP 说中国又将迎来一位「跛脚鸭」美国总统，场合是深圳的多边峰会。HKFP 称，美国财长贝森特（Bessent）和贸易代表格里尔（Greer）周五与中方通话，称会谈「坦率」，双方领导人本月在中国举行的亚太峰会上要见面。；德国评论：Spiegel 周日版说「苍白的特朗普」，FAZ 认为美国选举结果「远不是向左的风向转变」，联盟党低估了「可负担性」议题。；L&#39;Humanité：里奥格兰德河谷的拉美裔选民在中期选举中大量离开共和党，有受访者说特朗普「也许是种族主义者，但他谈到了生活成本」。；Spiegel：伊朗处决了三名一月抗议活动的参与者，人权组织说没有可信证据，处决也被当作震慑手段。；特朗普提名 UFC 老板达纳·怀特（Dana White）当白宫新闻秘书，新来源进一步印证：Tagesschau 说这个提议“引发猜测”，还问是不是有误会；Zeit 的标题写“怀特将与特朗普会面”；香港01 转述美媒说怀特已拒绝。；taz 补充：白宫发言人的位置自 10 月中旬起一直空缺，这次是想用“老朋友”来填。；El País 分析：特朗普虽败选，但在外交上仍然有权力、也难以预测；提名斯蒂芬·米勒（Stephen Miller）出任幕僚长，说明他不容许党内对败选做反思。；El País 另有两篇：民主党参议员乔恩·奥索夫（Jon Ossoff）被博彩公司看作 2028 年民主党总统候选人的热门；一批少数族裔新生代民主党候选人放弃身份政治议题、转向选民的实际问题，并且赢了。；Al Jazeera：民主党拿下国会可能增强乌克兰对俄的筹码，但乌克兰仍面对特朗普和平努力与军援的不确定。；L&#39;Humanité 称民主党胜利之大，让特朗普“无法质疑结果”，并提醒民主党需要拿出“比回到常态更多的东西”。</li><li><b>11-07</b>特朗普在败选三天后让斯蒂芬·米勒（Stephen Miller）接替苏西·怀尔斯（Susie Wiles）出任白宫幕僚长（DW、SZ、FAZ、taz、BBC 都报了）。；美国司法部放弃了指控加州「故意向非公民发放选票」的官司（SZ、FAZ 直播栏）。；对伊朗：WSWS 引福克斯新闻称，特朗普周四召集国安团队讨论再次打击伊朗，并提到有人猜测 11 月 9 日会动手。这是单一来源转述，其他媒体今天没有印证。Al Jazeera 的标题说特朗普发出的信号前后矛盾。卡塔尔首相说美方愿意寻求结束战争的办法（Al Jazeera）。；市场：BBC 说 AI 概念股在市值蒸发数万亿美元后反弹，此前抛售的部分原因是担心民主党获胜会拖慢 AI 发展。Le Monde 说纳斯达克因民主党大胜而急跌。；民主党的打算：Le Monde 称他们要拿五角大楼预算和「金穹」导弹防御项目开刀，France 24 说他们的优先事项是生活成本、调查腐败和加强对 ICE（移民与海关执法局）的监督。；DW 报道伊朗民众在矛盾信息和「可能遭核攻击」的传言中生活。；FAZ 的金融专栏称，特朗普的 meme 币在中期选举后“几乎跌到谷底”。这是选举之后市场对特朗普相关资产信心下降的又一个侧面，条目只有摘要，没有具体跌幅。；SCMP 引美中关系全国委员会（NCUSCR）主席斯蒂芬·奥林斯（Stephen Orlins）的话：国防部长赫格塞思（Hegseth）和太平洋司令部司令帕帕罗（Paparo）上将可能“很快”访华。这只是一位资深观察人士的转述，不是官方宣布。</li><li><b>11-06</b>国防部长赫格塞思（Hegseth）成了共和党败选后的头号“替罪羊”候选。他发视频说自己“不会退缩”，弹劾“不会奏效”，还称新国会是“跛脚鸭”（SCMP、Spiegel）。；白宫否认赫格塞思和国务卿鲁比奥（Rubio）要离职（BBC）。鲁比奥对《纽约时报》说会干到特朗普任期结束（France 24、TASS）。TASS 的标题称他表示愿意支持万斯竞选总统。；特朗普对伊朗说美国可能要“摧毁”剩下的部分，“很快就会知道”（Al Jazeera）。TASS 转述他强调自己不愿这样做，并说美方很快决定是否“更进一步”。FAZ 的直播栏说军方在为新的战斗做准备。；特朗普此前接受了选举结果，现在又称选举“被操纵”，没有给出证据（Le Monde 直播）。；TASS 转引报道：民主党人想先为调查特朗普和马斯克打好法律基础，再谈重启弹劾。；美股科技股大跌，Nasdaq 100 下跌约6%，特斯拉跌11%，SpaceX 跌9%。FAZ 的解释是选后担心对 AI 的监管，BBC 说是担心数据中心和 AI 行业受到更严格审查。；特朗普签署行政令，阻止未来的总统改动椭圆形办公室（BBC）。Spiegel 报道，美国政府在战争期间仍坚持把伊朗人遣返回伊朗，联邦法院对此措辞严厉。；联邦法官塔尼娅·查特金（Tanya Chutkan）在周四夜到周五凌晨下令暂停特朗普要建的 76 米高“凯旋门”。此前首都规划委员会刚刚批准了这个项目（Le Monde）。；Al Jazeera：特朗普签署公告，把椭圆形办公室宣布为“国家纪念碑”，这是他败选后一周内第三场翻修项目活动。上午 BBC 报道的“阻止后任总统改动椭圆形办公室”的行政令，很可能说的是同一件事，条目没有明说。；民主党内部：杰弗里斯（Jeffries）和舒默（Schumer）被看作未来的众议院议长和参议院多数党领袖，但都有人质疑他们。两人已经在拟定新国会的优先事项（Le Monde）。；伊拉克：总理扎伊迪（al-Zaidi）与特朗普通了电话（Al Jazeera）。伊拉克外长称，伊拉克会尽力避免被拖入冲突，民主党获胜也不能保证中东和平（TASS）。Al Jazeera 写到，伊拉克外交部门在劝武装团体不要参与伊朗对美国袭击的报复。；普京接见了伊朗安全部长，谈到修建输气管道，据称俄方还答应提供军备（Spiegel）。；科技股抛售扩散：Tagesschau 称芯片和科技股全球抛售，首尔一度暂停交易，美国是2020年以来最严重的一次下挫；DAX 跌回 26000 点以下。；SZ 称 Nasdaq 迎来一年半来最差的一天，Tesla、Nvidia 等大跌，并把原因和民主党的中期选举胜利联系起来。Guardian 报道，欧洲股市随之下挫，伦敦 FTSE 跌 1.5%，市场担心 AI 行业放缓。Al Jazeera 称亚洲交易日抛售继续，起因是对美国数据中心扩建和 AI 监管的担忧。；法官下令暂停特朗普的“凯旋门”工程，期限14天（Al Jazeera）。SZ 补充了椭圆形办公室的细节：特朗普在墙上装了大量金色装饰，他想用“国家纪念碑”的名义，让继任者更难改动。；Tagesschau 写到，共和党在败选后争论党的未来路线：错误分析、互相指责和个人的“竞选演说”很难分清。；BBC 称，卫星图像显示 11 月伊朗导弹基地附近有挖掘和新建筑施工。条目只有标题和一句摘要，没有更多细节。；TASS 的新闻评论摘要标题称，欧盟想在和谈中争取一个角色，华盛顿内部在伊朗战略上的分歧加深。只有标题。</li><li><b>11-05</b>万斯（Vance）说共和党败选的原因是伊朗战争（Tagesschau）。BBC 称这是近年来现任副总统与总统最尖锐的一次决裂。Le Monde 指出他在为 2028 年总统提名铺路。；Spiegel 报道，特朗普说他以后仍会同样行事，党内则传出更尖锐的批评。；SCMP 称，新国会 1 月开幕后民主党将同时掌握两院，可以阻挡特朗普的立法、质询战争开支。BBC 提醒：民主党能通过法案，但特朗普仍有否决权。阿拉斯加和密西西比两个参议院席位仍在计票（Al Jazeera）。；TASS 转引一家美国报纸（原文未点名）称，白宫内部对选后伊朗政策没有共识，有官员在劝特朗普再次发动打击。；韩国计划把海军反海盗部队的行动范围扩大到距霍尔木兹海峡约 650 公里处，需经国会批准（Guardian）。France 24 说韩国将派巡逻机和排爆小组，但排除军事介入。Guardian 称这是在特朗普批评其对伊战争支持不足之后。；乌克兰对美国转向持谨慎乐观，但怀疑变化会来得很快（Tagesschau）。泽连斯基（Zelensky）与美方特使威特科夫（Witkoff）、库什纳（Kushner）通了电话（Le Monde）。；华尔街收涨，市场预期华盛顿将陷入僵局（Le Monde）。；Al Jazeera：万斯把中期选举惨败归咎于伊朗战争，民主党准备用国会权力约束这场战争。；FAZ 英文版总结败因：伊朗战争、油价和特朗普的误判。FAZ 德文版另一篇写道，特朗普许诺花钱、马斯克砸了数百万美元，选民没有被收买，“怕社会主义”的攻势也没奏效。；Le Monde 直播：共和党参议员特德·克鲁兹（Ted Cruz）称这是“蓝色海啸、一场惨败”。民主党人詹姆斯·塔拉里科（James Talarico）在得州击败共和党人肯·帕克斯顿（Ken Paxton），拿下参议院席位。；FAZ 直播栏的标题称，有共和党人要求弹劾国防部长赫格塞思（Hegseth），特朗普还缩减了与韩国的军演。目前只有标题，没有细节。；TASS 转引 Axios：中情局局长和财政部长在劝特朗普维持对伊朗的封锁，目的是逼伊朗按美方条件谈判。这和上午 TASS 转引的“有官员劝再次打击”并不一致。；美国财政部制裁了被指协助伊朗的印度和土耳其公司。据 Al Jazeera，一对印度夫妇为伊朗油轮伪造圭亚那、老挝等国的船舶注册（Al Jazeera）。；克里姆林宫发言人佩斯科夫（Peskov）说，特朗普会继续行使总统权力，其余是美国内政（TASS）。Le Monde 评论认为，欧洲人不该指望特朗普败选带来变化，他还有两年时间塑造美国外交，华盛顿仍会优先本国利益。；DAX 创历史新高，Tagesschau 称驱动因素包括中期选举后的乐观情绪、油价下降和工业数据向好。；霍尔木兹海峡：据伊朗说法，两艘油轮起火。Tagesschau 写到，德黑兰自开战以来基本封锁海峡，但仍不断有油轮冒险通过。起火原因条目里没说。；油价继续下跌，汽油变便宜，柴油仍然贵，DAX 创历史新高。Tagesschau 称投资者指望中期选举后伊朗战事缓和，但局势依然紧张。；国会权力的边界：Al Jazeera 指出，民主党赢了席位，但没有三分之二多数，推翻不了总统否决。另一篇写道，民主党可在众议院通过弹劾赫格塞思（Hegseth）的条款，但参议院需要共和党人支持。；共和党内部：FAZ 称保守派媒体也开始指责特朗普，标题是“Schuld hat Trump, ihr Idioten”（罪魁是特朗普，你们这些白痴），特朗普大发脾气。；伊朗反应：DW 称德黑兰领导层既有“满足”也有怀疑，不指望华盛顿改变路线；也有人把民主党的胜利看作反战信号。；押注落空：France 24 称马斯克投入超过 4.4 亿美元支持共和党，结果落空。El País 称民主党获胜后，特斯拉和 SpaceX 的市值合计蒸发 1110 亿（原文未标币种）。</li><li><b>11-04</b>El País 报道，共和党人在寻找败选的责任人，却没人敢点特朗普的名。特朗普把败选责任推给伊朗，同时在炫耀白宫宴会厅的施工进度。；El País 还写到，特朗普在考虑否决对手的法案，民主党新多数派则打算调查政府成员。；Zeit 的标题称万斯在选举惨败后与特朗普拉开距离。Spiegel 说特朗普对副总统万斯的表态“含糊其辞”。；伊朗最高领袖哈梅内伊（Khamenei）表示，美国大选结果不会改变其对伊政策（teleSUR 标题）。Al Jazeera 在问美国会不会恢复对伊朗的袭击，称德黑兰已备好“最大威慑”方案。；TASS 引用一位前美国驻沙特大使的话：特朗普不必顾虑选举后果，可以改善对俄关系，但也有他做出“不理智、破坏性”举动来重树权威的危险。</li></ul>
+    
+    <ul class="persp"><li><b>Le Monde</b>报道打击和反击的升级链条</li><li><b>Al Jazeera</b>关注航运风险和胡塞的资金来源</li></ul>
+    <p><b>研判：</b>冲突向海湾国家扩散，霍尔木兹和红海两条航道同时承压，油价和运费可能继续上涨。</p>
+    <p class="signals">观察信号：油价 · 海湾国家是否要求美军撤出</p>
+  </details>
+  <div class="srcs"><a class="src" href="https://www.lemonde.fr/international/article/2026/11/18/bahrein-et-koweit-cibles-par-des-attaques-de-drones-iraniens_6813084_3210.html" target="_blank" rel="noopener">Le Monde ↗</a><a class="src" href="https://www.aljazeera.com/video/newsfeed/2026/11/18/ships-risk-hormuz-strait-due-to-limited-us-protection?traffic_source=rss" target="_blank" rel="noopener">Al Jazeera ↗</a><a class="src" href="https://tass.com/emergencies/2220189" target="_blank" rel="noopener">TASS ↗</a><a class="src" href="https://www.dw.com/de/jemen-saudi-arabiens-verbündete-geraten-ins-wanken/a-79971660?maca=de-rss-de-all-1119-rdf" target="_blank" rel="noopener">DW ↗</a></div>
+  
+<div class="acts" data-key="at3a6bc94bec" data-title="美国政治与美伊战争" data-text="美军轰炸伊朗格什姆岛后，伊朗袭击巴林和科威特境内目标；美国护航有限，船只冒险通过霍尔木兹海峡；一艘阿联酋公司的船遇袭，11人受伤、1人失踪；也门：沙特的盟友阵脚松动，胡塞武装控制力增强" data-src="Le Monde" data-link="https://www.lemonde.fr/international/article/2026/11/18/bahrein-et-koweit-cibles-par-des-attaques-de-drones-iraniens_6813084_3210.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="ask">问 Claude</button>
+</div>
+</article>
+  <div class="end"><span class="dot">·</span>主线看完了</div>
+</section>
+
+<section class="panel" id="briefs">
+  <div class="chips" id="chips">
+    <button class="chip on" data-s="">全部</button>
+    <button class="chip" data-s="德国">德国</button><button class="chip" data-s="左翼视角">左翼视角</button><button class="chip" data-s="国际">国际</button><button class="chip" data-s="中国">中国</button><button class="chip" data-s="中国·社会">中国·社会</button><button class="chip" data-s="香港">香港</button><button class="chip" data-s="珠三角">珠三角</button><button class="chip" data-s="长三角">长三角</button><button class="chip" data-s="AI">AI</button><button class="chip" data-s="艺术">艺术</button><button class="chip" data-s="明斯特">明斯特</button>
+  </div>
+  
+  <a class="brief" data-s="德国" data-key="b315621a3a5" data-ts="1794991389" href="https://www.spiegel.de/politik/bundesverfassung-bsw-beschwerde-die-stimmen-zur-bundestagswahl-muessen-nicht-neu-ausgezaehlt-werden-a-714504aa-841f-4258-a2d5-cb852a8f20f6#ref=rss" target="_blank" rel="noopener">
+    <div class="meta">德国 · Spiegel</div>
+    联邦宪法法院：BSW 的选举申诉被驳回，2025年大选选票不用重新清点
+    
+<div class="acts" data-key="ab315621a3a5" data-title="联邦宪法法院：BSW 的选举申诉被驳回，2025年大选选票不用重新清点" data-text="联邦宪法法院：BSW 的选举申诉被驳回，2025年大选选票不用重新清点" data-src="Spiegel" data-link="https://www.spiegel.de/politik/bundesverfassung-bsw-beschwerde-die-stimmen-zur-bundestagswahl-muessen-nicht-neu-ausgezaehlt-werden-a-714504aa-841f-4258-a2d5-cb852a8f20f6#ref=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b44322642f8" data-ts="1794991389" href="https://www.zeit.de/politik/deutschland/2026-11/baugenehmigungen-deutschland-wohnungsbau-wohnungsmangel-gxe" target="_blank" rel="noopener">
+    <div class="meta">德国 · Zeit Online</div>
+    建房许可数量大幅下降
+    
+<div class="acts" data-key="ab44322642f8" data-title="建房许可数量大幅下降" data-text="建房许可数量大幅下降" data-src="Zeit Online" data-link="https://www.zeit.de/politik/deutschland/2026-11/baugenehmigungen-deutschland-wohnungsbau-wohnungsmangel-gxe">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b3864888869" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMixwFBVV95cUxQeFppYTg4dmJ5VlVmUlBoeUpvSU5XQnhHa3pPU01sOHdmMmpEbjBjbkJuc1dxb0hxTVhxRkhHLUtXSk1sU25SSVJZalJxeHM0SzlyY2JNejJaeU13SDNLaHdObTJOYUJETWN6ZHAtLUJJaWc0TkdTZURSdW9uSlRxdDlkbk1rcG9faXBIOFZPVXdSZC1ScV9KUnplTGhxZ3FqRFRCY0Q5ZjF2cXFQZVlkWXlla2phRXFMUDVKdy13N2tITi13Vmdv?oc=5" target="_blank" rel="noopener">
+    <div class="meta">德国 · tagesschau.de</div>
+    汉莎飞行员给出最后期限到周一，可能再次罢工
+    
+<div class="acts" data-key="ab3864888869" data-title="汉莎飞行员给出最后期限到周一，可能再次罢工" data-text="汉莎飞行员给出最后期限到周一，可能再次罢工" data-src="tagesschau.de" data-link="https://news.google.com/rss/articles/CBMixwFBVV95cUxQeFppYTg4dmJ5VlVmUlBoeUpvSU5XQnhHa3pPU01sOHdmMmpEbjBjbkJuc1dxb0hxTVhxRkhHLUtXSk1sU25SSVJZalJxeHM0SzlyY2JNejJaeU13SDNLaHdObTJOYUJETWN6ZHAtLUJJaWc0TkdTZURSdW9uSlRxdDlkbk1rcG9faXBIOFZPVXdSZC1ScV9KUnplTGhxZ3FqRFRCY0Q5ZjF2cXFQZVlkWXlla2phRXFMUDVKdy13N2tITi13Vmdv?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="bf84f0f1c4a" data-ts="1794991389" href="https://www.sueddeutsche.de/politik/ukraine-krieg-newsblog-pistorius-us-kritik-dumm-krim-terrorismus-li.3571967" target="_blank" rel="noopener">
+    <div class="meta">德国 · Süddeutsche</div>
+    国防部长皮斯托里乌斯批评美国对乌克兰的指责&#39;相当愚蠢&#39;
+    
+<div class="acts" data-key="abf84f0f1c4a" data-title="国防部长皮斯托里乌斯批评美国对乌克兰的指责&#39;相当愚蠢&#39;" data-text="国防部长皮斯托里乌斯批评美国对乌克兰的指责&#39;相当愚蠢&#39;" data-src="Süddeutsche" data-link="https://www.sueddeutsche.de/politik/ukraine-krieg-newsblog-pistorius-us-kritik-dumm-krim-terrorismus-li.3571967">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b49af657c34" data-ts="1794991389" href="https://www.dw.com/de/eu-staaten-und-ruanda-beschließen-abschiebezentrum/a-79975193?maca=de-rss-de-all-1119-rdf" target="_blank" rel="noopener">
+    <div class="meta">德国 · DW</div>
+    欧盟国家和卢旺达正式决定设立遣返中心
+    
+<div class="acts" data-key="ab49af657c34" data-title="欧盟国家和卢旺达正式决定设立遣返中心" data-text="欧盟国家和卢旺达正式决定设立遣返中心" data-src="DW" data-link="https://www.dw.com/de/eu-staaten-und-ruanda-beschließen-abschiebezentrum/a-79975193?maca=de-rss-de-all-1119-rdf">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="德国" data-key="b651313c5d7" data-ts="1794991389" href="https://www.faz.net/aktuell/finanzen/anthropic-boersengang-lbbw-chefvolkswirt-moritz-kraemer-warnt-vor-ki-euphorie-accg-201691235.html" target="_blank" rel="noopener">
+    <div class="meta">德国 · FAZ</div>
+    LBBW 首席经济学家：&#39;Anthropic 不是投资，是邪教&#39;
+    
+<div class="acts" data-key="ab651313c5d7" data-title="LBBW 首席经济学家：&#39;Anthropic 不是投资，是邪教&#39;" data-text="LBBW 首席经济学家：&#39;Anthropic 不是投资，是邪教&#39;" data-src="FAZ" data-link="https://www.faz.net/aktuell/finanzen/anthropic-boersengang-lbbw-chefvolkswirt-moritz-kraemer-warnt-vor-ki-euphorie-accg-201691235.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="bcffb9a9472" data-ts="1794991389" href="https://jacobin.de/kiezkantinen-berlin-linke-vergesellschaftung/" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · Jacobin DE</div>
+    Jacobin 德语版：柏林街区食堂用一盘热千层面挑战资本主义
+    
+<div class="acts" data-key="abcffb9a9472" data-title="Jacobin 德语版：柏林街区食堂用一盘热千层面挑战资本主义" data-text="Jacobin 德语版：柏林街区食堂用一盘热千层面挑战资本主义" data-src="Jacobin DE" data-link="https://jacobin.de/kiezkantinen-berlin-linke-vergesellschaftung/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="bd4d65b49b1" data-ts="1794991389" href="https://www.unsere-zeit.de/ein-brandbrief-gegen-berufsverbote-4819928/" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · Unsere Zeit</div>
+    《我们的时代》：一封反对职业禁令的公开信
+    
+<div class="acts" data-key="abd4d65b49b1" data-title="《我们的时代》：一封反对职业禁令的公开信" data-text="《我们的时代》：一封反对职业禁令的公开信" data-src="Unsere Zeit" data-link="https://www.unsere-zeit.de/ein-brandbrief-gegen-berufsverbote-4819928/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="b526b40dc85" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMixwFBVV95cUxOTGxiRnVLT2FFWjRGUXNZRmd2SnBRaDdDcVNIZkN1WUdfTmZqTEZGWVJoWFpjcVVKZ211cmVoWnYxZW1LRHJkd3hCZmVEU0VodVhMVE41cUFnM2JkZTJuaGtfMFRyV201clZsMElDdC1ESU5zRnR6d2dGRXN5dVltd20wakVJUzMyQ1dtckZibHZMQUU5QV9TZWNWTUhWY3dtV0pmTG5KZUpsTHVBSXlJMi1uWHNPeVFxT3NfdkpOMHVEQlFKZmFJ?oc=5" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · NDR.de</div>
+    汉诺威有人示威反对护理改革
+    
+<div class="acts" data-key="ab526b40dc85" data-title="汉诺威有人示威反对护理改革" data-text="汉诺威有人示威反对护理改革" data-src="NDR.de" data-link="https://news.google.com/rss/articles/CBMixwFBVV95cUxOTGxiRnVLT2FFWjRGUXNZRmd2SnBRaDdDcVNIZkN1WUdfTmZqTEZGWVJoWFpjcVVKZ211cmVoWnYxZW1LRHJkd3hCZmVEU0VodVhMVE41cUFnM2JkZTJuaGtfMFRyV201clZsMElDdC1ESU5zRnR6d2dGRXN5dVltd20wakVJUzMyQ1dtckZibHZMQUU5QV9TZWNWTUhWY3dtV0pmTG5KZUpsTHVBSXlJMi1uWHNPeVFxT3NfdkpOMHVEQlFKZmFJ?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="bfda8e5e08e" data-ts="1794991389" href="https://www.nd-aktuell.de/artikel/1203945.extremwetterfolgen-die-unsichtbaren-opfer-der-klimakrise.html" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · nd</div>
+    nd：气候危机的隐形受害者
+    
+<div class="acts" data-key="abfda8e5e08e" data-title="nd：气候危机的隐形受害者" data-text="nd：气候危机的隐形受害者" data-src="nd" data-link="https://www.nd-aktuell.de/artikel/1203945.extremwetterfolgen-die-unsichtbaren-opfer-der-klimakrise.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="左翼视角" data-key="b144447b4c6" data-ts="1794991389" href="https://jacobin.com/2026/11/dsa-democratic-socialism-electoralism-strategy" target="_blank" rel="noopener">
+    <div class="meta">左翼视角 · Jacobin</div>
+    Jacobin：拒绝&#39;选举主义&#39;，拥抱社会主义选举策略
+    
+<div class="acts" data-key="ab144447b4c6" data-title="Jacobin：拒绝&#39;选举主义&#39;，拥抱社会主义选举策略" data-text="Jacobin：拒绝&#39;选举主义&#39;，拥抱社会主义选举策略" data-src="Jacobin" data-link="https://jacobin.com/2026/11/dsa-democratic-socialism-electoralism-strategy">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b864b164a81" data-ts="1794991389" href="https://taz.de/Demokratin-gewinnt-Senatssitz-in-Alaska/!6231020/" target="_blank" rel="noopener">
+    <div class="meta">国际 · taz</div>
+    民主党拿下阿拉斯加参议院席位，是1958年以来民主党在参议院最大的增幅
+    
+<div class="acts" data-key="ab864b164a81" data-title="民主党拿下阿拉斯加参议院席位，是1958年以来民主党在参议院最大的增幅" data-text="民主党拿下阿拉斯加参议院席位，是1958年以来民主党在参议院最大的增幅" data-src="taz" data-link="https://taz.de/Demokratin-gewinnt-Senatssitz-in-Alaska/!6231020/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b785382a8a4" data-ts="1794991389" href="https://www.bbc.co.uk/news/articles/crkgvxxwpwz2o?at_medium=RSS&amp;at_campaign=rss" target="_blank" rel="noopener">
+    <div class="meta">国际 · BBC World</div>
+    美国连续出现技术故障，鲁比奥说美国没有遭到&#39;系统性攻击&#39;
+    
+<div class="acts" data-key="ab785382a8a4" data-title="美国连续出现技术故障，鲁比奥说美国没有遭到&#39;系统性攻击&#39;" data-text="美国连续出现技术故障，鲁比奥说美国没有遭到&#39;系统性攻击&#39;" data-src="BBC World" data-link="https://www.bbc.co.uk/news/articles/crkgvxxwpwz2o?at_medium=RSS&amp;at_campaign=rss">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b8b4920433d" data-ts="1794991389" href="https://www.france24.com/en/europe/20261118-italy-approves-anti-semitism-law-despite-concerns-over-freedom-of-expression" target="_blank" rel="noopener">
+    <div class="meta">国际 · France 24</div>
+    意大利通过反犹主义法，引发言论自由的担忧
+    
+<div class="acts" data-key="ab8b4920433d" data-title="意大利通过反犹主义法，引发言论自由的担忧" data-text="意大利通过反犹主义法，引发言论自由的担忧" data-src="France 24" data-link="https://www.france24.com/en/europe/20261118-italy-approves-anti-semitism-law-despite-concerns-over-freedom-of-expression">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b0d1cf6e1d0" data-ts="1794991389" href="https://www.dw.com/de/türkei-weiterer-oppositioneller-tv-sender-unter-staatlicher-kontrolle/a-79969106?maca=de-rss-de-all-1119-rdf" target="_blank" rel="noopener">
+    <div class="meta">国际 · DW</div>
+    土耳其又一家反对派电视台被国家接管
+    
+<div class="acts" data-key="ab0d1cf6e1d0" data-title="土耳其又一家反对派电视台被国家接管" data-text="土耳其又一家反对派电视台被国家接管" data-src="DW" data-link="https://www.dw.com/de/türkei-weiterer-oppositioneller-tv-sender-unter-staatlicher-kontrolle/a-79969106?maca=de-rss-de-all-1119-rdf">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="ba3b5cb6b71" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMijgFBVV95cUxNVDNMOWRVTkVYQTctb3hQUFZfcm5BUVhjNXRSQm1veVdMdjAxOHN3b2QwY1BhT2NFeEJ3WDE4ZnozTndReGUtQVNIbmIzc2t0YkRpbm9KRERGUVlfVlM4M2ExSjl5QkNJRndEU3U4UjFDbnhPU0UxTVgwMlRKNkw5b28xeWE4SWhIcFlIUWVR?oc=5" target="_blank" rel="noopener">
+    <div class="meta">国际 · teleSUR</div>
+    欧盟否决 COP31 协议初稿
+    
+<div class="acts" data-key="aba3b5cb6b71" data-title="欧盟否决 COP31 协议初稿" data-text="欧盟否决 COP31 协议初稿" data-src="teleSUR" data-link="https://news.google.com/rss/articles/CBMijgFBVV95cUxNVDNMOWRVTkVYQTctb3hQUFZfcm5BUVhjNXRSQm1veVdMdjAxOHN3b2QwY1BhT2NFeEJ3WDE4ZnozTndReGUtQVNIbmIzc2t0YkRpbm9KRERGUVlfVlM4M2ExSjl5QkNJRndEU3U4UjFDbnhPU0UxTVgwMlRKNkw5b28xeWE4SWhIcFlIUWVR?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="国际" data-key="b38c68c48f6" data-ts="1794991389" href="https://www.lemonde.fr/afrique/article/2026/11/18/en-rdc-ebola-tue-massivement-les-enfants-je-ne-peux-meme-pas-le-prendre-dans-mes-bras-pour-le-reconforter_6813071_3212.html" target="_blank" rel="noopener">
+    <div class="meta">国际 · Le Monde</div>
+    刚果（金）埃博拉大量夺走儿童生命
+    
+<div class="acts" data-key="ab38c68c48f6" data-title="刚果（金）埃博拉大量夺走儿童生命" data-text="刚果（金）埃博拉大量夺走儿童生命" data-src="Le Monde" data-link="https://www.lemonde.fr/afrique/article/2026/11/18/en-rdc-ebola-tue-massivement-les-enfants-je-ne-peux-meme-pas-le-prendre-dans-mes-bras-pour-le-reconforter_6813071_3212.html">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="b340b44b571" data-ts="1794991389" href="https://www.scmp.com/news/us/diplomacy/article/3374835/huawei-calls-us-prosecutions-case-fictionalised-portrait-closing-arguments" target="_blank" rel="noopener">
+    <div class="meta">中国 · SCMP China</div>
+    华为在美国庭审结案陈词中称，检方描绘的是&#39;虚构的肖像&#39;
+    
+<div class="acts" data-key="ab340b44b571" data-title="华为在美国庭审结案陈词中称，检方描绘的是&#39;虚构的肖像&#39;" data-text="华为在美国庭审结案陈词中称，检方描绘的是&#39;虚构的肖像&#39;" data-src="SCMP China" data-link="https://www.scmp.com/news/us/diplomacy/article/3374835/huawei-calls-us-prosecutions-case-fictionalised-portrait-closing-arguments">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="b54c95f7301" data-ts="1794991389" href="https://www.scmp.com/opinion/china-opinion/article/3374572/chinas-local-officials-feel-financial-stick-long-seeing-carrot" target="_blank" rel="noopener">
+    <div class="meta">中国 · SCMP China</div>
+    SCMP：地方官员早早就挨了财政大棒，却迟迟看不到胡萝卜
+    
+<div class="acts" data-key="ab54c95f7301" data-title="SCMP：地方官员早早就挨了财政大棒，却迟迟看不到胡萝卜" data-text="SCMP：地方官员早早就挨了财政大棒，却迟迟看不到胡萝卜" data-src="SCMP China" data-link="https://www.scmp.com/opinion/china-opinion/article/3374572/chinas-local-officials-feel-financial-stick-long-seeing-carrot">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国" data-key="ba47d0a8c94" data-ts="1794991389" href="https://hongkongfp.com/2026/11/18/beijing-bolsters-south-china-sea-push-with-new-island-runway-analysts/" target="_blank" rel="noopener">
+    <div class="meta">中国 · Hong Kong Free Press</div>
+    分析人士：北京在南海新岛礁修建跑道
+    
+<div class="acts" data-key="aba47d0a8c94" data-title="分析人士：北京在南海新岛礁修建跑道" data-text="分析人士：北京在南海新岛礁修建跑道" data-src="Hong Kong Free Press" data-link="https://hongkongfp.com/2026/11/18/beijing-bolsters-south-china-sea-push-with-new-island-runway-analysts/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国·社会" data-key="bfc0a70f728" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMiwgFBVV95cUxQdVk4dVhncENkYjNPNDhsZHhxMUdUS0ZSa2paN2gxTlhRUl9DQnlWdXB3RnptVFM4amh3RFNxQ2RJcWkzcVc4bHZoNnpYMHVEZnNXUlJLV3FPVVpxbl8zSHRlLUhhLUlXalF5MzNfejJOYlRVWnRLanVsMmZ5YmJyV2xmcGdwNVZSSU1GeVRjVHFiNHBBOEZnel9CYXlhNXFJUVJtRHl0d0NkWVYtSUoyWE5fQ2h1b3ZFNTNuVktiYmRNZw?oc=5" target="_blank" rel="noopener">
+    <div class="meta">中国·社会 · Sixth Tone</div>
+    中国的学校推迟上课时间，减轻学生负担
+    
+<div class="acts" data-key="abfc0a70f728" data-title="中国的学校推迟上课时间，减轻学生负担" data-text="中国的学校推迟上课时间，减轻学生负担" data-src="Sixth Tone" data-link="https://news.google.com/rss/articles/CBMiwgFBVV95cUxQdVk4dVhncENkYjNPNDhsZHhxMUdUS0ZSa2paN2gxTlhRUl9DQnlWdXB3RnptVFM4amh3RFNxQ2RJcWkzcVc4bHZoNnpYMHVEZnNXUlJLV3FPVVpxbl8zSHRlLUhhLUlXalF5MzNfejJOYlRVWnRLanVsMmZ5YmJyV2xmcGdwNVZSSU1GeVRjVHFiNHBBOEZnel9CYXlhNXFJUVJtRHl0d0NkWVYtSUoyWE5fQ2h1b3ZFNTNuVktiYmRNZw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="中国·社会" data-key="b390a903f52" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMiqAFBVV95cUxQSzJib1JId2hpUTUwZTE5Q2JxZngzRGRLM2lja3NWQ2xSOHdZSUdWazVfcWRlVHE2cXF0dUZSQUdKR3k0WEVETEtFSm5sU1ZQYXdrajZOVU11YlhXT085eU9hcE56SUlJb19KMGlOVjFoZTFEMHIySDRKUFpZNnNyRU5keXBmb2hUQmdhY09WTHQxcUV4UVAyTE85QkFTSzVKa3dIYjJkY1A?oc=5" target="_blank" rel="noopener">
+    <div class="meta">中国·社会 · Sixth Tone</div>
+    CAR-T 细胞抗癌疗法纳入基本医保
+    
+<div class="acts" data-key="ab390a903f52" data-title="CAR-T 细胞抗癌疗法纳入基本医保" data-text="CAR-T 细胞抗癌疗法纳入基本医保" data-src="Sixth Tone" data-link="https://news.google.com/rss/articles/CBMiqAFBVV95cUxQSzJib1JId2hpUTUwZTE5Q2JxZngzRGRLM2lja3NWQ2xSOHdZSUdWazVfcWRlVHE2cXF0dUZSQUdKR3k0WEVETEtFSm5sU1ZQYXdrajZOVU11YlhXT085eU9hcE56SUlJb19KMGlOVjFoZTFEMHIySDRKUFpZNnNyRU5keXBmb2hUQmdhY09WTHQxcUV4UVAyTE85QkFTSzVKa3dIYjJkY1A?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="香港" data-key="b0130d0910c" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMiggFBVV95cUxPZmNfeHhYOXFKYVNxc1d3R2VvZldGazY3NnY0d2NhWmttQU5QU1hUeUNVWmExLVMzZmE3M200THBXbDBVWTNWZmtSMm03MUlEekhqaXZYaFh6ZnBZWUd0XzVUVW4xZ0NKbXJIVDFUbkJRUWZMR09JX2FGYmxWZkQxaTRR?oc=5" target="_blank" rel="noopener">
+    <div class="meta">香港 · 端传媒</div>
+    端传媒：在人人担心书业的时候，有人在香港开出版社、开书店
+    
+<div class="acts" data-key="ab0130d0910c" data-title="端传媒：在人人担心书业的时候，有人在香港开出版社、开书店" data-text="端传媒：在人人担心书业的时候，有人在香港开出版社、开书店" data-src="端传媒" data-link="https://news.google.com/rss/articles/CBMiggFBVV95cUxPZmNfeHhYOXFKYVNxc1d3R2VvZldGazY3NnY0d2NhWmttQU5QU1hUeUNVWmExLVMzZmE3M200THBXbDBVWTNWZmtSMm03MUlEekhqaXZYaFh6ZnBZWUd0XzVUVW4xZ0NKbXJIVDFUbkJRUWZMR09JX2FGYmxWZkQxaTRR?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="香港" data-key="bf0c3114bda" data-ts="1794991389" href="https://hongkongfp.com/2026/11/18/hong-kong-govt-seeks-hk19-8-billion-from-legislature-to-fund-early-ngau-tam-mei-development/" target="_blank" rel="noopener">
+    <div class="meta">香港 · Hong Kong Free Press</div>
+    政府向立法会申请198亿港元，提前开发牛潭尾
+    
+<div class="acts" data-key="abf0c3114bda" data-title="政府向立法会申请198亿港元，提前开发牛潭尾" data-text="政府向立法会申请198亿港元，提前开发牛潭尾" data-src="Hong Kong Free Press" data-link="https://hongkongfp.com/2026/11/18/hong-kong-govt-seeks-hk19-8-billion-from-legislature-to-fund-early-ngau-tam-mei-development/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="香港" data-key="b3d179ba9f8" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMisgNBVV95cUxNeGxHUWk2d2lJMmRsajltbjRYX2tURF9ObmN1cFZtOVNlcWtOQjJjTzRVMm1IUjQwWENTZmxkb3o3VXdwWUFqVFppV2JOYUozeE9ZVFZMQkpDNDdETjl4cFlKNnVpNWpCTjc3R1cxc2ZMQjlBUFZCajNVYlc5UmVmeXE1ZTNVaGVWVlRNeDMydXdpdEdyMXJaLS1FUnlYV3h1ZzBraGwxSldrU2t2NGJ5SEhJVEluWWJYdGdlYWNsV0ZRQmVMeTRlQWVlVkFqV29GbjR0TkJwWkp2anBkak1Hd3FDMlpZV0FWaE1LS0lNMlIwWE1HX3hBeGlnaGVuREplbUhSNUEzWEZnYmR2NnZfUFg2WVdQSVA5UmJNMWpKT3QxWWhpUXFKZl9JMHRDeTA5aFFrR19OUVRNQVphcFBKNUlVRldPY2NBc2ZFNzV2LVFrUHRyR2RhQ0FvQkNhLTZ4dlBQbUVaR2c2TXJCRDNfZ05WQVp5YVUtT19IUGZzZzdxdllCM3Y0ZmM0ZHJWdDUwVWtYZUh1aEdqclptQS16MWNvWmx0RXFCWDZtRU1WeUVWdw?oc=5" target="_blank" rel="noopener">
+    <div class="meta">香港 · 香港01</div>
+    中大医院一名女病人在手术中被误切双侧卵巢
+    
+<div class="acts" data-key="ab3d179ba9f8" data-title="中大医院一名女病人在手术中被误切双侧卵巢" data-text="中大医院一名女病人在手术中被误切双侧卵巢" data-src="香港01" data-link="https://news.google.com/rss/articles/CBMisgNBVV95cUxNeGxHUWk2d2lJMmRsajltbjRYX2tURF9ObmN1cFZtOVNlcWtOQjJjTzRVMm1IUjQwWENTZmxkb3o3VXdwWUFqVFppV2JOYUozeE9ZVFZMQkpDNDdETjl4cFlKNnVpNWpCTjc3R1cxc2ZMQjlBUFZCajNVYlc5UmVmeXE1ZTNVaGVWVlRNeDMydXdpdEdyMXJaLS1FUnlYV3h1ZzBraGwxSldrU2t2NGJ5SEhJVEluWWJYdGdlYWNsV0ZRQmVMeTRlQWVlVkFqV29GbjR0TkJwWkp2anBkak1Hd3FDMlpZV0FWaE1LS0lNMlIwWE1HX3hBeGlnaGVuREplbUhSNUEzWEZnYmR2NnZfUFg2WVdQSVA5UmJNMWpKT3QxWWhpUXFKZl9JMHRDeTA5aFFrR19OUVRNQVphcFBKNUlVRldPY2NBc2ZFNzV2LVFrUHRyR2RhQ0FvQkNhLTZ4dlBQbUVaR2c2TXJCRDNfZ05WQVp5YVUtT19IUGZzZzdxdllCM3Y0ZmM0ZHJWdDUwVWtYZUh1aEdqclptQS16MWNvWmx0RXFCWDZtRU1WeUVWdw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="珠三角" data-key="b17ef2eaa0e" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMie0FVX3lxTE8yZ2JmeU1BdzNTaDF2eUNZV2pMS192LVVIVU4zMGllaFZyZlMtT1FaZktuUFFBY1FnOG5JeDRudGNjdGN0VWt1S0xUczhyRFg0ZTlYQnh4NS1MQWx2ZS1RVWd5RzZfb3lkSTNzU2dUNU9ORWdLTmY2LWozOA?oc=5" target="_blank" rel="noopener">
+    <div class="meta">珠三角 · 中国日报网</div>
+    前10个月深圳对其他 APEC 经济体进出口增长超过四成
+    
+<div class="acts" data-key="ab17ef2eaa0e" data-title="前10个月深圳对其他 APEC 经济体进出口增长超过四成" data-text="前10个月深圳对其他 APEC 经济体进出口增长超过四成" data-src="中国日报网" data-link="https://news.google.com/rss/articles/CBMie0FVX3lxTE8yZ2JmeU1BdzNTaDF2eUNZV2pMS192LVVIVU4zMGllaFZyZlMtT1FaZktuUFFBY1FnOG5JeDRudGNjdGN0VWt1S0xUczhyRFg0ZTlYQnh4NS1MQWx2ZS1RVWd5RzZfb3lkSTNzU2dUNU9ORWdLTmY2LWozOA?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="珠三角" data-key="b464ea9f514" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMijwFBVV95cUxOanFVTUM2QUl2ek5CbFBUQ1lSNXJtVU15LU10eHdtX01Wa0tfTmJ5c1ROZnJ3U1M3Q1kwSy00UjdfbUc3TW9Wbk5ZRlpmSWZVTEl0TUhmM0M4cUNwUW16ZEhrcFhOVC1USkdXR0EzdjZpU0lOT0Z5SENPUnRDZVE5eGw1eFZjdEF0Um1zMVFtYw?oc=5" target="_blank" rel="noopener">
+    <div class="meta">珠三角 · 21世纪经济报道</div>
+    德勤中国主席谈&#39;深圳周期&#39;：中国制造业竞争力正在重塑
+    
+<div class="acts" data-key="ab464ea9f514" data-title="德勤中国主席谈&#39;深圳周期&#39;：中国制造业竞争力正在重塑" data-text="德勤中国主席谈&#39;深圳周期&#39;：中国制造业竞争力正在重塑" data-src="21世纪经济报道" data-link="https://news.google.com/rss/articles/CBMijwFBVV95cUxOanFVTUM2QUl2ek5CbFBUQ1lSNXJtVU15LU10eHdtX01Wa0tfTmJ5c1ROZnJ3U1M3Q1kwSy00UjdfbUc3TW9Wbk5ZRlpmSWZVTEl0TUhmM0M4cUNwUW16ZEhrcFhOVC1USkdXR0EzdjZpU0lOT0Z5SENPUnRDZVE5eGw1eFZjdEF0Um1zMVFtYw?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="长三角" data-key="ba516e4382e" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMiXkFVX3lxTE45LVRObHh0S2VmZm50OFptaWJUQTNWT01QZjd0ajYwT3dGdTNycVdIVDVaRGk5RWdDQVFLTjdFcGdQaW0zR1RfMWNXV2tTaUNFUmhZc3VjQmVLZERBVkE?oc=5" target="_blank" rel="noopener">
+    <div class="meta">长三角 · 京报网</div>
+    南京市委书记和市长会见宝马新任董事长
+    
+<div class="acts" data-key="aba516e4382e" data-title="南京市委书记和市长会见宝马新任董事长" data-text="南京市委书记和市长会见宝马新任董事长" data-src="京报网" data-link="https://news.google.com/rss/articles/CBMiXkFVX3lxTE45LVRObHh0S2VmZm50OFptaWJUQTNWT01QZjd0ajYwT3dGdTNycVdIVDVaRGk5RWdDQVFLTjdFcGdQaW0zR1RfMWNXV2tTaUNFUmhZc3VjQmVLZERBVkE?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="长三角" data-key="b12c76f855a" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE1qUVlyRGdVM2h5MTNwdU1DT3dEU1dUSXF0V0RnT2JOMnl0R1d3clZlRnd6R3lfOGlrMWctb1d3RE0zeUdNUHhMYmZobndrcHB6bkZV?oc=5" target="_blank" rel="noopener">
+    <div class="meta">长三角 · 第一财经</div>
+    上海外资总部1124家、研发中心680家
+    
+<div class="acts" data-key="ab12c76f855a" data-title="上海外资总部1124家、研发中心680家" data-text="上海外资总部1124家、研发中心680家" data-src="第一财经" data-link="https://news.google.com/rss/articles/CBMiU0FVX3lxTE1qUVlyRGdVM2h5MTNwdU1DT3dEU1dUSXF0V0RnT2JOMnl0R1d3clZlRnd6R3lfOGlrMWctb1d3RE0zeUdNUHhMYmZobndrcHB6bkZV?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="AI" data-key="b4e158274f0" data-ts="1794991389" href="https://openai.com/index/introducing-gpt-6-2-astra-sol" target="_blank" rel="noopener">
+    <div class="meta">AI · OpenAI</div>
+    OpenAI 发布 GPT-6.2 Astra 和 Sol 两个新模型
+    
+<div class="acts" data-key="ab4e158274f0" data-title="OpenAI 发布 GPT-6.2 Astra 和 Sol 两个新模型" data-text="OpenAI 发布 GPT-6.2 Astra 和 Sol 两个新模型" data-src="OpenAI" data-link="https://openai.com/index/introducing-gpt-6-2-astra-sol">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="AI" data-key="b7c1e49303e" data-ts="1794991389" href="https://complexdiscovery.com/harvard-researchers-find-ai-coding-agents-shifted-the-bottleneck-to-code-review/" target="_blank" rel="noopener">
+    <div class="meta">AI · Hacker News 热门</div>
+    哈佛研究：AI 编程智能体把瓶颈转移到了代码审查
+    
+<div class="acts" data-key="ab7c1e49303e" data-title="哈佛研究：AI 编程智能体把瓶颈转移到了代码审查" data-text="哈佛研究：AI 编程智能体把瓶颈转移到了代码审查" data-src="Hacker News 热门" data-link="https://complexdiscovery.com/harvard-researchers-find-ai-coding-agents-shifted-the-bottleneck-to-code-review/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="AI" data-key="bc8c022b112" data-ts="1794991389" href="https://revscope.co/blog/search-seo-geo-2026/" target="_blank" rel="noopener">
+    <div class="meta">AI · Hacker News 热门</div>
+    谷歌的 AI 回答让网站搜索流量减少了40%
+    
+<div class="acts" data-key="abc8c022b112" data-title="谷歌的 AI 回答让网站搜索流量减少了40%" data-text="谷歌的 AI 回答让网站搜索流量减少了40%" data-src="Hacker News 热门" data-link="https://revscope.co/blog/search-seo-geo-2026/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="AI" data-key="bfaf89b60f1" data-ts="1794991389" href="https://nicolasbouliane.com/blog/death-by-ai" target="_blank" rel="noopener">
+    <div class="meta">AI · Hacker News 热门</div>
+    &#39;AI 正在杀死 All About Berlin&#39;：给在柏林外国人写实用指南的网站作者讲流量崩溃
+    
+<div class="acts" data-key="abfaf89b60f1" data-title="&#39;AI 正在杀死 All About Berlin&#39;：给在柏林外国人写实用指南的网站作者讲流量崩溃" data-text="&#39;AI 正在杀死 All About Berlin&#39;：给在柏林外国人写实用指南的网站作者讲流量崩溃" data-src="Hacker News 热门" data-link="https://nicolasbouliane.com/blog/death-by-ai">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="AI" data-key="b2cc1eaadb1" data-ts="1794991389" href="https://github.com/microsoft/onnxruntime" target="_blank" rel="noopener">
+    <div class="meta">AI · Hacker News 热门</div>
+    微软的 ONNX Runtime 从 GitHub 上消失了
+    
+<div class="acts" data-key="ab2cc1eaadb1" data-title="微软的 ONNX Runtime 从 GitHub 上消失了" data-text="微软的 ONNX Runtime 从 GitHub 上消失了" data-src="Hacker News 热门" data-link="https://github.com/microsoft/onnxruntime">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="艺术" data-key="bbcb63ce50a" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMipgFBVV95cUxQQndLUzd5YWRVNUtrV0xaNmdXZG5fdjl6bDhlTUFWVHJBNkRaeFNFN19BUnJ3a0dhYnhmV1pqVDBiVlFISF9YZWYxelVNWUQ5dHhodXpnWnpld1N3MVFyVXlvTDc4YUx0SlNXTEhvMVliNDVPRzZIVUdPSnBpMW9aTWNUUXFaYlNmdjhDQ2c1b0wxVU1uVl9nOTRuREZFakxLVG5QWjh3?oc=5" target="_blank" rel="noopener">
+    <div class="meta">艺术 · It&#39;s Nice That</div>
+    一个70年代建筑草图和奥托·艾舍启发了一家艺术中心的新标志
+    
+<div class="acts" data-key="abbcb63ce50a" data-title="一个70年代建筑草图和奥托·艾舍启发了一家艺术中心的新标志" data-text="一个70年代建筑草图和奥托·艾舍启发了一家艺术中心的新标志" data-src="It&#39;s Nice That" data-link="https://news.google.com/rss/articles/CBMipgFBVV95cUxQQndLUzd5YWRVNUtrV0xaNmdXZG5fdjl6bDhlTUFWVHJBNkRaeFNFN19BUnJ3a0dhYnhmV1pqVDBiVlFISF9YZWYxelVNWUQ5dHhodXpnWnpld1N3MVFyVXlvTDc4YUx0SlNXTEhvMVliNDVPRzZIVUdPSnBpMW9aTWNUUXFaYlNmdjhDQ2c1b0wxVU1uVl9nOTRuREZFakxLVG5QWjh3?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="艺术" data-key="b470e5dc1e0" data-ts="1794991389" href="https://hyperallergic.com/how-should-we-memorialize-the-trump-era/" target="_blank" rel="noopener">
+    <div class="meta">艺术 · Hyperallergic</div>
+    Hyperallergic：应该怎样纪念特朗普时代？
+    
+<div class="acts" data-key="ab470e5dc1e0" data-title="Hyperallergic：应该怎样纪念特朗普时代？" data-text="Hyperallergic：应该怎样纪念特朗普时代？" data-src="Hyperallergic" data-link="https://hyperallergic.com/how-should-we-memorialize-the-trump-era/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="艺术" data-key="bc4de3b4c97" data-ts="1794991389" href="https://hyperallergic.com/rare-hilma-af-klint-work-heads-to-auction/" target="_blank" rel="noopener">
+    <div class="meta">艺术 · Hyperallergic</div>
+    希尔玛·阿夫·克林特的罕见作品将被拍卖；康定斯基一幅画拍出8500万美元纪录
+    
+<div class="acts" data-key="abc4de3b4c97" data-title="希尔玛·阿夫·克林特的罕见作品将被拍卖；康定斯基一幅画拍出8500万美元纪录" data-text="希尔玛·阿夫·克林特的罕见作品将被拍卖；康定斯基一幅画拍出8500万美元纪录" data-src="Hyperallergic" data-link="https://hyperallergic.com/rare-hilma-af-klint-work-heads-to-auction/">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <a class="brief" data-s="明斯特" data-key="bbd47c4823b" data-ts="1794991389" href="https://news.google.com/rss/articles/CBMi3gFBVV95cUxNRmlSc3FXczJQZ1d3aE1jUERSZ0NoSzQ3ZkxQb0FiYVFjS1hpMFgxakJFNmFCOVVQWG9UYl81aFkwV2FaVWE5Wk1sM3hYRWw3cEtlaWk1WDZzUnZmYTNDb1BrNnpXWE05Z1NDczlaWGw1OWlMTm5ETWtQbGNCcFJNOGJ2MzFsa0pFdW52WEh1ZTA2Y1l2c20tNmZXTW05LXZvNU11OHpBR3FfZDB1TmNJUDFGRmJGWno1UEpwa3Z0WTdNQUtPbTF2NFJpMFBiVmpSWDQybmg2LU9VcXlSaHc?oc=5" target="_blank" rel="noopener">
+    <div class="meta">明斯特 · Stadt Münster</div>
+    明斯特市政府发布气候、能源和环保方面的消息
+    
+<div class="acts" data-key="abbd47c4823b" data-title="明斯特市政府发布气候、能源和环保方面的消息" data-text="明斯特市政府发布气候、能源和环保方面的消息" data-src="Stadt Münster" data-link="https://news.google.com/rss/articles/CBMi3gFBVV95cUxNRmlSc3FXczJQZ1d3aE1jUERSZ0NoSzQ3ZkxQb0FiYVFjS1hpMFgxakJFNmFCOVVQWG9UYl81aFkwV2FaVWE5Wk1sM3hYRWw3cEtlaWk1WDZzUnZmYTNDb1BrNnpXWE05Z1NDczlaWGw1OWlMTm5ETWtQbGNCcFJNOGJ2MzFsa0pFdW52WEh1ZTA2Y1l2c20tNmZXTW05LXZvNU11OHpBR3FfZDB1TmNJUDFGRmJGWno1UEpwa3Z0WTdNQUtPbTF2NFJpMFBiVmpSWDQybmg2LU9VcXlSaHc?oc=5">
+  <button class="act" data-act="like">♡ 赞</button><button class="act" data-act="track">＋ 追踪</button><button class="ask">问 Claude</button>
+</div>
+  </a>
+  
+  <div class="end"><span class="dot">·</span>简讯就这些</div>
+</section>
+
+<section class="panel" id="video">
+  
+  
+  <div class="end">今天没有新视频</div>
+</section>
+
+<section class="panel" id="art">
+  <div class="favbar"><button class="favtab on" data-v="today">今日作品</button><button class="favtab" data-v="fav">★ 我的收藏 <span id="favCount">0</span></button></div>
+  <div id="favList" style="display:none"></div>
+  <div id="artToday">
+  
+  <article class="card art" data-key="arta7c03ec03c" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;布鲁克斯号奴隶船平面图（Description of a Slave Ship）&#34;, &#34;creator&#34;: &#34;普利茅斯废奴委员会&#34;, &#34;year&#34;: &#34;1788&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;英国废奴运动需要一张图，让从没见过奴隶船的公众，一眼明白奴隶贸易有多残酷。&#34;, &#34;decisions&#34;: [&#34;用工程图的俯视角度，把454个人像货物一样整齐排满船舱&#34;, &#34;冷静的技术图纸语言，没有任何渲染，恐怖感反而更强&#34;], &#34;symbols&#34;: &#34;用奴隶贩子自己的&#39;装载图&#39;语言来揭露他们。&#34;, &#34;takeaway&#34;: [&#34;做外劳、宿舍、方舱这类题材时，&#39;俯视平面图 + 密密麻麻的人形&#39;极有冲击力&#34;, &#34;越残酷的内容，越要用克制、客观的形式&#34;], &#34;ai_prompt&#34;: &#34;18th century engraved ship cross-section plan, top-down view, rows of small identical human figures packed tightly, black ink on cream paper, technical diagram style&#34;, &#34;ai_tips&#34;: &#34;人数和布局要按真实资料画，AI 只用来出版画质感。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 1 / 10</span>
+    
+    <h2>布鲁克斯号奴隶船平面图（Description of a Slave Ship）</h2>
+    <div class="by">普利茅斯废奴委员会 · 1788</div>
+    <h4>它要解决什么问题</h4><p>英国废奴运动需要一张图，让从没见过奴隶船的公众，一眼明白奴隶贸易有多残酷。</p>
+    <h4>创作者的关键决定</h4><ol><li>用工程图的俯视角度，把454个人像货物一样整齐排满船舱</li><li>冷静的技术图纸语言，没有任何渲染，恐怖感反而更强</li></ol>
+    <h4>符号怎么用</h4><p>用奴隶贩子自己的&#39;装载图&#39;语言来揭露他们。</p>
+    <h4>你可以借用的手法</h4><ul><li>做外劳、宿舍、方舱这类题材时，&#39;俯视平面图 + 密密麻麻的人形&#39;极有冲击力</li><li>越残酷的内容，越要用克制、客观的形式</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>18th century engraved ship cross-section plan, top-down view, rows of small identical human figures packed tightly, black ink on cream paper, technical diagram style</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">人数和布局要按真实资料画，AI 只用来出版画质感。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E5%B8%83%E9%B2%81%E5%85%8B%E6%96%AF%E5%8F%B7%E5%A5%B4%E9%9A%B6%E8%88%B9%E5%B9%B3%E9%9D%A2%E5%9B%BE%EF%BC%88Description%20of%20a%20Slave%20Ship%EF%BC%89%20%E6%99%AE%E5%88%A9%E8%8C%85%E6%96%AF%E5%BA%9F%E5%A5%B4%E5%A7%94%E5%91%98%E4%BC%9A" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art29e58eca00" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;《传记年表》（A Chart of Biography）&#34;, &#34;creator&#34;: &#34;约瑟夫·普里斯特利&#34;, &#34;year&#34;: &#34;1765&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;这位科学家兼牧师想让学生直观看到历史人物的生卒年，以及谁和谁生活在同一时代。&#34;, &#34;decisions&#34;: [&#34;每个人是一条横线，长度就是寿命，第一次把&#39;时间&#39;画成一条轴&#34;, &#34;按领域分行：政治家、哲学家、诗人&#34;], &#34;symbols&#34;: &#34;把历史变成一张可以&#39;看&#39;的表，影响了后来所有时间线设计。&#34;, &#34;takeaway&#34;: [&#34;历史长视频里可以用这种&#39;人物横线&#39;，展示同一时代的几位人物&#34;, &#34;按类别分行，让观众看出交叉和断层&#34;], &#34;ai_prompt&#34;: &#34;18th century timeline chart, horizontal lines of different lengths representing lifespans, grouped rows, fine copperplate engraving, aged paper&#34;, &#34;ai_tips&#34;: &#34;这种图用表格软件或代码生成更准确，AI 只做纸张风格。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 2 / 10</span>
+    
+    <h2>《传记年表》（A Chart of Biography）</h2>
+    <div class="by">约瑟夫·普里斯特利 · 1765</div>
+    <h4>它要解决什么问题</h4><p>这位科学家兼牧师想让学生直观看到历史人物的生卒年，以及谁和谁生活在同一时代。</p>
+    <h4>创作者的关键决定</h4><ol><li>每个人是一条横线，长度就是寿命，第一次把&#39;时间&#39;画成一条轴</li><li>按领域分行：政治家、哲学家、诗人</li></ol>
+    <h4>符号怎么用</h4><p>把历史变成一张可以&#39;看&#39;的表，影响了后来所有时间线设计。</p>
+    <h4>你可以借用的手法</h4><ul><li>历史长视频里可以用这种&#39;人物横线&#39;，展示同一时代的几位人物</li><li>按类别分行，让观众看出交叉和断层</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>18th century timeline chart, horizontal lines of different lengths representing lifespans, grouped rows, fine copperplate engraving, aged paper</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">这种图用表格软件或代码生成更准确，AI 只做纸张风格。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E3%80%8A%E4%BC%A0%E8%AE%B0%E5%B9%B4%E8%A1%A8%E3%80%8B%EF%BC%88A%20Chart%20of%20Biography%EF%BC%89%20%E7%BA%A6%E7%91%9F%E5%A4%AB%C2%B7%E6%99%AE%E9%87%8C%E6%96%AF%E7%89%B9%E5%88%A9" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art472ed262d8" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;《时间之殿》（Temple of Time）&#34;, &#34;creator&#34;: &#34;埃玛·威拉德&#34;, &#34;year&#34;: &#34;1846&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;这位美国女性教育家想让学生不用死记年代，就能&#39;看见&#39;整个世界历史。&#34;, &#34;decisions&#34;: [&#34;把历史画成一座有透视的神殿：远处是古代，近处是现代，柱子代表世纪&#34;, &#34;地面上铺着各国的历史长河&#34;], &#34;symbols&#34;: &#34;用建筑空间来比喻时间，历史变成了可以&#39;走进去&#39;的地方。&#34;, &#34;takeaway&#34;: [&#34;历史类视频可以把时间线做成有空间感的场景，镜头一路往前推&#34;, &#34;把抽象的时间具象成一个可以走动的地方&#34;], &#34;ai_prompt&#34;: &#34;19th century educational chart, a classical temple in deep perspective, columns labeled as centuries, floor as a timeline of nations, hand-colored lithograph&#34;, &#34;ai_tips&#34;: &#34;适合用 AI 出空间场景，文字标注后期自己加。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 3 / 10</span>
+    
+    <h2>《时间之殿》（Temple of Time）</h2>
+    <div class="by">埃玛·威拉德 · 1846</div>
+    <h4>它要解决什么问题</h4><p>这位美国女性教育家想让学生不用死记年代，就能&#39;看见&#39;整个世界历史。</p>
+    <h4>创作者的关键决定</h4><ol><li>把历史画成一座有透视的神殿：远处是古代，近处是现代，柱子代表世纪</li><li>地面上铺着各国的历史长河</li></ol>
+    <h4>符号怎么用</h4><p>用建筑空间来比喻时间，历史变成了可以&#39;走进去&#39;的地方。</p>
+    <h4>你可以借用的手法</h4><ul><li>历史类视频可以把时间线做成有空间感的场景，镜头一路往前推</li><li>把抽象的时间具象成一个可以走动的地方</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>19th century educational chart, a classical temple in deep perspective, columns labeled as centuries, floor as a timeline of nations, hand-colored lithograph</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">适合用 AI 出空间场景，文字标注后期自己加。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E3%80%8A%E6%97%B6%E9%97%B4%E4%B9%8B%E6%AE%BF%E3%80%8B%EF%BC%88Temple%20of%20Time%EF%BC%89%20%E5%9F%83%E7%8E%9B%C2%B7%E5%A8%81%E6%8B%89%E5%BE%B7" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art1e845c43e6" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;《人体是一座工业宫殿》（Der Mensch als Industriepalast）&#34;, &#34;creator&#34;: &#34;弗里茨·卡恩&#34;, &#34;year&#34;: &#34;1926&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;魏玛时期的这位德国医生，要用工业时代人人熟悉的工厂，给大众讲清楚人体怎么运作。&#34;, &#34;decisions&#34;: [&#34;把人体剖面画成一栋多层工厂：大脑是控制室，胃是化工车间，工人在里面操作机器&#34;, &#34;用工厂的分工逻辑来解释器官之间的协作&#34;], &#34;symbols&#34;: &#34;人体即工厂，是20年代对工业化的乐观想象，今天也可以反过来读出一种批判。&#34;, &#34;takeaway&#34;: [&#34;杜伊斯堡长视频可以反过来用：把钢厂画成一个&#39;身体&#39;，讲它怎么生、怎么死&#34;, &#34;用观众熟悉的系统去解释陌生的系统&#34;], &#34;ai_prompt&#34;: &#34;1920s German scientific illustration, cutaway of a human body as a multi-storey factory, tiny workers operating machines in organs, flat colors, poster style&#34;, &#34;ai_tips&#34;: &#34;AI 很擅长这种&#39;剖面工厂&#39;，但细节容易乱，挑一张满意的再手动修。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 4 / 10</span>
+    
+    <h2>《人体是一座工业宫殿》（Der Mensch als Industriepalast）</h2>
+    <div class="by">弗里茨·卡恩 · 1926</div>
+    <h4>它要解决什么问题</h4><p>魏玛时期的这位德国医生，要用工业时代人人熟悉的工厂，给大众讲清楚人体怎么运作。</p>
+    <h4>创作者的关键决定</h4><ol><li>把人体剖面画成一栋多层工厂：大脑是控制室，胃是化工车间，工人在里面操作机器</li><li>用工厂的分工逻辑来解释器官之间的协作</li></ol>
+    <h4>符号怎么用</h4><p>人体即工厂，是20年代对工业化的乐观想象，今天也可以反过来读出一种批判。</p>
+    <h4>你可以借用的手法</h4><ul><li>杜伊斯堡长视频可以反过来用：把钢厂画成一个&#39;身体&#39;，讲它怎么生、怎么死</li><li>用观众熟悉的系统去解释陌生的系统</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>1920s German scientific illustration, cutaway of a human body as a multi-storey factory, tiny workers operating machines in organs, flat colors, poster style</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">AI 很擅长这种&#39;剖面工厂&#39;，但细节容易乱，挑一张满意的再手动修。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E3%80%8A%E4%BA%BA%E4%BD%93%E6%98%AF%E4%B8%80%E5%BA%A7%E5%B7%A5%E4%B8%9A%E5%AE%AB%E6%AE%BF%E3%80%8B%EF%BC%88Der%20Mensch%20als%20Industriepalast%EF%BC%89%20%E5%BC%97%E9%87%8C%E8%8C%A8%C2%B7%E5%8D%A1%E6%81%A9" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art2bf8a838b5" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;《Unknown Pleasures》专辑封面&#34;, &#34;creator&#34;: &#34;彼得·萨维尔（设计），数据来自脉冲星 CP 1919&#34;, &#34;year&#34;: &#34;1979&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;Joy Division 乐队的鼓手在天文百科里看到一张脉冲星信号图，想把它用作专辑封面。&#34;, &#34;decisions&#34;: [&#34;把原图的黑线白底反转成白线黑底，更冷、更神秘&#34;, &#34;封面不写乐队名和专辑名，只有这张图&#34;], &#34;symbols&#34;: &#34;科学数据脱离了语境，变成一个文化符号，后来被印在无数 T 恤上。&#34;, &#34;takeaway&#34;: [&#34;一张数据图可以变成运动或品牌的标志&#34;, &#34;去掉文字，让图像本身成为识别&#34;], &#34;ai_prompt&#34;: &#34;stacked white line plots on black background, ridge line chart, each line a waveform, minimal, no text, album cover&#34;, &#34;ai_tips&#34;: &#34;这种山脊图用代码画最准，可以拿真实数据，比如德国钢铁产量每年的曲线。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 5 / 10</span>
+    
+    <h2>《Unknown Pleasures》专辑封面</h2>
+    <div class="by">彼得·萨维尔（设计），数据来自脉冲星 CP 1919 · 1979</div>
+    <h4>它要解决什么问题</h4><p>Joy Division 乐队的鼓手在天文百科里看到一张脉冲星信号图，想把它用作专辑封面。</p>
+    <h4>创作者的关键决定</h4><ol><li>把原图的黑线白底反转成白线黑底，更冷、更神秘</li><li>封面不写乐队名和专辑名，只有这张图</li></ol>
+    <h4>符号怎么用</h4><p>科学数据脱离了语境，变成一个文化符号，后来被印在无数 T 恤上。</p>
+    <h4>你可以借用的手法</h4><ul><li>一张数据图可以变成运动或品牌的标志</li><li>去掉文字，让图像本身成为识别</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>stacked white line plots on black background, ridge line chart, each line a waveform, minimal, no text, album cover</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">这种山脊图用代码画最准，可以拿真实数据，比如德国钢铁产量每年的曲线。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E3%80%8AUnknown%20Pleasures%E3%80%8B%E4%B8%93%E8%BE%91%E5%B0%81%E9%9D%A2%20%E5%BD%BC%E5%BE%97%C2%B7%E8%90%A8%E7%BB%B4%E5%B0%94%EF%BC%88%E8%AE%BE%E8%AE%A1%EF%BC%89%EF%BC%8C%E6%95%B0%E6%8D%AE%E6%9D%A5%E8%87%AA%E8%84%89%E5%86%B2%E6%98%9F%20CP%201919" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="artb2a390baae" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;《时代》周刊解释性图表&#34;, &#34;creator&#34;: &#34;奈杰尔·霍姆斯&#34;, &#34;year&#34;: &#34;1978–1994&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;这位英国设计师要让新闻杂志的读者，在几秒钟里读懂经济和政治数据。&#34;, &#34;decisions&#34;: [&#34;把图表和插画结合：油价上涨画成一个人被油桶压着&#34;, &#34;幽默和夸张，后来被批评为&#39;图表垃圾&#39;&#34;], &#34;symbols&#34;: &#34;他和数据可视化学者塔夫特之间的争论：该追求纯粹的数据，还是吸引人的叙事？&#34;, &#34;takeaway&#34;: [&#34;做社交媒体内容时，适度的插画能让人停下来；但数字本身不能被扭曲&#34;, &#34;先让人看，再让人懂，两者要平衡&#34;], &#34;ai_prompt&#34;: &#34;1980s magazine explanatory infographic, playful illustration integrated into a bar chart, bold colors, editorial cartoon style&#34;, &#34;ai_tips&#34;: &#34;AI 生成的插画可以用，但柱子高度要自己按数据改。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 6 / 10</span>
+    
+    <h2>《时代》周刊解释性图表</h2>
+    <div class="by">奈杰尔·霍姆斯 · 1978–1994</div>
+    <h4>它要解决什么问题</h4><p>这位英国设计师要让新闻杂志的读者，在几秒钟里读懂经济和政治数据。</p>
+    <h4>创作者的关键决定</h4><ol><li>把图表和插画结合：油价上涨画成一个人被油桶压着</li><li>幽默和夸张，后来被批评为&#39;图表垃圾&#39;</li></ol>
+    <h4>符号怎么用</h4><p>他和数据可视化学者塔夫特之间的争论：该追求纯粹的数据，还是吸引人的叙事？</p>
+    <h4>你可以借用的手法</h4><ul><li>做社交媒体内容时，适度的插画能让人停下来；但数字本身不能被扭曲</li><li>先让人看，再让人懂，两者要平衡</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>1980s magazine explanatory infographic, playful illustration integrated into a bar chart, bold colors, editorial cartoon style</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">AI 生成的插画可以用，但柱子高度要自己按数据改。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E3%80%8A%E6%97%B6%E4%BB%A3%E3%80%8B%E5%91%A8%E5%88%8A%E8%A7%A3%E9%87%8A%E6%80%A7%E5%9B%BE%E8%A1%A8%20%E5%A5%88%E6%9D%B0%E5%B0%94%C2%B7%E9%9C%8D%E5%A7%86%E6%96%AF" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art11e2c175a4" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;《视线之外，心思之外》（Out of Sight, Out of Mind）&#34;, &#34;creator&#34;: &#34;Pitch Interactive&#34;, &#34;year&#34;: &#34;2013&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;一个数据工作室想让人们看见美国在巴基斯坦的无人机袭击，以及被炸死的平民和儿童。&#34;, &#34;decisions&#34;: [&#34;每一次袭击是从天上落下的一道线，砸到地面后变成死者的数量&#34;, &#34;按时间播放，平民和儿童用不同颜色区分&#34;], &#34;symbols&#34;: &#34;&#39;从天而降&#39;的动画形式，本身就是对无人机战争的模拟。&#34;, &#34;takeaway&#34;: [&#34;伊朗、加沙等战争题材可以借鉴：让每一个数字落下来&#34;, &#34;动画的节奏会让观众感受到累积&#34;], &#34;ai_prompt&#34;: &#34;dark interactive data visualization, thin vertical lines falling from the top onto a timeline, small colored bars accumulating at the bottom, black background, minimal&#34;, &#34;ai_tips&#34;: &#34;这种动画用 D3 或 After Effects 做，AI 只用来设计配色和片头。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 7 / 10</span>
+    
+    <h2>《视线之外，心思之外》（Out of Sight, Out of Mind）</h2>
+    <div class="by">Pitch Interactive · 2013</div>
+    <h4>它要解决什么问题</h4><p>一个数据工作室想让人们看见美国在巴基斯坦的无人机袭击，以及被炸死的平民和儿童。</p>
+    <h4>创作者的关键决定</h4><ol><li>每一次袭击是从天上落下的一道线，砸到地面后变成死者的数量</li><li>按时间播放，平民和儿童用不同颜色区分</li></ol>
+    <h4>符号怎么用</h4><p>&#39;从天而降&#39;的动画形式，本身就是对无人机战争的模拟。</p>
+    <h4>你可以借用的手法</h4><ul><li>伊朗、加沙等战争题材可以借鉴：让每一个数字落下来</li><li>动画的节奏会让观众感受到累积</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>dark interactive data visualization, thin vertical lines falling from the top onto a timeline, small colored bars accumulating at the bottom, black background, minimal</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">这种动画用 D3 或 After Effects 做，AI 只用来设计配色和片头。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E3%80%8A%E8%A7%86%E7%BA%BF%E4%B9%8B%E5%A4%96%EF%BC%8C%E5%BF%83%E6%80%9D%E4%B9%8B%E5%A4%96%E3%80%8B%EF%BC%88Out%20of%20Sight%2C%20Out%20of%20Mind%EF%BC%89%20Pitch%20Interactive" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art53ee28d125" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;《美国枪击死亡：被偷走的岁月》（U.S. Gun Deaths）&#34;, &#34;creator&#34;: &#34;Periscopic&#34;, &#34;year&#34;: &#34;2013&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;让观众感受到枪击死者被夺走的人生，而不只是一个数字。&#34;, &#34;decisions&#34;: [&#34;每个死者是一条弧线，橙色是活过的岁月，灰色是被偷走的岁月&#34;, &#34;按年龄统计他们本来可以活多久&#34;], &#34;symbols&#34;: &#34;把&#39;死亡人数&#39;换成&#39;被偷走的年数&#39;，改变了数据的情感重量。&#34;, &#34;takeaway&#34;: [&#34;换一个计量单位，就能改变观众的感受：比如裁员&#39;失去的工作年数&#39;&#34;, &#34;同一个数据，选择怎么讲就是立场&#34;], &#34;ai_prompt&#34;: &#34;data visualization of arcs, each arc orange then fading to grey, dark background, many arcs flowing left to right, elegant and somber&#34;, &#34;ai_tips&#34;: &#34;用代码画，AI 只出配色方案。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 8 / 10</span>
+    
+    <h2>《美国枪击死亡：被偷走的岁月》（U.S. Gun Deaths）</h2>
+    <div class="by">Periscopic · 2013</div>
+    <h4>它要解决什么问题</h4><p>让观众感受到枪击死者被夺走的人生，而不只是一个数字。</p>
+    <h4>创作者的关键决定</h4><ol><li>每个死者是一条弧线，橙色是活过的岁月，灰色是被偷走的岁月</li><li>按年龄统计他们本来可以活多久</li></ol>
+    <h4>符号怎么用</h4><p>把&#39;死亡人数&#39;换成&#39;被偷走的年数&#39;，改变了数据的情感重量。</p>
+    <h4>你可以借用的手法</h4><ul><li>换一个计量单位，就能改变观众的感受：比如裁员&#39;失去的工作年数&#39;</li><li>同一个数据，选择怎么讲就是立场</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>data visualization of arcs, each arc orange then fading to grey, dark background, many arcs flowing left to right, elegant and somber</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">用代码画，AI 只出配色方案。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E3%80%8A%E7%BE%8E%E5%9B%BD%E6%9E%AA%E5%87%BB%E6%AD%BB%E4%BA%A1%EF%BC%9A%E8%A2%AB%E5%81%B7%E8%B5%B0%E7%9A%84%E5%B2%81%E6%9C%88%E3%80%8B%EF%BC%88U.S.%20Gun%20Deaths%EF%BC%89%20Periscopic" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art52225a55da" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;数据可视化作品集&#34;, &#34;creator&#34;: &#34;费德丽卡·弗拉加帕内&#34;, &#34;year&#34;: &#34;2010年代至今&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;这位意大利设计师为联合国、媒体做数据可视化，题材常常是移民、人权和难民。&#34;, &#34;decisions&#34;: [&#34;用细腻的有机线条和小图形，代替规整的柱状图&#34;, &#34;数据像花朵或星座一样展开，邀请人慢慢看&#34;], &#34;symbols&#34;: &#34;精致、安静的视觉语言，让沉重的话题也能被读者看进去。&#34;, &#34;takeaway&#34;: [&#34;做难民和移民议题时，可以借鉴她的&#39;慢看&#39;风格，而不是冲击性的&#34;, &#34;在海报上用小图形表示个体&#34;], &#34;ai_prompt&#34;: &#34;delicate data visualization, organic flowing lines and small dots forming flower-like shapes, soft muted colors on white, editorial print&#34;, &#34;ai_tips&#34;: &#34;AI 能出风格参考，数据和标注要自己按真实数字做。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 9 / 10</span>
+    
+    <h2>数据可视化作品集</h2>
+    <div class="by">费德丽卡·弗拉加帕内 · 2010年代至今</div>
+    <h4>它要解决什么问题</h4><p>这位意大利设计师为联合国、媒体做数据可视化，题材常常是移民、人权和难民。</p>
+    <h4>创作者的关键决定</h4><ol><li>用细腻的有机线条和小图形，代替规整的柱状图</li><li>数据像花朵或星座一样展开，邀请人慢慢看</li></ol>
+    <h4>符号怎么用</h4><p>精致、安静的视觉语言，让沉重的话题也能被读者看进去。</p>
+    <h4>你可以借用的手法</h4><ul><li>做难民和移民议题时，可以借鉴她的&#39;慢看&#39;风格，而不是冲击性的</li><li>在海报上用小图形表示个体</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>delicate data visualization, organic flowing lines and small dots forming flower-like shapes, soft muted colors on white, editorial print</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">AI 能出风格参考，数据和标注要自己按真实数字做。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BD%9C%E5%93%81%E9%9B%86%20%E8%B4%B9%E5%BE%B7%E4%B8%BD%E5%8D%A1%C2%B7%E5%BC%97%E6%8B%89%E5%8A%A0%E5%B8%95%E5%86%85" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  <article class="card art" data-key="art2ba5860d49" data-ts="1794991389" data-art='{&#34;work&#34;: &#34;Sweet&#39;s 产品目录与信息设计&#34;, &#34;creator&#34;: &#34;拉迪斯拉夫·苏特纳&#34;, &#34;year&#34;: &#34;1940–1950年代&#34;, &#34;image&#34;: null, &#34;brief&#34;: &#34;这位流亡美国的捷克设计师要把几千页工业产品资料，排成工程师能快速查找的目录。&#34;, &#34;decisions&#34;: [&#34;用颜色条、编号和箭头建立导航系统，一眼找到要的章节&#34;, &#34;大量用图示代替文字，分清主次&#34;], &#34;symbols&#34;: &#34;他提出&#39;视觉信息的三个要素：功能、流程、形式&#39;，让枯燥的资料也能读得进去。&#34;, &#34;takeaway&#34;: [&#34;阅读器或信息台的界面设计，可以借鉴他的颜色导航和编号系统&#34;, &#34;资料越多，越要先设计&#39;怎么找&#39;，再设计&#39;长什么样&#39;&#34;], &#34;ai_prompt&#34;: &#34;1950s modernist industrial catalog page, bold color tabs, numbered sections, arrows and diagrams, clean grid, limited palette of red, black and grey&#34;, &#34;ai_tips&#34;: &#34;排版要自己做，AI 只用来出风格参考。&#34;}'>
+    <button class="favbtn">☆ 收藏</button>
+    <span class="label">作品 10 / 10</span>
+    
+    <h2>Sweet&#39;s 产品目录与信息设计</h2>
+    <div class="by">拉迪斯拉夫·苏特纳 · 1940–1950年代</div>
+    <h4>它要解决什么问题</h4><p>这位流亡美国的捷克设计师要把几千页工业产品资料，排成工程师能快速查找的目录。</p>
+    <h4>创作者的关键决定</h4><ol><li>用颜色条、编号和箭头建立导航系统，一眼找到要的章节</li><li>大量用图示代替文字，分清主次</li></ol>
+    <h4>符号怎么用</h4><p>他提出&#39;视觉信息的三个要素：功能、流程、形式&#39;，让枯燥的资料也能读得进去。</p>
+    <h4>你可以借用的手法</h4><ul><li>阅读器或信息台的界面设计，可以借鉴他的颜色导航和编号系统</li><li>资料越多，越要先设计&#39;怎么找&#39;，再设计&#39;长什么样&#39;</li></ul>
+    <h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>1950s modernist industrial catalog page, bold color tabs, numbered sections, arrows and diagrams, clean grid, limited palette of red, black and grey</div>
+    <p style="margin-top:8px;font-size:14px;color:var(--muted)">排版要自己做，AI 只用来出风格参考。</p>
+    <div class="srcs"></div>
+    <div class="srcs"><a class="src" href="https://www.google.com/search?tbm=isch&q=Sweet%27s%20%E4%BA%A7%E5%93%81%E7%9B%AE%E5%BD%95%E4%B8%8E%E4%BF%A1%E6%81%AF%E8%AE%BE%E8%AE%A1%20%E6%8B%89%E8%BF%AA%E6%96%AF%E6%8B%89%E5%A4%AB%C2%B7%E8%8B%8F%E7%89%B9%E7%BA%B3" target="_blank" rel="noopener">找高清图 ↗</a></div>
+  </article>
+  
+  </div>
+  
+  <h3 class="sub">设计与艺术动态</h3>
+  <a class="brief" href="https://news.google.com/rss/articles/CBMipgFBVV95cUxQQndLUzd5YWRVNUtrV0xaNmdXZG5fdjl6bDhlTUFWVHJBNkRaeFNFN19BUnJ3a0dhYnhmV1pqVDBiVlFISF9YZWYxelVNWUQ5dHhodXpnWnpld1N3MVFyVXlvTDc4YUx0SlNXTEhvMVliNDVPRzZIVUdPSnBpMW9aTWNUUXFaYlNmdjhDQ2c1b0wxVU1uVl9nOTRuREZFakxLVG5QWjh3?oc=5" target="_blank" rel="noopener"><div class="meta">It&#39;s Nice That</div>一个70年代建筑草图和奥托·艾舍启发了一家艺术中心的新标志</a><a class="brief" href="https://hyperallergic.com/how-should-we-memorialize-the-trump-era/" target="_blank" rel="noopener"><div class="meta">Hyperallergic</div>Hyperallergic：应该怎样纪念特朗普时代？</a><a class="brief" href="https://hyperallergic.com/rare-hilma-af-klint-work-heads-to-auction/" target="_blank" rel="noopener"><div class="meta">Hyperallergic</div>希尔玛·阿夫·克林特的罕见作品将被拍卖；康定斯基一幅画拍出8500万美元纪录</a>
+  <div class="end"><span class="dot">·</span>艺术看完了</div>
+</section>
+
+<section class="panel" id="de">
+  <h3 class="sub">今日德语</h3>
+  
+  <div class="card"><div class="word"><b>der Spritpreisdeckel</b><span>油价上限</span></div>
+    <div class="ex">Die Koalition hat sich auf einen Spritpreisdeckel geeinigt.</div></div>
+  
+  <div class="card"><div class="word"><b>das Armutszeugnis</b><span>无能的证明、丢人的表现</span></div>
+    <div class="ex">Brantner nennt die Einigung ein Armutszeugnis für die Bundesregierung.</div></div>
+  
+  <div class="card"><div class="word"><b>den Ausschluss beantragen</b><span>申请开除</span></div>
+    <div class="ex">Die Fraktionsspitze hat den Ausschluss von Emde beantragt.</div></div>
+  
+  <div class="card"><div class="word"><b>die Urabstimmung / 99 Prozent Zustimmung</b><span>会员投票 / 99%赞成</span></div>
+    <div class="ex">Mit 99 Prozent Zustimmung plant die IG Metall 24-Stunden-Streiks.</div></div>
+  
+  <div class="card"><div class="word"><b>aus den Gräben herauskommen</b><span>走出战壕，放下对立</span></div>
+    <div class="ex">Jetzt aber raus aus den Gräben und ran an die Arbeit.</div></div>
+  
+  <h3 class="sub">创作素材</h3>
+  
+  <div class="card"><h2>20号同一天：青年反兵役，工人争工资</h2><p>一张对照图，适合德语 Instagram：左边是 Gen Z，右边是 IG Metall，中间一句&#39;谁为危机买单&#39;。人形图标可以参考今天艺术栏目里那种整齐排列的画法。</p><div class="srcs"><a class="src" href="https://news.google.com/rss/articles/CBMi-wFBVV95cUxOQW43Q0dKWUxVOTBxUS0xMW90MHRRTU8tSXNETFNFa3FsZVM0cXE4N3dEVDJtT1ByMXhsWTVlT3Q3THNwUElBRkpoc2lVQVQwcWMtZXJfczdsS1E4MUxmWEp3clc0RkQxYzA1SFM4MGFlcFBCTl80NzBUUWpCQk15bEJ0c01zUlhEOXZiVi1UUTZUdEowU1FORExEU0JVRklCdG5JbEpjX1dnTXlPMzFSazItRVkwRWEyRlNaNWV3eTFHRnNjLVkzblNybXlCSXE1SFRIOUpuTkdVQklId3MzeC1qQ3JLcmJMdExXaktDclhtSlVLNHcyZ01xTQ?oc=5" target="_blank" rel="noopener">MDR.de ↗</a><a class="src" href="https://news.google.com/rss/articles/CBMixgFBVV95cUxNQXJ0UHNNZ01mXzJ5OGR1QWY5bTRrWm5fWWN3Q3l6VzZha2lFbVY2cWxPSW5YSHk4d1dfcTFWZ2RET3U0elJDTVV3SGhKNW9EYjNJMzY5dVRjMlBlbFBuVTNmN09feVk5cXg1SG9HVHZaWGpjbGRKX0RrLXI4V3ZhaGw3LWxXV2FOcGVIbzBvT0FoMllEQ01SdlRHVTg3MDRKX0JZQkpjeExnV2plemlKNnRqcmJvYlE0cVo1cXhIY19GSVhkTFE?oc=5" target="_blank" rel="noopener">IG Metall ↗</a></div></div>
+  
+  <div class="card"><h2>电力税下调：一年的减负，是不是改革？</h2><p>用一个家庭的电费单算一笔账，说清楚2027年能省多少、2028年会怎样，面向在德国的中国人。</p><div class="srcs"><a class="src" href="https://www.zeit.de/video/2026-11/koalition-einigt-sich-auf-senkung-der-stromsteuer" target="_blank" rel="noopener">Zeit Online ↗</a><a class="src" href="https://www.sueddeutsche.de/politik/bundeshaushalt-stromsteuer-koalitionsausschuss-ergebnis-2027-li.3581995" target="_blank" rel="noopener">Süddeutsche ↗</a></div></div>
+  
+  <div class="end"><span class="dot">·</span>今天就到这里</div>
+</section>
+</main>
+<footer>
+  <p style="margin-bottom:8px"><a href="reader/" style="text-decoration:underline">📖 阅读器</a></p>
+  <details><summary>来源状态：76 个正常，0 个失败</summary>
+    
+  </details>
+  <p style="margin-top:8px">往期：<a href="2026-11-17.html" style="text-decoration:underline">11-17</a> · <a href="2026-11-14.html" style="text-decoration:underline">11-14</a> · <a href="2026-11-13.html" style="text-decoration:underline">11-13</a> · <a href="2026-11-12.html" style="text-decoration:underline">11-12</a> · <a href="2026-11-11.html" style="text-decoration:underline">11-11</a> · <a href="2026-11-10.html" style="text-decoration:underline">11-10</a> · <a href="2026-11-09.html" style="text-decoration:underline">11-09</a> · <a href="2026-11-08.html" style="text-decoration:underline">11-08</a> · <a href="2026-11-07.html" style="text-decoration:underline">11-07</a> · <a href="2026-11-06.html" style="text-decoration:underline">11-06</a> · <a href="2026-11-05.html" style="text-decoration:underline">11-05</a> · <a href="2026-11-04.html" style="text-decoration:underline">11-04</a></p>
+</footer>
+<script>
+const tabs=[...document.querySelectorAll('.tab')],panels=[...document.querySelectorAll('.panel')];
+function show(id){tabs.forEach(t=>t.classList.toggle('on',t.dataset.p===id));panels.forEach(p=>p.classList.toggle('on',p.id===id));window.scrollTo({top:0});try{sessionStorage.setItem('tab',id)}catch(e){}}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.p));
+try{const s=sessionStorage.getItem('tab');if(s)show(s)}catch(e){}
+const order=tabs.map(t=>t.dataset.p);let sx=0,sy=0;
+document.querySelector('main').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.querySelector('main').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+ if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const cur=order.indexOf(document.querySelector('.tab.on').dataset.p);
+ const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+ document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
+
+document.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})});
+
+/* ===== 工作安排：加密存放，在手机上解密 ===== */
+(()=>{
+const ENC=(location.pathname.includes('/archive/')?'../':'')+'work.enc';
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const b64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+async function dec(box,pw){const k0=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+ const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(box.salt),iterations:box.iter,hash:'SHA-256'},k0,{name:'AES-GCM',length:256},false,['decrypt']);
+ return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(box.iv)},k,b64(box.ct))))}
+const todayStr=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+const days=d=>Math.round((new Date(d+'T12:00')-new Date(todayStr+'T12:00'))/864e5);
+const md=d=>{const[y,m,dd]=d.split('-');return (+m)+'月'+(+dd)+'日'};
+let done={};try{done=JSON.parse(localStorage.getItem('workDone'))||{}}catch(e){}
+const saveDone=()=>{try{localStorage.setItem('workDone',JSON.stringify(done))}catch(e){}};
+const kid=(l,i)=>l.id+'|'+(i.date||'')+'|'+i.text;
+const LVN={red:'最优先',yellow:'有固定时间点',green:'持续推进',later:'以后再开',paused:'暂停'};
+function todo(list,inLine){return '<ul class="todo">'+list.map(([l,i])=>{const k=kid(l,i),d=done[k];
+  const tag=i.date&&i.date<todayStr?'<span class="tag">逾期 '+(-days(i.date))+' 天</span>':(i.kind==='wait'?'<span class="tag">等待中</span>':'');
+  return '<li class="'+(d?'done':'')+'"><input type="checkbox" data-k="'+esc(k)+'"'+(d?' checked':'')+'><span>'+esc(i.text)+(inLine?'':'<span class="tag">'+esc(l.title)+'</span>')+tag+'</span></li>'}).join('')+'</ul>'}
+function render(plan){
+ const all=[];plan.lines.forEach(l=>(l.items||[]).forEach(i=>all.push([l,i])));
+ const today=all.filter(([l,i])=>i.date===todayStr&&i.kind!=='deadline'&&i.kind!=='read');
+ const overdue=all.filter(([l,i])=>i.date&&i.date<todayStr&&!done[kid(l,i)]&&i.kind!=='deadline'&&i.kind!=='read');
+ const order=plan.today_order||[];
+ today.sort((a,b)=>{const ia=order.findIndex(o=>a[1].text.includes(o.slice(-4))),ib=order.findIndex(o=>b[1].text.includes(o.slice(-4)));return (ia<0?99:ia)-(ib<0?99:ib)});
+ const soon=all.filter(([l,i])=>i.date&&i.date>todayStr&&days(i.date)<=14&&i.kind!=='read').sort((a,b)=>a[1].date<b[1].date?-1:1);
+ let h='';
+ const reads=all.filter(([l,i])=>i.kind==='read'&&i.date&&i.date>=todayStr&&days(i.date)<=6);
+ if(reads.length){const left=reads.filter(([l,i])=>!done[kid(l,i)]);h+='<p class="wnote">本周阅读还剩 '+left.length+' / '+reads.length+' 项'+(left[0]?'，下一项：'+esc(left[0][1].text.replace(/^第.周 · .：/,'')):'')+'</p>'}
+ if(order.length)h+='<p class="wnote">今天的顺序：'+order.map(esc).join(' → ')+'</p>';
+ h+=today.length||overdue.length?todo([...overdue,...today]):'<p class="wstat">今天没有排定的事。</p>';
+ if(soon.length)h+='<h3 class="sub" style="margin:14px 0 4px">接下来两周</h3>'+soon.map(([l,i])=>'<div class="due'+(i.kind==='key'||i.kind==='deadline'?' key':'')+'"><span>'+md(i.date)+' · '+esc(i.text)+'</span><b>'+(days(i.date)===1?'明天':days(i.date)+' 天后')+'</b></div>').join('');
+ h+='<p class="wnote" style="margin-top:10px">安排更新于 '+md(plan.updated)+'。完成情况记在这台手机上；有变化直接告诉 Claude。</p>';
+ document.getElementById('todayBody').innerHTML=h;
+ let w='';
+ if(plan.principle)w+='<div class="card work"><p class="wnote" style="margin:0">'+esc(plan.principle)+'</p></div>';
+ plan.lines.forEach(l=>{
+  const last=(l.log||[]).map(x=>x.date).sort().pop();const idle=last?-days(last):null;
+  const open=(l.items||[]).filter(i=>!done[kid(l,i)]);
+  w+='<article class="card work"><span class="label"><span class="lv lv-'+l.level+'"></span>'+esc(LVN[l.level]||'')+'</span>'
+   +'<h2>'+esc(l.title)+(idle!==null&&idle>=5&&['red','yellow','green'].includes(l.level)?'<span class="stale">'+idle+' 天没进展</span>':'')+'</h2>'
+   +(l.goal?'<p class="wnote" style="margin-top:0">目标：'+esc(l.goal)+'</p>':'')
+   +(l.status?'<p class="wstat">'+esc(l.status)+'</p>':'')
+   +(open.length?todo(open.map(i=>[l,i]),true):'')
+   +(l.note?'<p class="wnote">'+esc(l.note)+'</p>':'')
+   +((l.log||[]).length?'<details><summary>进展记录</summary><ul class="tl">'+l.log.slice().reverse().map(x=>'<li><b>'+md(x.date)+'</b>'+esc(x.text)+'</li>').join('')+'</ul></details>':'')
+   +'</article>'});
+ w+='<div class="end"><span class="dot">·</span>工作安排就这些</div>';
+ document.getElementById('workBody').innerHTML=w;
+ document.querySelectorAll('.todo input').forEach(c=>c.onchange=()=>{if(c.checked)done[c.dataset.k]=todayStr;else delete done[c.dataset.k];saveDone();render(plan)});
+}
+async function unlock(pw,silent){
+ try{const box=await (await fetch(ENC,{cache:'no-store'})).json();const plan=await dec(box,pw);
+  try{localStorage.setItem('workPass',pw)}catch(e){};render(plan)}
+ catch(e){if(!silent){const i=document.getElementById('lockPw');i.value='';i.placeholder='密码不对，再试一次'}}
+}
+const f=document.getElementById('lockForm');
+if(f)f.onsubmit=e=>{e.preventDefault();unlock(document.getElementById('lockPw').value.trim())};
+let saved='';try{saved=localStorage.getItem('workPass')||''}catch(e){}
+if(saved)unlock(saved,true);
+})();
+/* 刷新：主屏幕 App 没有下拉刷新，回到前台时自动检查有没有新一期 */
+(()=>{const cur=+document.body.dataset.latest;let busy=false;
+ async function check(force){if(busy)return;busy=true;
+  try{const t=await (await fetch(location.pathname+'?t='+Date.now(),{cache:'no-store'})).text();
+   const m=t.match(/data-latest="(\d+)"/);if(force||(m&&+m[1]>cur))location.reload()}catch(e){if(force)location.reload()}busy=false}
+ document.getElementById('reload').onclick=()=>check(true);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check(false)});
+ window.addEventListener('pageshow',e=>{if(e.persisted)check(false)});
+ check(false)})();
+/* 抓取：开一个预填好的 Issue，点"Submit"后约 3 分钟出新内容 */
+(()=>{const go=()=>{const t=new Date();const stamp=t.getMonth()+1+'/'+t.getDate()+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+  window.open('https://github.com/prima-bottle/info-feed/issues/new?title='+encodeURIComponent('抓取 '+stamp)+'&body='+encodeURIComponent('点 Submit 后大约 3 分钟出新内容，回到信息台点 ↻ 刷新。'),'_blank')};
+ document.getElementById('fetchNow').onclick=go;document.querySelectorAll('.fetchbtn').forEach(b=>b.onclick=go);
+ const d=new Date(),today=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const pageDate=document.body.dataset.date;
+ if(pageDate&&pageDate<today&&d.getHours()>=5){const bar=document.getElementById('stalebar');bar.style.display='flex';
+  const[,m,dd]=pageDate.split('-');document.getElementById('staletext').textContent='这还是'+(+m)+'月'+(+dd)+'日的内容，今天的还没生成'}
+})();
+
+/* 艺术收藏：存在这台手机的浏览器里 */
+(()=>{const K='artFav';let fav={};try{fav=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+ const save=()=>{try{localStorage.setItem(K,JSON.stringify(fav))}catch(e){}};
+ const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const idOf=a=>(a.work||'')+'|'+(a.creator||'');
+ function count(){document.getElementById('favCount').textContent=Object.keys(fav).length}
+ function sync(){document.querySelectorAll('#artToday .art').forEach(c=>{let a;try{a=JSON.parse(c.dataset.art)}catch(e){return}
+   const b=c.querySelector('.favbtn'),on=!!fav[idOf(a)];b.classList.toggle('on',on);b.textContent=on?'★ 已收藏':'☆ 收藏'});count()}
+ function list(){const box=document.getElementById('favList');const xs=Object.values(fav).sort((x,y)=>y.saved-x.saved);
+  if(!xs.length){box.innerHTML='<div class="end">还没有收藏。在作品卡片右上角点 ☆ 收藏。</div>';return}
+  box.innerHTML=xs.map(a=>'<article class="card art"><button class="favbtn on" data-id="'+esc(idOf(a))+'">★ 取消收藏</button>'
+   +(a.image?'<img class="artimg" src="'+esc(a.image)+'" loading="lazy">':'')
+   +'<h2>'+esc(a.work)+'</h2><div class="by">'+esc(a.creator)+(a.year?' · '+esc(a.year):'')+'</div>'
+   +(a.brief?'<h4>它要解决什么问题</h4><p>'+esc(a.brief)+'</p>':'')
+   +((a.decisions||[]).length?'<h4>创作者的关键决定</h4><ol>'+a.decisions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')
+   +(a.symbols?'<h4>符号怎么用</h4><p>'+esc(a.symbols)+'</p>':'')
+   +((a.takeaway||[]).length?'<h4>你可以借用的手法</h4><ul>'+a.takeaway.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')
+   +(a.ai_prompt?'<h4>AI 提示词思路</h4><div class="prompt"><button class="copy">复制</button>'+esc(a.ai_prompt)+'</div>':'')
+   +(a.ai_tips?'<p style="margin-top:8px;font-size:14px;color:var(--muted)">'+esc(a.ai_tips)+'</p>':'')
+   +'<div class="favdate">收藏于 '+new Date(a.saved).toLocaleDateString('zh-CN')+'</div></article>').join('');
+  box.querySelectorAll('.favbtn').forEach(b=>b.onclick=()=>{delete fav[b.dataset.id];save();list();sync()});
+  box.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();
+   (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='已复制'}).catch(()=>{})})}
+ document.querySelectorAll('#artToday .favbtn').forEach(b=>b.onclick=e=>{e.preventDefault();e.stopPropagation();
+  const a=JSON.parse(b.closest('.art').dataset.art),id=idOf(a);if(fav[id])delete fav[id];else fav[id]={...a,saved:Date.now()};save();sync()});
+ document.querySelectorAll('.favtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.favtab').forEach(x=>x.classList.toggle('on',x===t));
+  const f=t.dataset.v==='fav';document.getElementById('favList').style.display=f?'':'none';document.getElementById('artToday').style.display=f?'none':'';if(f)list()});
+ sync()})();
+/* 夜间模式：自动 → 夜间 → 日间 */
+(()=>{const b=document.getElementById('theme'),names={auto:'自动',dark:'夜间',light:'日间'},next={auto:'dark',dark:'light',light:'auto'};
+ let cur='auto';try{cur=localStorage.getItem('theme')||'auto'}catch(e){}
+ const apply=()=>{if(cur==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=cur;b.textContent='◐ '+names[cur]};
+ apply();b.onclick=()=>{cur=next[cur];try{localStorage.setItem('theme',cur)}catch(e){};apply()}})();
+/* 已读记录：只存在这台手机的浏览器里 */
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const latest=+document.body.dataset.latest, prevSeen=LS.get('seenRun',0);
+let read=LS.get('read',{});
+const cutoff=Date.now()/1000-3*86400; for(const k in read){if(read[k]<cutoff)delete read[k]}
+const cards=[...document.querySelectorAll('[data-key]')];
+// 1. 上次打开后新增的内容标"新"
+if(prevSeen&&latest>prevSeen){cards.forEach(c=>{if(+c.dataset.ts>prevSeen&&!read[c.dataset.key]){
+  const b=document.createElement('span');b.className='new';b.textContent='新';
+  (c.querySelector('.label,h2,.meta,.t')||c).prepend(b)}})}
+LS.set('seenRun',latest);
+// 2. 之前看过的收进每个板块底部的"已看过"
+panels.forEach(p=>{const old=[...p.querySelectorAll(':scope > [data-key], :scope > a[data-key]')].filter(c=>read[c.dataset.key]);
+  if(!old.length)return;const d=document.createElement('details');d.className='folded';
+  d.innerHTML='<summary>已看过 '+old.length+' 条</summary>';old.forEach(c=>{c.classList.add('read');d.appendChild(c)});
+  const end=p.querySelector(':scope > .end');p.insertBefore(d,end)});
+cards.forEach(c=>{if(read[c.dataset.key])c.classList.add('read')});
+// 3. 在屏幕上停留超过 1.5 秒或点开过，算看过
+const timers=new Map();
+const io=new IntersectionObserver(es=>es.forEach(e=>{const k=e.target.dataset.key;
+  if(e.isIntersecting){timers.set(k,setTimeout(()=>{read[k]=Date.now()/1000;LS.set('read',read);io.unobserve(e.target)},1500))}
+  else{clearTimeout(timers.get(k))}}),{threshold:.6});
+cards.forEach(c=>{if(!read[c.dataset.key]){io.observe(c);c.addEventListener('click',()=>{read[c.dataset.key]=Date.now()/1000;LS.set('read',read)})}});
+
+/* 赞 / 追踪：打开预填好的 GitHub Issue，你点"Submit"就生效 */
+const REPO='prima-bottle/info-feed';let acted=LS.get('acted',{});
+document.querySelectorAll('.acts').forEach(box=>{
+  box.querySelectorAll('.act').forEach(btn=>{
+    const k=box.dataset.key+':'+btn.dataset.act;
+    if(acted[k]){btn.classList.add('done');btn.textContent=btn.dataset.act==='like'?'♥ 已赞':'✓ 追踪中'}
+    btn.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();
+      const like=btn.dataset.act==='like';
+      const title=(like?'赞：':'追踪：')+box.dataset.title.slice(0,80);
+      const body=[box.dataset.text,box.dataset.src&&('来源：'+box.dataset.src),box.dataset.link,'','（来自信息台 '+document.body.dataset.date+'。想取消就把这个 Issue 关掉。）'].filter(x=>x!==undefined&&x!==null).join('\n');
+      window.open('https://github.com/'+REPO+'/issues/new?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body),'_blank');
+      acted[k]=Date.now();LS.set('acted',acted);btn.classList.add('done');btn.textContent=like?'♥ 已赞':'✓ 追踪中';
+    })})});
+/* 问 Claude：把这条整理成提问，交给手机上的 Claude App（走订阅，不花 API） */
+document.querySelectorAll('.acts .ask').forEach(btn=>btn.addEventListener('click',async ev=>{ev.preventDefault();ev.stopPropagation();
+  const b=btn.parentNode;
+  const text=['这是我信息台里的一条内容，请帮我：','1. 用几句话讲清楚发生了什么、来龙去脉；','2. 不同立场的媒体（左翼、主流、保守、中国官方）分别会怎么看；','3. 接下来值得关注什么。','',
+    '标题：'+b.dataset.title,'内容：'+b.dataset.text,b.dataset.src&&('来源：'+b.dataset.src),b.dataset.link&&('链接：'+b.dataset.link)].filter(Boolean).join('\n');
+  try{await navigator.clipboard.writeText(text)}catch(e){}
+  if(navigator.share){try{await navigator.share({text});return}catch(e){if(e.name==='AbortError')return}}
+  window.open('https://claude.ai/new?q='+encodeURIComponent(text),'_blank')}));
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
