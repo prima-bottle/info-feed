@@ -38,11 +38,23 @@ def main() -> None:
     if not raws:
         sys.exit("今天还没有抓取过：先触发 fetch 模式")
     items, ids = [], set()
+    enrich: dict = {}  # 你电脑上的本地模型（local/worker.py）给的相关度分和全文要点
+    for p in raws:
+        enrich.update(load(DATA / "enrich" / p.name, {}).get("items", {}))
+    dropped = gists = 0
     for p in raws:  # 合并今天所有抓取，去重、去掉已经编过的
         for it in load(p, {}).get("items", []):
-            if it["id"] not in seen and it["id"] not in ids:
-                ids.add(it["id"])
-                items.append(it)
+            if it["id"] in seen or it["id"] in ids:
+                continue
+            e = enrich.get(it["id"], {})
+            if e.get("score") == 0 and not it.get("thread"):
+                dropped += 1
+                continue
+            if e.get("gist"):
+                it = {**it, "summary": "【全文要点】" + e["gist"]}
+                gists += 1
+            ids.add(it["id"])
+            items.append(it)
     merged = DATA / "raw" / f"{date}-merged.json"
     merged.write_text(json.dumps({"items": items, "status": load(raws[-1], {}).get("status", [])}, ensure_ascii=False))
     cfg["threads"] = [t for t in cfg.get("threads", []) if not t.get("user")] + load(DATA / "user_threads.json", [])
@@ -50,6 +62,7 @@ def main() -> None:
            f"## 读者\n{PROFILE}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n"
            f"## 长期主线（id 以 u 开头的是读者自己点了追踪的，优先找后续）\n{_threads(cfg, load(DATA / 'threads.json', {}))}\n\n"
            + _art(cfg, load(DATA / "art.json", []), date)
+           + (f"## 本地模型预处理\n已去掉 {dropped} 条无关条目；{gists} 条的摘要换成了从原网页全文提炼的要点（以【全文要点】开头），可以放心引用其中的具体事实。\n\n" if enrich else "")
            + f"## 今天的条目（{len(items)} 条，每行一个 JSON）\n{_compact(items)}\n\n"
            + (SCHEMA if mode == "full" else SCHEMA + "\n\n" + UPDATE_SCHEMA)
            + f"\n\nRAW_FILE={merged.relative_to(ROOT)}\n")

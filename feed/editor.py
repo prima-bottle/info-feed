@@ -74,7 +74,7 @@ def _compact(items: list[dict]) -> str:
             continue
         lines.append(json.dumps({
             "id": it["id"], "src": it["source"], **({"thread": it["thread"]} if it.get("thread") else {}), "sec": it["section"], "kind": it["kind"],
-            "t": it["title"], "s": it["summary"][:300], **({"img": 1} if it.get("image") else {}),
+            "t": it["title"], "s": it["summary"][:600 if it["summary"].startswith("【全文要点】") else 300], **({"img": 1} if it.get("image") else {}),
         }, ensure_ascii=False))
     return "\n".join(lines)
 

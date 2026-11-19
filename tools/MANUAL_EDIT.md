@@ -1,11 +1,11 @@
 # 手动编辑流程（API 额度用完时，由对话或定时任务里的 Claude 完成）
 
 0. 先运行 `python tools/pending.py`：
-   - NONE：没事可做，直接结束（不要抓取）。
-   - FULL：今天还没出早间版 → 先触发抓取（第 1 步），再编 full。
-   - UPDATE：读者在网页上点了 ⤓，新抓取已经在 data/raw/ 里 → 跳过第 1 步，直接编 update。
-   另外每天 12 点那一次，即使是 NONE，也触发一次抓取并编 update（午间版）。
-
+   - NONE：没事可做，直接结束（不要抓取）。例外：12 点那一次，如果最近一小时内 data/raw/ 里没有今天的新抓取，就触发抓取（第 1 步）并编 update（午间版）。
+   - FULL：今天还没出早间版，但读者电脑上的本地助手已经抓好并写了要点 → 跳过第 1 步，直接编 full。
+   - FULL_FETCH：今天还没出早间版，也没有近期抓取 → 先触发抓取（第 1 步），再编 full。
+   - UPDATE：有新的抓取（读者点了 ⤓ 或本地助手触发的）→ 跳过第 1 步，直接编 update。
+   本地助手（local/worker.py）会给条目打分、把部分摘要换成原网页全文的要点（以【全文要点】开头），prepare_edit.py 会自动合并进来。
 1. 抓取：GitHub Actions 的 daily.yml 用 fetch 模式只抓原始条目，存到 `data/raw/日期-时间.json`。
    需要新抓时：
    `echo '{"ref":"main","inputs":{"mode":"fetch","force":"true"}}' | gh api -X POST repos/prima-bottle/info-feed/actions/workflows/daily.yml/dispatches --input -`
