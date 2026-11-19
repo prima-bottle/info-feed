@@ -170,6 +170,27 @@ details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);
 #hand{position:fixed;inset:0;z-index:58;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
 #hand .hb{background:var(--bg);width:100%;max-width:720px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto}
 #hand textarea{width:100%;min-height:150px;margin-top:8px;font:inherit;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+:root{--sideW:min(420px,40vw);--peekH:46vh}
+#shMin{display:none}
+#sheet.side{box-shadow:0 -4px 20px rgba(0,0,0,.18)}
+#sheet.side #shMin{display:inline-block}
+#sheet.side.mini .sb{display:none}
+@media (min-width:900px){
+  #sheet.side{top:0;bottom:0;right:0;left:auto;width:var(--sideW);max-width:none;max-height:none;margin:0;border-radius:0;border-left:1px solid var(--line);box-shadow:-4px 0 18px rgba(0,0,0,.10)}
+  #sheet.side .sh{padding-top:max(12px,env(safe-area-inset-top))}
+  #sheet.side #shMin{display:none}
+  body.has-side #view{padding-right:var(--sideW)}
+  body.has-side .top,body.has-side .bot{right:var(--sideW)}
+  body.has-side #selbar{right:calc(var(--sideW) + 8px)}
+  body.has-side #arcBack{right:calc(var(--sideW) + 12px)}
+}
+@media (max-width:899.98px){
+  #sheet.side{max-height:var(--peekH);border-top:1px solid var(--line)}
+  #sheet.side.mini{max-height:none}
+  body.has-side #view{padding-bottom:calc(var(--peekH) + 20px)}
+  body.has-side .bot{display:none}
+  body.has-side #selbar{bottom:calc(var(--peekH) + 8px)}
+}
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:60;max-width:90vw}
 </style>
 </head>
@@ -223,7 +244,7 @@ details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);
 
 <div id="arcBack" class="hide"><button id="abGo">← 返回</button><button id="abX">✕</button></div>
 <div id="mask" class="hide"></div>
-<div id="sheet" class="hide"><div class="sh"><h3 id="shT"></h3><button class="ib" id="shX">✕</button></div><div class="sb" id="shB"></div></div>
+<div id="sheet" class="hide"><div class="sh"><h3 id="shT"></h3><button class="ib" id="shMin" title="收起/展开">▾</button><button class="ib" id="shX">✕</button></div><div class="sb" id="shB"></div></div>
 
 <script src="lib/pdf.min.js"></script>
 <script src="lib/jszip.min.js"></script>
@@ -621,7 +642,7 @@ function paintMarks(b,p){
       const r=document.createRange();r.setStart(node,a-off);r.setEnd(node,z-off);const m=document.createElement('mark');m.dataset.id=n.id;m.className=(n.fn?'f-'+n.fn:'')+((n.text||(n.ai&&n.ai.length))?' n':'');
       try{r.surroundContents(m)}catch(e){}}}}
 function noteSheet(n){
-  sheet((n.id?'笔记 · ':'写笔记 · ')+locLabel(n),`<div class="quote">${esc(n.quote)}</div>
+  sideSheet((n.id?'笔记 · ':'写笔记 · ')+locLabel(n),`<div class="quote">${esc(n.quote)}</div>
     <div class="lbl" style="margin-top:4px">句子功能</div><div class="chips" id="fnc">${FNS.map(([k,v])=>`<button class="chip ${(n.fn||'')===k?'on':''}" data-f="${k}"><span class="fd ${k?'f-'+k:''}"></span>${v}</button>`).join('')}</div>
     <div class="lbl">和我的立场的关系</div><div class="chips" id="tg">${TAGS.map(([k,v])=>`<button class="chip ${k} ${n.tag===k?'on':''}" data-k="${k}">${v}</button>`).join('')}</div>
     <textarea id="nt" placeholder="你的想法…">${esc(n.text)}</textarea>
@@ -636,7 +657,7 @@ function noteSheet(n){
   if(!n.id)setTimeout(()=>$('#nt').focus(),200)}
 function studyBlock(){const s=S.doc.study||{};return `${s.big?`大问题：${s.big}\n大问题上的立场：${s.bigSide||'（未定）'}\n`:''}当前研究问题：${s.q||'（还没设定）'}\n我的立场：${s.side||'（还没设定）'}${s.line?'\n工作线：'+s.line:''}`}
 async function askSheet(n){
-  sheet('问 AI · '+locLabel(n),`<div class="quote">${esc(n.quote)}</div><div id="chat">${(n.ai||[]).map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
+  sideSheet('问 AI · '+locLabel(n),`<div class="quote">${esc(n.quote)}</div><div id="chat">${(n.ai||[]).map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
     <div class="chips" id="qk">${['解释一下','翻译成中文','这段的论证有什么问题？','和我的研究问题有什么关系？','反方会怎么用这段？'].map(q=>`<button class="chip">${q}</button>`).join('')}</div>
     <textarea id="qIn" placeholder="想问什么…" style="min-height:60px"></textarea>
     <div class="row"><button class="btn pri" id="qGo">发送</button><div style="flex:1"></div><button class="btn" id="qNote">存为笔记</button></div>`);
@@ -1017,7 +1038,7 @@ function showFn(full){
   while(n&&c<5){const t=(n.textContent||'').replace(/\s+/g,' ').trim();if(t)parts.push(t);c++;n=n.nextElementSibling;if(n&&(n.id&&n.tagName==='SPAN'))break;if(parts.join(' ').length>900)break}
   const body=parts.join(' ').replace(/^\[\d+\]\s*/,'');
   const back={k:S.curSec,y:scrollY};
-  sheet('注释',`<div class="quote" style="max-height:none">${esc(body||'（没有找到注释内容）')}</div><div class="row"><button class="btn sm" id="fnGo">在注释页查看</button></div>`);
+  sideSheet('注释',`<div class="quote" style="max-height:none">${esc(body||'（没有找到注释内容）')}</div><div class="row"><button class="btn sm" id="fnGo">在注释页查看</button></div>`);
   $('#fnGo').onclick=()=>{closeSheet();goEl(k,'#'+CSS.escape(id),S.cur);const y=back.y;setBack('← 回到正文',()=>{scrollTo(0,y);$('#arcBack').classList.add('hide')})}}
 
 /* ---------- 术语表 ---------- */
@@ -1035,11 +1056,11 @@ function applyGloss(root){
     if(last<s.length)frag.append(s.slice(last));node.replaceWith(frag)}}
 function rerenderLoaded(){for(const s of S.secs)if(s.dataset.ld){delete s.dataset.ld;loadSec(s)}}
 function glossPop(id){const g=(S.doc.glossary||[]).find(x=>x.id===id);if(!g)return;
-  sheet(g.term,`${g.def?`<div class="msg" style="margin-top:0">${fmt(g.def)}</div>`:'<p class="muted">还没写释义。</p>'}${g.ctx?`<div class="lbl">第一次记下时的语境 · ${locLabel(g)}</div><div class="quote">${esc(g.ctx.slice(0,500))}</div>`:''}
+  sideSheet(g.term,`${g.def?`<div class="msg" style="margin-top:0">${fmt(g.def)}</div>`:'<p class="muted">还没写释义。</p>'}${g.ctx?`<div class="lbl">第一次记下时的语境 · ${locLabel(g)}</div><div class="quote">${esc(g.ctx.slice(0,500))}</div>`:''}
     <div class="row"><button class="btn sm" id="gpE">编辑</button>${g.sec!=null||g.page?'<button class="btn sm" id="gpG">去那一处</button>':''}</div>`);
   $('#gpE').onclick=()=>termSheet(g);if($('#gpG'))$('#gpG').onclick=()=>{closeSheet();goNote(g)}}
 function termSheet(g){
-  sheet(g.id?'术语':'加入术语表',`<div class="lbl">术语</div><input id="gT" value="${esc(g.term)}" placeholder="例：Sozialplan">
+  sideSheet(g.id?'术语':'加入术语表',`<div class="lbl">术语</div><input id="gT" value="${esc(g.term)}" placeholder="例：Sozialplan">
     <div class="lbl">释义</div><textarea id="gD" placeholder="中文译法、在本书里的意思、冠词和复数……">${esc(g.def||'')}</textarea>
     ${g.ctx?`<div class="lbl">原文语境 · ${locLabel(g)}</div><div class="quote">${esc(g.ctx.slice(0,500))}</div>`:''}
     <div class="row"><button class="btn pri" id="gS">保存</button><button class="btn" id="gA">AI 释义</button><div style="flex:1"></div>${g.id?'<button class="btn" id="gX" style="color:var(--accent)">删除</button>':''}</div>`);
@@ -1074,7 +1095,7 @@ const PSEED=[
  ['Können Sie das an einem Beispiel zeigen?','追问','您能举个例子说明吗？'],
 ];
 function phraseSheet(x){
-  sheet(x.id?'表达':'加入表达收集表',`<div class="lbl">表达 / 句型</div><input id="pP" value="${esc(x.phrase)}" placeholder="例：Zwar …, aber …">
+  sideSheet(x.id?'表达':'加入表达收集表',`<div class="lbl">表达 / 句型</div><input id="pP" value="${esc(x.phrase)}" placeholder="例：Zwar …, aber …">
     <div class="lbl">论证功能</div><div class="chips" id="pF">${PFNS.map(f=>`<button class="chip ${x.fn===f?'on':''}">${f}</button>`).join('')}</div>
     <div class="lbl">意思和用法</div><textarea id="pZ" style="min-height:70px" placeholder="中文意思、句型模板、语法要点">${esc(x.zh||'')}</textarea>
     ${x.ex?`<div class="lbl">原文例句${x.src&&x.src.page?' · p.'+x.src.page:''}</div><div class="quote">${esc(x.ex)}</div>`:''}
@@ -1107,7 +1128,7 @@ function citeText(c){return `„${c.quote}“ (${citeRef(c)})`}
 async function copyText(t){try{await navigator.clipboard.writeText(t);toast('已复制')}catch(e){toast('复制失败')}}
 function citeSheet(c){
   const uses=['论据','反驳','背景','金句'];
-  sheet(c.id?'引用':'加入引用库',`<div class="quote">${esc(c.quote)}</div><div class="cref">${esc(citeRef(c))}${(S.doc.biblio||{}).author?'':' · 先在“笔记 → 引用库”里填书目信息'}</div>
+  sideSheet(c.id?'引用':'加入引用库',`<div class="quote">${esc(c.quote)}</div><div class="cref">${esc(citeRef(c))}${(S.doc.biblio||{}).author?'':' · 先在“笔记 → 引用库”里填书目信息'}</div>
     <div class="chips" id="cu">${uses.map(u=>`<button class="chip ${c.use===u?'on':''}">${u}</button>`).join('')}</div>
     <div class="lbl">中文译文（做字幕、写中文稿用）</div><textarea id="cZ" style="min-height:70px">${esc(c.zh||'')}</textarea>
     <div class="lbl">备注</div><textarea id="cN" style="min-height:50px">${esc(c.note||'')}</textarea>
@@ -1153,8 +1174,12 @@ async function importPack(j){
   await dput('docs',d);rerenderLoaded();toast('学习包已导入：'+n.join('、'),4000);qSheet()}
 
 /* ---------- 面板 ---------- */
-function sheet(t,html){$('#arcBack').classList.add('hide');$('#shT').textContent=t;$('#shB').innerHTML=html;$('#shB').onclick=null;$('#sheet').classList.remove('hide');$('#mask').classList.remove('hide');$('#shB').scrollTop=0}
-function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add('hide')}
+function sideSheet(t,html){sheet(t,html,true)}
+function sheet(t,html,side){$('#arcBack').classList.add('hide');side=!!(side&&S.open);
+  const sh=$('#sheet');sh.classList.toggle('side',side);sh.classList.remove('mini');document.body.classList.toggle('has-side',side);$('#shT').textContent=t;$('#shB').innerHTML=html;$('#shB').onclick=null;$('#sheet').classList.remove('hide');$('#mask').classList.toggle('hide',side);$('#shMin').textContent='▾';$('#shB').scrollTop=0}
+function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add('hide');$('#sheet').classList.remove('side','mini');document.body.classList.remove('has-side')}
+$('#shMin').onclick=()=>{const sh=$('#sheet');sh.classList.toggle('mini');$('#shMin').textContent=sh.classList.contains('mini')?'▴':'▾'};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').classList.contains('hide'))closeSheet()});
 $('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
 
 /* ---------- 多设备同步（GitHub 私有仓库） ---------- */
