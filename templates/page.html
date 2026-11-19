@@ -397,6 +397,20 @@ if(saved)unlock(saved,true);
   const[,m,dd]=pageDate.split('-');document.getElementById('staletext').textContent='这还是'+(+m)+'月'+(+dd)+'日的内容，今天的还没生成'}
 })();
 
+/* 抓到了但还没编：提示下一次 Claude 编辑的时间（每小时 23 分检查） */
+(function(){
+  const latest=+document.body.dataset.latest||0;
+  fetch('https://api.github.com/repos/prima-bottle/info-feed/contents/data/raw',{cache:'no-store'}).then(r=>r.ok?r.json():[]).then(fs=>{
+    const ts=fs.map(f=>(f.name.match(/^(\d{4})-(\d\d)-(\d\d)-(\d\d)(\d\d)\.json$/)||null)).filter(Boolean)
+      .map(m=>new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5]).getTime()/1000);
+    const newest=Math.max(0,...ts);if(newest<=latest+60)return;
+    const n=new Date();let next=new Date(n);next.setMinutes(23,0,0);if(next<=n)next.setHours(next.getHours()+1);
+    if(next.getHours()<6)next.setHours(6,23);if(next.getHours()>22){next.setDate(next.getDate()+1);next.setHours(6,23)}
+    const t=new Date(newest*1000),hm=x=>String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');
+    const bar=document.getElementById('stalebar');bar.style.display='flex';bar.querySelector('.fetchbtn').style.display='none';
+    document.getElementById('staletext').textContent=hm(t)+' 已抓到新内容，Claude 会在 '+hm(next)+' 左右编好，到时点 ↻ 刷新'}).catch(()=>{})
+})();
+
 /* 艺术收藏：存在这台手机的浏览器里 */
 (()=>{const K='artFav';let fav={};try{fav=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
  const save=()=>{try{localStorage.setItem(K,JSON.stringify(fav))}catch(e){}};
