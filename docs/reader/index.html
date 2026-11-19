@@ -281,18 +281,21 @@ async function localLLM({system,messages,max=1600,onText}){
   for(const m of messages){if(typeof m.content==='string')msgs.push({role:m.role,content:m.content});
     else msgs.push({role:m.role,content:m.content.map(c=>c.type==='image'?{type:'image_url',image_url:{url:`data:${c.source.media_type};base64,${c.source.data}`}}:{type:'text',text:c.text})})}
   if(nothink){const last=[...msgs].reverse().find(m=>m.role==='user');if(last&&typeof last.content==='string'&&!/\/no_think/.test(last.content))last.content+=' /no_think'}
-  let r;try{r=await fetch(lmBase()+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages:msgs,max_tokens:Math.max(max,400),temperature:0.4,stream:true})})}
+  let r;try{r=await fetch(lmBase()+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages:msgs,max_tokens:Math.max(max,400)+ls.get('lmThinkBudget',3000),temperature:0.4,stream:true,reasoning_effort:'low',chat_template_kwargs:{enable_thinking:false}})})}
   catch(e){throw new Error('连不上本地模型：确认电脑开着、LM Studio 的本地服务器已启动并勾选了 CORS')}
   if(!r.ok){let t=await r.text();throw new Error('本地模型返回 '+r.status+'：'+t.slice(0,200))}
   const clean=t=>t.replace(/<think>[\s\S]*?(<\/think>|$)/g,'').replace(/^\s+/,'');
-  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',raw='',thinking=0;onText&&onText('（本地模型处理中…）');
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',raw='',thinking=0,finish='';onText&&onText('（本地模型处理中…）');
   for(;;){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
     while((i=buf.indexOf('\n'))>=0){const ln=buf.slice(0,i).trim();buf=buf.slice(i+1);if(!ln.startsWith('data:'))continue;const d=ln.slice(5).trim();if(d==='[DONE]')continue;
       let j;try{j=JSON.parse(d)}catch(e){continue}if(j.error)throw new Error('本地模型出错：'+(j.error.message||j.error));
-      const dl=j.choices&&j.choices[0]&&j.choices[0].delta||{};const c=dl.content;
+      const ch=j.choices&&j.choices[0]||{};if(ch.finish_reason)finish=ch.finish_reason;const dl=ch.delta||{};const c=dl.content;
       if(dl.reasoning_content||dl.reasoning){thinking++;if(!raw&&onText&&thinking%20===1)onText('（本地模型思考中…）')}
       if(c){raw+=c;const out=clean(raw);onText&&onText(out||'（本地模型思考中…）')}}}
-  return clean(raw)}
+  const out=clean(raw);
+  if(!out){const why=finish==='length'?'思考太久，用完了输出长度上限':'只输出了思考过程，没有给出答案';
+    throw new Error(`本地模型${why}。可以在 LM Studio 里关掉这个模型的“思考 / Reasoning”，或者换一个不带思考的模型；也可以先切回 Claude。`)}
+  return out}
 function promptText(system,messages){
   const flat=c=>typeof c==='string'?c:c.filter(b=>b.type==='text').map(b=>b.text).join('\n');
   const ms=messages.filter(m=>flat(m.content).trim());
