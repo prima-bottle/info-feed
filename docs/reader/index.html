@@ -265,23 +265,33 @@ const useApp=()=>ls.get('aimode','')==='app'||(!ls.get('key','')&&!['api','local
 const aiMode=()=>ls.get('aimode','')==='local'?'local':useApp()?'app':'api';
 /* 本地模型：LM Studio 的 OpenAI 兼容接口 */
 const lmBase=()=>ls.get('lmUrl','http://localhost:1234/v1').trim().replace(/\/+$/,'');
-async function lmModels(){let r;try{r=await fetch(lmBase()+'/models',{cache:'no-store'})}catch(e){throw new Error('连不上本地模型：确认电脑开着、LM Studio 的本地服务器已启动并勾选了 CORS，地址填得对')}
-  if(!r.ok)throw new Error('本地模型返回 '+r.status);const j=await r.json();return (j.data||[]).map(x=>x.id).filter(id=>!/embed/i.test(id))}
+async function lmModels(full){
+  const root=lmBase().replace(/\/v1$/,'');
+  try{const r=await fetch(root+'/api/v0/models',{cache:'no-store'});if(r.ok){const j=await r.json();
+      const ms=(j.data||[]).filter(x=>!/embed/i.test(x.type||'')&&!/embed/i.test(x.id)).map(x=>({id:x.id,loaded:x.state==='loaded'}));
+      ms.sort((a,b)=>b.loaded-a.loaded);if(ms.length)return full?ms:ms.map(x=>x.id)}}catch(e){}
+  let r;try{r=await fetch(lmBase()+'/models',{cache:'no-store'})}catch(e){throw new Error('连不上本地模型：确认电脑开着、LM Studio 的本地服务器已启动并打开了 CORS，地址和端口填得对')}
+  if(!r.ok)throw new Error('本地模型返回 '+r.status);const j=await r.json();const ms=(j.data||[]).map(x=>x.id).filter(id=>!/embed/i.test(id));
+  return full?ms.map(id=>({id,loaded:null})):ms}
 async function localLLM({system,messages,max=1600,onText}){
-  let model=ls.get('lmModel','');if(!model){const ms=await lmModels();if(!ms.length)throw new Error('LM Studio 里还没有加载模型');model=ms[0]}
-  const sys=(system||'')+(/qwen3/i.test(model)?'\n/no_think':'');
+  let model=ls.get('lmModel','');
+  if(!model){const ms=await lmModels(true);if(!ms.length)throw new Error('LM Studio 里还没有模型');const ld=ms.find(x=>x.loaded);if(!ld&&ms[0].loaded===false)throw new Error('LM Studio 里还没有加载模型：先在“已加载的实例”里加载一个，或者在设置里指定模型');model=(ld||ms[0]).id}
+  const nothink=/qwen3/i.test(model);const sys=(system||'')+(nothink?'\n/no_think':'');
   const msgs=[];if(sys.trim())msgs.push({role:'system',content:sys.trim()});
   for(const m of messages){if(typeof m.content==='string')msgs.push({role:m.role,content:m.content});
     else msgs.push({role:m.role,content:m.content.map(c=>c.type==='image'?{type:'image_url',image_url:{url:`data:${c.source.media_type};base64,${c.source.data}`}}:{type:'text',text:c.text})})}
+  if(nothink){const last=[...msgs].reverse().find(m=>m.role==='user');if(last&&typeof last.content==='string'&&!/\/no_think/.test(last.content))last.content+=' /no_think'}
   let r;try{r=await fetch(lmBase()+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages:msgs,max_tokens:Math.max(max,400),temperature:0.4,stream:true})})}
   catch(e){throw new Error('连不上本地模型：确认电脑开着、LM Studio 的本地服务器已启动并勾选了 CORS')}
   if(!r.ok){let t=await r.text();throw new Error('本地模型返回 '+r.status+'：'+t.slice(0,200))}
   const clean=t=>t.replace(/<think>[\s\S]*?(<\/think>|$)/g,'').replace(/^\s+/,'');
-  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',raw='';
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',raw='',thinking=0;onText&&onText('（本地模型处理中…）');
   for(;;){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
     while((i=buf.indexOf('\n'))>=0){const ln=buf.slice(0,i).trim();buf=buf.slice(i+1);if(!ln.startsWith('data:'))continue;const d=ln.slice(5).trim();if(d==='[DONE]')continue;
-      let j;try{j=JSON.parse(d)}catch(e){continue}const c=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;
-      if(c){raw+=c;const out=clean(raw);onText&&onText(out||'（思考中…）')}}}
+      let j;try{j=JSON.parse(d)}catch(e){continue}if(j.error)throw new Error('本地模型出错：'+(j.error.message||j.error));
+      const dl=j.choices&&j.choices[0]&&j.choices[0].delta||{};const c=dl.content;
+      if(dl.reasoning_content||dl.reasoning){thinking++;if(!raw&&onText&&thinking%20===1)onText('（本地模型思考中…）')}
+      if(c){raw+=c;const out=clean(raw);onText&&onText(out||'（本地模型思考中…）')}}}
   return clean(raw)}
 function promptText(system,messages){
   const flat=c=>typeof c==='string'?c:c.filter(b=>b.type==='text').map(b=>b.text).join('\n');
@@ -813,7 +823,9 @@ $('#bSet').onclick=()=>{
   $('#syOff').onclick=()=>{ls.set('syToken','');$('#syT').value='';syncStatus('');$('#syOut').textContent='已关闭同步（数据仍在仓库里）'};
   const saveLm=()=>{ls.set('lmUrl',$('#lmU').value.trim()||'http://localhost:1234/v1');ls.set('lmModel',$('#lmM').value);ls.set('heavyClaude',$('#lmHeavy').checked)};
   $('#aIn').onchange=()=>$('#lmBox').classList.toggle('hide',$('#aIn').value!=='local');
-  $('#lmDet').onclick=async()=>{saveLm();$('#lmOut').textContent='检测中…';try{const ms=await lmModels();$('#lmM').innerHTML='<option value="">自动（用 LM Studio 当前加载的模型）</option>'+ms.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');$('#lmOut').textContent=ms.length?'找到 '+ms.length+' 个模型':'LM Studio 里还没有加载模型'}catch(e){$('#lmOut').textContent=e.message}};
+  $('#lmDet').onclick=async()=>{saveLm();$('#lmOut').textContent='检测中…';try{const ms=await lmModels(true);const cur=ls.get('lmModel','');
+    $('#lmM').innerHTML='<option value="">自动（用 LM Studio 当前加载的模型）</option>'+ms.map(m=>`<option value="${esc(m.id)}" ${m.id===cur?'selected':''}>${esc(m.id)}${m.loaded?'（已加载）':m.loaded===false?'（未加载）':''}</option>`).join('');
+    const nl=ms.filter(m=>m.loaded).length;$('#lmOut').textContent=ms.length?`找到 ${ms.length} 个模型${ms[0].loaded!==null?`，其中 ${nl} 个已加载`:''}。建议选一个“已加载”的。`:'LM Studio 里还没有模型'}catch(e){$('#lmOut').textContent=e.message}};
   $('#lmTest').onclick=async()=>{saveLm();ls.set('aimode','local');$('#aIn').value='local';$('#lmOut').textContent='连接中…';const t0=Date.now();
     try{await localLLM({max:60,messages:[{role:'user',content:'用中文回复“连接正常”四个字，不要多写。'}],onText:t=>{$('#lmOut').textContent=t}});$('#lmOut').textContent+='（'+((Date.now()-t0)/1000).toFixed(1)+' 秒）'}catch(e){$('#lmOut').textContent=e.message}};
   $('#kSave').onclick=()=>{ls.set('aimode',$('#aIn').value);saveLm();ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);toast('已保存')};
