@@ -383,12 +383,12 @@ async function docMenu(id){
   const d=await dget('docs',id);
   sheet(d.name,`<button class="btn" id="mExp">导出笔记（Markdown）</button>
     <div class="lbl">删除</div><p class="muted" style="font-size:14px">会删掉这本书和它的所有笔记、对谈记录。</p>
-    ${syncOn()&&d.fp?'<label class="row" style="font-size:14px;gap:6px"><input type="checkbox" id="mCloud" style="width:auto"> 同时删除其他设备上的笔记和记录</label>':''}
+    ${syncOn()&&d.fp?'<label class="row" style="font-size:14px;gap:6px"><input type="checkbox" id="mCloud" style="width:auto"> 同时删除云端的文件、笔记和记录（所有设备）</label>':''}
     <div class="row"><button class="btn" id="mDel" style="color:var(--accent)">删除这本书</button></div>`);
   $('#mExp').onclick=()=>exportMd(id);
   let armed=false;$('#mDel').onclick=async e=>{if(!armed){armed=true;e.target.textContent='再点一次确认删除';return}
     for(const n of await notesOf(id))await ddel('notes',n.id);
-    const cloud=$('#mCloud')&&$('#mCloud').checked;if(cloud&&d.fp)addTomb('D|'+d.fp);
+    const cloud=$('#mCloud')&&$('#mCloud').checked;if(cloud&&d.fp){addTomb('D|'+d.fp);deleteRemoteFile(d.fp)}
     await ddel('files',id);await ddel('docs',id);await ddel('chats',id);closeSheet();renderLib();toast(cloud?'已删除，其他设备会在下次同步时删除':'已从这台设备删除');if(cloud)syncNow()}}
 async function addFiles(files){
   for(const f of files){
@@ -775,7 +775,7 @@ $('#bSet').onclick=()=>{
     <div class="lbl" style="margin-top:22px">多设备同步（GitHub 私有仓库）</div>
     <input id="syR" placeholder="仓库，如 prima-bottle/reader-sync" value="${esc(ls.get('syRepo',''))}" autocomplete="off">
     <input id="syT" type="password" placeholder="GitHub 令牌（github_pat_…）" value="${esc(ls.get('syToken',''))}" autocomplete="off" style="margin-top:8px">
-    <p class="muted" style="font-size:13px;margin-top:6px">同步笔记、划线、术语、引用、表达、导读、研究、档案、对话和阅读位置。PDF / EPUB 文件不上传，每台设备各添加一次，按文件内容自动对上。令牌只存在这台设备上。</p>
+    <p class="muted" style="font-size:13px;margin-top:6px">同步书本文件（PDF / EPUB）和笔记、划线、术语、引用、表达、导读、研究、档案、对话、阅读位置。在一台设备上添加的书会自动上传，其他设备的书库里点一下就能下载。单本最大约 95MB。令牌只存在这台设备上。</p>
     <div class="row"><button class="btn pri" id="sySave">保存并同步</button><button class="btn" id="syNow">立即同步</button><button class="btn" id="syOff">关闭</button></div><div id="syOut" class="msg">${esc(ls.get('syMsg',''))}</div>`);
   $('#sySave').onclick=async()=>{const r=$('#syR').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/$/,'');ls.set('syRepo',r);ls.set('syToken',$('#syT').value.trim());$('#syOut').textContent='同步中…';await syncNow(true);$('#syOut').textContent=ls.get('syMsg','')};
   $('#syNow').onclick=async()=>{$('#syOut').textContent='同步中…';await syncNow(true);$('#syOut').textContent=ls.get('syMsg','')};
@@ -1107,7 +1107,7 @@ function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add
 $('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
 
 /* ---------- 多设备同步（GitHub 私有仓库） ---------- */
-const SY={busy:false,again:false,timer:null,applying:false,cache:new Map(),tomb:{},chatUp:{},remote:null};
+const SY={busy:false,again:false,timer:null,applying:false,cache:new Map(),tomb:{},chatUp:{},remote:null,files:{},uploading:false,down:{}};
 const SYNC_META=['study','guides','biblio','tutorLog','page'];
 const SYNC_ARR=['glossary','cites','questions','archives'];
 const syncCfg=()=>({repo:ls.get('syRepo',''),token:ls.get('syToken','')});
@@ -1137,7 +1137,7 @@ async function primeCache(){
 async function ensureFps(){for(const d of await dall('docs')){if(d.fp)continue;const b=await dget('files',d.id);if(!b)continue;d.fp=await fpOf(b);await dputRaw('docs',d);if(S.doc&&S.doc.id===d.id)S.doc.fp=d.fp}}
 async function localSnap(){
   const docs=await dall('docs'),notes=await dall('notes'),id2fp={};for(const d of docs)if(d.fp)id2fp[d.id]=d.fp;
-  const L={at:Date.now(),docs:{},notes:{},chats:{},phrases:{},lines:await getLines(),tomb:{}};
+  const L={at:Date.now(),docs:{},notes:{},chats:{},phrases:{},lines:await getLines(),tomb:{},files:{...SY.files}};
   for(const [k,v] of Object.entries(SY.tomb)){if(k.startsWith('L|')){const [,id,f,...it]=k.split('|');if(id2fp[id])L.tomb[`d|${id2fp[id]}|${f}|${it.join('|')}`]=v}else L.tomb[k]=v}
   const isDef=v=>v==null||v===1||v===''||(Array.isArray(v)&&!v.length)||(typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(x=>!x));
   for(const d of docs){if(!d.fp)continue;const o={meta:{name:d.name,kind:d.kind,pages:d.pages},fup:{...(d.fup||{})},items:{}};
@@ -1163,6 +1163,7 @@ function mergeSnap(L,R){
       if(ub>ua||!(f in a.meta)||(ub===ua&&JSON.stringify(b.meta[f]??'').length>JSON.stringify(a.meta[f]??'').length)){o.meta[f]=b.meta[f];o.fup[f]=ub}}
     for(const f of SYNC_ARR)o.items[f]=mergeMap(a.items[f],b.items[f],tomb,`d|${fp}|${f}|`);
     M.docs[fp]=o}
+  M.files={...(R.files||{}),...(L.files||{})};for(const fp of Object.keys(M.files))if(!M.docs[fp]&&tomb['D|'+fp])delete M.files[fp];
   for(const fp of new Set([...Object.keys(L.chats),...Object.keys(R.chats)])){if(!M.docs[fp])continue;const a=L.chats[fp],b=R.chats[fp];M.chats[fp]=!a?b:!b?a:(b.up>a.up?b:a)}
   for(const [id,n] of Object.entries(M.notes))if(!M.docs[n.fp])delete M.notes[id];
   return M}
@@ -1188,6 +1189,7 @@ async function applySnap(M,L){
     await dputRaw('meta',[...new Set([...(M.lines||[]),...(await getLines())])],'lines');
     const fresh={};for(const [k,v] of Object.entries(SY.tomb))if(v>=L.at)fresh[k]=v;
     SY.tomb={...M.tomb,...fresh};await dputRaw('meta',SY.tomb,'tomb');
+    SY.files={...(M.files||{})};await dputRaw('meta',SY.files,'rfiles');
     SY.remote=M}
   finally{SY.applying=false}
   await primeCache();
@@ -1223,7 +1225,8 @@ async function syncNow(manual){
   try{await ensureFps();
     for(let k=0;k<4;k++){const R=await ghGet();const L=await localSnap();const M=mergeSnap(L,R.data);
       if(!sameData(M,R.data)){const sha=await ghPut(M,R.sha);if(sha===null)continue}
-      await applySnap(M,L);const t=new Date();syncStatus('✓ 已同步 '+t.getHours()+':'+String(t.getMinutes()).padStart(2,'0'));if(manual)toast('同步完成');return}
+      await applySnap(M,L);const t=new Date();syncStatus('✓ 已同步 '+t.getHours()+':'+String(t.getMinutes()).padStart(2,'0'));if(manual)toast('同步完成');
+      uploadMissing();return}
     throw new Error('和其他设备同时写入，稍后会自动重试')}
   catch(e){syncStatus('⚠ 同步失败');ls.set('syMsg','同步失败：'+e.message);if(manual)toast('同步失败：'+e.message,6000)}
   finally{SY.busy=false;if(SY.again){SY.again=false;setTimeout(()=>syncNow(),1500)}}}
@@ -1235,10 +1238,53 @@ function renderRemote(local){
   const have=new Set(local.map(d=>d.fp).filter(Boolean));const rest=Object.entries(M.docs).filter(([fp])=>!have.has(fp));
   if(!rest.length){el.innerHTML='';return}
   const cnt=fp=>Object.values(M.notes).filter(n=>n.fp===fp).length;
-  el.innerHTML='<div class="lbl" style="margin-top:18px">其他设备上的书（在这台设备上添加同一个文件，笔记就会自动出现）</div>'+rest.map(([fp,o])=>`<div class="doc" style="opacity:.7"><div class="main"><h2>${esc(o.meta.name||'未命名')}</h2><div class="meta">${o.meta.kind==='epub'?'EPUB · ':''}${cnt(fp)} 条笔记${o.meta.page?' · 读到 p.'+o.meta.page:''}</div></div></div>`).join('')}
+  const mb=n=>(n/1048576).toFixed(n>10485760?0:1)+' MB';
+  el.innerHTML='<div class="lbl" style="margin-top:18px">云端的书（点一下下载到这台设备）</div>'+rest.map(([fp,o])=>{const f=(M.files||{})[fp];const st=SY.down[fp];
+    return `<div class="doc rdoc" data-fp="${fp}" style="${f?'':'opacity:.6'}"><div class="main"><h2>${esc(o.meta.name||'未命名')}</h2><div class="meta">${o.meta.kind==='epub'?'EPUB · ':''}${cnt(fp)} 条笔记${o.meta.page>1?' · 读到 p.'+o.meta.page:''}${f?' · '+mb(f.size):''}</div>
+      <div class="meta" style="margin-top:4px;color:var(--blue)">${st||(f?'⬇ 点击下载':'文件还没上传：在添加它的那台设备上打开阅读器，会自动上传')}</div></div></div>`}).join('');
+  el.querySelectorAll('.rdoc').forEach(x=>x.onclick=()=>downloadRemote(x.dataset.fp))}
+async function gh(path,opt={}){const {repo,token}=syncCfg();
+  return fetch(`${GH}/repos/${repo}${path}`,{...opt,cache:'no-store',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opt.body?{'Content-Type':'application/json'}:{}),...(opt.headers||{})}})}
+const blobB64=b=>new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=()=>rej(fr.error);fr.readAsDataURL(b)});
+async function uploadFile(d){
+  const blob=await dget('files',d.id);if(!blob)return null;
+  if(blob.size>95*1048576)throw new Error('《'+d.name.slice(0,20)+'》超过 95MB，GitHub 存不下');
+  const ext=d.kind==='epub'?'epub':'pdf',path=`files/${d.fp}.${ext}`;
+  let r=await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:await blobB64(blob),encoding:'base64'})});
+  if(r.status===403)throw new Error('令牌没有写入权限');if(!r.ok)throw new Error('上传文件失败（'+r.status+'）');
+  const bsha=(await r.json()).sha;
+  for(let k=0;k<5;k++){
+    r=await gh('');const br=(await r.json()).default_branch||'main';
+    r=await gh(`/git/ref/heads/${br}`);if(!r.ok)throw new Error('仓库还没初始化，先完成一次同步');const head=(await r.json()).object.sha;
+    r=await gh(`/git/commits/${head}`);const baseTree=(await r.json()).tree.sha;
+    r=await gh('/git/trees',{method:'POST',body:JSON.stringify({base_tree:baseTree,tree:[{path,mode:'100644',type:'blob',sha:bsha}]})});if(!r.ok)throw new Error('上传失败（tree '+r.status+'）');const tree=(await r.json()).sha;
+    r=await gh('/git/commits',{method:'POST',body:JSON.stringify({message:'上传 '+d.name.slice(0,60),tree,parents:[head]})});if(!r.ok)throw new Error('上传失败（commit '+r.status+'）');const commit=(await r.json()).sha;
+    r=await gh(`/git/refs/heads/${br}`,{method:'PATCH',body:JSON.stringify({sha:commit})});
+    if(r.ok)return {sha:bsha,path,name:d.name,file:d.file||'',kind:d.kind||'pdf',size:blob.size,at:Date.now()};
+    if(r.status!==422&&r.status!==409)throw new Error('上传失败（ref '+r.status+'）');
+    await new Promise(z=>setTimeout(z,800))}
+  throw new Error('上传时和其他设备冲突，稍后自动重试')}
+async function uploadMissing(){
+  if(SY.uploading||!syncOn())return;SY.uploading=true;let did=false;
+  try{for(const d of await dall('docs')){if(!d.fp||SY.files[d.fp]||(SY.remote&&(SY.remote.files||{})[d.fp]))continue;
+      syncStatus('⟳ 上传《'+d.name.slice(0,12)+'》');
+      const info=await uploadFile(d);if(info){SY.files[d.fp]=info;await dputRaw('meta',SY.files,'rfiles');did=true}}}
+  catch(e){syncStatus('⚠ 上传失败');ls.set('syMsg','上传书本失败：'+e.message)}
+  finally{SY.uploading=false}
+  if(did)syncNow()}
+async function downloadRemote(fp){
+  const M=SY.remote;const f=M&&(M.files||{})[fp];if(!f){toast('这本书的文件还没上传，在添加它的设备上打开阅读器就会自动上传',5000);return}
+  if(SY.down[fp]&&!SY.down[fp].startsWith('⚠'))return;SY.down[fp]='⟳ 下载中…';renderLib();
+  try{const r=await gh(`/git/blobs/${f.sha}`,{headers:{Accept:'application/vnd.github.raw+json'}});if(!r.ok)throw new Error('下载失败（'+r.status+'）');
+    const b=await r.blob();const name=f.file||((f.name||'book')+'.'+(f.kind||'pdf'));
+    await addFiles([new File([b],name,{type:f.kind==='epub'?'application/epub+zip':'application/pdf'})]);delete SY.down[fp];toast('已下载《'+(f.name||'').slice(0,20)+'》')}
+  catch(e){SY.down[fp]='⚠ '+e.message+'（点击重试）'}
+  renderLib()}
+async function deleteRemoteFile(fp){const f=SY.files[fp]||(SY.remote&&(SY.remote.files||{})[fp]);if(!f)return;
+  try{const r=await gh(`/contents/${f.path}`,{method:'DELETE',body:JSON.stringify({message:'删除 '+(f.name||'').slice(0,60),sha:f.sha})});if(r.ok||r.status===404){delete SY.files[fp];await dputRaw('meta',SY.files,'rfiles')}}catch(e){}}
 
 /* ---------- 启动 ---------- */
-(async()=>{db=await openDB();await loadPhr();SY.tomb=(await dget('meta','tomb'))||{};SY.chatUp=(await dget('meta','chatUp'))||{};await primeCache();renderLib();
+(async()=>{db=await openDB();await loadPhr();SY.tomb=(await dget('meta','tomb'))||{};SY.chatUp=(await dget('meta','chatUp'))||{};SY.files=(await dget('meta','rfiles'))||{};await primeCache();renderLib();
   if(syncOn()){syncStatus(ls.get('syMsg','').startsWith('同步失败')?'⚠ 同步失败':'⟳');syncNow()}
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})})();
 </script>
