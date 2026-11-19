@@ -261,7 +261,28 @@ async function getLines(){return (await dget('meta','lines'))||['YouTube频道',
 /* ---------- Claude ---------- */
 const MODELS=[['claude-sonnet-5-5','Sonnet 5.5（推荐）'],['claude-opus-5-5','Opus 5.5（更强，更贵）'],['claude-haiku-5-5','Haiku 5.5（快，便宜）']];
 /* 不用 API 时：把提问交给手机上的 Claude App（走订阅），回答可以粘贴回来存进笔记 */
-const useApp=()=>ls.get('aimode','')==='app'||(!ls.get('key','')&&ls.get('aimode','')!=='api');
+const useApp=()=>ls.get('aimode','')==='app'||(!ls.get('key','')&&!['api','local'].includes(ls.get('aimode','')));
+const aiMode=()=>ls.get('aimode','')==='local'?'local':useApp()?'app':'api';
+/* 本地模型：LM Studio 的 OpenAI 兼容接口 */
+const lmBase=()=>ls.get('lmUrl','http://localhost:1234/v1').trim().replace(/\/+$/,'');
+async function lmModels(){let r;try{r=await fetch(lmBase()+'/models',{cache:'no-store'})}catch(e){throw new Error('连不上本地模型：确认电脑开着、LM Studio 的本地服务器已启动并勾选了 CORS，地址填得对')}
+  if(!r.ok)throw new Error('本地模型返回 '+r.status);const j=await r.json();return (j.data||[]).map(x=>x.id).filter(id=>!/embed/i.test(id))}
+async function localLLM({system,messages,max=1600,onText}){
+  let model=ls.get('lmModel','');if(!model){const ms=await lmModels();if(!ms.length)throw new Error('LM Studio 里还没有加载模型');model=ms[0]}
+  const sys=(system||'')+(/qwen3/i.test(model)?'\n/no_think':'');
+  const msgs=[];if(sys.trim())msgs.push({role:'system',content:sys.trim()});
+  for(const m of messages){if(typeof m.content==='string')msgs.push({role:m.role,content:m.content});
+    else msgs.push({role:m.role,content:m.content.map(c=>c.type==='image'?{type:'image_url',image_url:{url:`data:${c.source.media_type};base64,${c.source.data}`}}:{type:'text',text:c.text})})}
+  let r;try{r=await fetch(lmBase()+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages:msgs,max_tokens:Math.max(max,400),temperature:0.4,stream:true})})}
+  catch(e){throw new Error('连不上本地模型：确认电脑开着、LM Studio 的本地服务器已启动并勾选了 CORS')}
+  if(!r.ok){let t=await r.text();throw new Error('本地模型返回 '+r.status+'：'+t.slice(0,200))}
+  const clean=t=>t.replace(/<think>[\s\S]*?(<\/think>|$)/g,'').replace(/^\s+/,'');
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',raw='';
+  for(;;){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let i;
+    while((i=buf.indexOf('\n'))>=0){const ln=buf.slice(0,i).trim();buf=buf.slice(i+1);if(!ln.startsWith('data:'))continue;const d=ln.slice(5).trim();if(d==='[DONE]')continue;
+      let j;try{j=JSON.parse(d)}catch(e){continue}const c=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;
+      if(c){raw+=c;const out=clean(raw);onText&&onText(out||'（思考中…）')}}}
+  return clean(raw)}
 function promptText(system,messages){
   const flat=c=>typeof c==='string'?c:c.filter(b=>b.type==='text').map(b=>b.text).join('\n');
   const ms=messages.filter(m=>flat(m.content).trim());
@@ -296,8 +317,11 @@ function claudeApp({system,messages}){
     d.querySelector('#hOk').onclick=()=>{const v=d.querySelector('#hAns').value.trim();if(!v){toast('还没粘贴回答');return}close();res(v)};
     d.querySelector('#hX').onclick=()=>{close();rej(new Error('已交给 Claude App，没有保存回答'))};
   })}
-async function claude({system,messages,max=1600,onText}){
-  if(useApp()){const out=await claudeApp({system,messages});onText&&onText(out);return out}
+async function claude(o){const {system,messages,max=1600,onText}=o;
+  if(aiMode()==='local'){const heavy=o.task==='tutor'||o.task==='guide';
+    if(!(heavy&&ls.get('heavyClaude',true)))return localLLM(o);
+    if(!ls.get('key','')){const out=await claudeApp({system,messages});onText&&onText(out);return out}}
+  else if(useApp()){const out=await claudeApp({system,messages});onText&&onText(out);return out}
   const key=ls.get('key','');if(!key)throw new Error('还没有填 Claude API 密钥：回到书库点右上角 ⚙︎ 设置');
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:ls.get('model',MODELS[0][0]),max_tokens:max,system,messages,stream:true})});
@@ -708,7 +732,7 @@ async function studySheet(){
   $('#sSave').onclick=async()=>{await save();toast('已保存')};
   $('#sGuide').onclick=async()=>{await save();const btn=$('#sGuide');btn.disabled=true;const out=$('#gOut');out.className='guide';out.textContent='正在读…';
     const from=S.cur;let txt='',to=from;for(let p=from;p<=S.doc.pages&&p<from+12&&txt.length<24000;p++){txt+=`\n[p.${p}]\n`+await pageText(p);to=p}
-    try{const t=await claude({max:1800,system:`你是牛津导师制里的导师，学生在读《${S.doc.name}》。\n${studyBlock()}\n用中文。`,
+    try{const t=await claude({task:'guide',max:1800,system:`你是牛津导师制里的导师，学生在读《${S.doc.name}》。\n${studyBlock()}\n用中文。`,
       messages:[{role:'user',content:`下面是 p.${from}–${to} 的原文。请给我这一段的导读：\n1. 这一段在讲什么（2–3 句）；\n2. 它和我的研究问题、立场是什么关系，哪里可能帮我，哪里可能打我；\n3. 3–5 个导读问题，每个标出处页码；\n4. 阅读时要警惕的地方（论证跳跃、证据可疑、概念含糊等）。\n不要替我回答这些问题。\n\n${txt}`}],onText:x=>{out.innerHTML=fmt(x)}});
       S.doc.guides=S.doc.guides||[];S.doc.guides.push({from,to,text:t,at:Date.now()});await dput('docs',S.doc)}
     catch(e){out.className='msg e';out.textContent=e.message}btn.disabled=false};
@@ -725,7 +749,7 @@ async function tutorSheet(){
   const send=async q=>{if(!q.trim())return;if(!chat.length)box.innerHTML='';
     chat.push({role:'user',content:q});box.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div><div class="msg a">…</div>`);
     const out=box.lastElementChild;out.scrollIntoView({block:'nearest'});$('#tGo').disabled=true;
-    try{const a=await claude({system:sys,max:1500,messages:chat.map(m=>({role:m.role,content:m.content})),onText:t=>{out.innerHTML=fmt(t)}});chat.push({role:'assistant',content:a});await dput('chats',chat,S.doc.id)}
+    try{const a=await claude({task:'tutor',system:sys,max:1500,messages:chat.map(m=>({role:m.role,content:m.content})),onText:t=>{out.innerHTML=fmt(t)}});chat.push({role:'assistant',content:a});await dput('chats',chat,S.doc.id)}
     catch(e){chat.pop();out.className='msg e';out.textContent=e.message}$('#tGo').disabled=false};
   $('#tGo').onclick=()=>{const q=$('#tIn').value;$('#tIn').value='';send(q)};
   $('#tk').onclick=async e=>{const b=e.target.closest('.chip');if(!b)return;
@@ -766,8 +790,15 @@ $('#restore').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(
 
 /* ---------- 设置 ---------- */
 $('#bSet').onclick=()=>{
-  sheet('设置',`<div class="lbl">AI 调用方式</div><select id="aIn"><option value="app" ${useApp()?'selected':''}>Claude App（用订阅，不花 API）</option><option value="api" ${useApp()?'':'selected'}>API 密钥（结果直接回到阅读器）</option></select>
+  const md=aiMode(),lmM=ls.get('lmModel','');
+  sheet('设置',`<div class="lbl">AI 调用方式</div><select id="aIn"><option value="app" ${md==='app'?'selected':''}>Claude App（用订阅，不花 API）</option><option value="api" ${md==='api'?'selected':''}>API 密钥（结果直接回到阅读器）</option><option value="local" ${md==='local'?'selected':''}>本地模型（LM Studio，在自己电脑上跑）</option></select>
     <p class="muted" style="font-size:13px;margin-top:6px">选 Claude App 时，问题会通过分享菜单交给手机上的 Claude，回答可以粘贴回来保存。</p>
+    <div id="lmBox" class="${md==='local'?'':'hide'}" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px">
+      <div class="lbl" style="margin-top:0">本地模型地址</div><input id="lmU" value="${esc(ls.get('lmUrl','http://localhost:1234/v1'))}" autocomplete="off">
+      <p class="muted" style="font-size:13px;margin-top:6px">在跑 LM Studio 的那台电脑上：保持 http://localhost:1234/v1。在手机、iPad 上：填 Tailscale 给电脑的 https 地址，后面加 /v1。</p>
+      <div class="lbl">模型</div><div class="row" style="margin-top:0"><select id="lmM"><option value="">自动（用 LM Studio 当前加载的模型）</option>${lmM?`<option value="${esc(lmM)}" selected>${esc(lmM)}</option>`:''}</select><button class="btn sm" id="lmDet">检测</button></div>
+      <label class="row" style="font-size:14px;gap:6px"><input type="checkbox" id="lmHeavy" style="width:auto" ${ls.get('heavyClaude',true)?'checked':''}> 导读和导师对谈仍用 Claude（本地小模型做这两件事效果明显差）</label>
+      <div class="row"><button class="btn" id="lmTest">测试本地模型</button></div><div id="lmOut" class="msg"></div></div>
     <div class="lbl">Claude API 密钥</div><input id="kIn" type="password" placeholder="sk-ant-…" value="${esc(ls.get('key',''))}" autocomplete="off">
     <p class="muted" style="font-size:13px;margin-top:6px">密钥只保存在这台设备的浏览器里，不会上传到仓库。AI 请求从手机直接发给 Anthropic。</p>
     <div class="lbl">模型</div><select id="mIn">${MODELS.map(([k,v])=>`<option value="${k}" ${ls.get('model',MODELS[0][0])===k?'selected':''}>${v}</option>`).join('')}</select>
@@ -780,7 +811,12 @@ $('#bSet').onclick=()=>{
   $('#sySave').onclick=async()=>{const r=$('#syR').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/$/,'');ls.set('syRepo',r);ls.set('syToken',$('#syT').value.trim());$('#syOut').textContent='同步中…';await syncNow(true);$('#syOut').textContent=ls.get('syMsg','')};
   $('#syNow').onclick=async()=>{$('#syOut').textContent='同步中…';await syncNow(true);$('#syOut').textContent=ls.get('syMsg','')};
   $('#syOff').onclick=()=>{ls.set('syToken','');$('#syT').value='';syncStatus('');$('#syOut').textContent='已关闭同步（数据仍在仓库里）'};
-  $('#kSave').onclick=()=>{ls.set('aimode',$('#aIn').value);ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);toast('已保存')};
+  const saveLm=()=>{ls.set('lmUrl',$('#lmU').value.trim()||'http://localhost:1234/v1');ls.set('lmModel',$('#lmM').value);ls.set('heavyClaude',$('#lmHeavy').checked)};
+  $('#aIn').onchange=()=>$('#lmBox').classList.toggle('hide',$('#aIn').value!=='local');
+  $('#lmDet').onclick=async()=>{saveLm();$('#lmOut').textContent='检测中…';try{const ms=await lmModels();$('#lmM').innerHTML='<option value="">自动（用 LM Studio 当前加载的模型）</option>'+ms.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');$('#lmOut').textContent=ms.length?'找到 '+ms.length+' 个模型':'LM Studio 里还没有加载模型'}catch(e){$('#lmOut').textContent=e.message}};
+  $('#lmTest').onclick=async()=>{saveLm();ls.set('aimode','local');$('#aIn').value='local';$('#lmOut').textContent='连接中…';const t0=Date.now();
+    try{await localLLM({max:60,messages:[{role:'user',content:'用中文回复“连接正常”四个字，不要多写。'}],onText:t=>{$('#lmOut').textContent=t}});$('#lmOut').textContent+='（'+((Date.now()-t0)/1000).toFixed(1)+' 秒）'}catch(e){$('#lmOut').textContent=e.message}};
+  $('#kSave').onclick=()=>{ls.set('aimode',$('#aIn').value);saveLm();ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);toast('已保存')};
   $('#kTest').onclick=async()=>{ls.set('aimode','api');$('#aIn').value='api';ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);$('#kOut').textContent='连接中…';
     try{await claude({max:30,messages:[{role:'user',content:'回复“连接正常”四个字。'}],onText:t=>{$('#kOut').textContent=t}})}catch(e){$('#kOut').textContent=e.message}}};
 
