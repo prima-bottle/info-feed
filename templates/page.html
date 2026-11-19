@@ -389,7 +389,7 @@ if(saved)unlock(saved,true);
  check(false)})();
 /* 抓取：开一个预填好的 Issue，点"Submit"后约 3 分钟出新内容 */
 (()=>{const go=()=>{const t=new Date();const stamp=t.getMonth()+1+'/'+t.getDate()+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
-  window.open('https://github.com/prima-bottle/info-feed/issues/new?title='+encodeURIComponent('抓取 '+stamp)+'&body='+encodeURIComponent('点 Submit 后大约 3 分钟出新内容，回到信息台点 ↻ 刷新。'),'_blank')};
+  window.open('https://github.com/prima-bottle/info-feed/issues/new?title='+encodeURIComponent('抓取 '+stamp)+'&body='+encodeURIComponent('点 Submit 后几分钟内抓好；Claude 每小时 23 分检查一次，编好后回到信息台点 ↻ 刷新。'),'_blank')};
  document.getElementById('fetchNow').onclick=go;document.querySelectorAll('.fetchbtn').forEach(b=>b.onclick=go);
  const d=new Date(),today=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
  const pageDate=document.body.dataset.date;
