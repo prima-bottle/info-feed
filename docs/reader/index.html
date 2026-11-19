@@ -178,11 +178,13 @@ details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);
 <div id="lib">
   <header>
     <h1>阅读器</h1>
+    <button class="btn sm hide" id="syncSt" title="立即同步"></button>
     <a class="btn sm" href="../">← 信息台</a>
     <button class="ib" id="bSet" title="设置">⚙︎</button>
   </header>
   <label class="drop" id="drop"><input type="file" id="file" accept="application/pdf,.pdf,application/epub+zip,.epub" multiple hidden>＋ 添加 PDF 或 EPUB<br><small>文件只存在这台设备上</small></label>
   <div id="docs"></div>
+  <div id="rdocs"></div>
   <div class="row" style="justify-content:center;margin-top:24px;flex-wrap:wrap">
     <button class="btn sm" id="bBackup">备份笔记</button>
     <label class="btn sm">恢复备份<input type="file" id="restore" accept=".json,application/json" hidden></label>
@@ -249,7 +251,8 @@ function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('reader'
   r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 const st=(s,m='readonly')=>db.transaction(s,m).objectStore(s);
 const dget=(s,k)=>P(st(s).get(k));
-const dput=(s,v,k)=>P(k===undefined?st(s,'readwrite').put(v):st(s,'readwrite').put(v,k));
+const dputRaw=(s,v,k)=>P(k===undefined?st(s,'readwrite').put(v):st(s,'readwrite').put(v,k));
+async function dput(s,v,k){try{stamp(s,v,k)}catch(e){console.warn(e)}const r=await dputRaw(s,v,k);if(s==='docs'||s==='notes'||s==='chats'||(s==='meta'&&(k==='phrases'||k==='lines')))syncSoon();return r}
 const ddel=(s,k)=>P(st(s,'readwrite').delete(k));
 const dall=s=>P(st(s).getAll());
 const notesOf=id=>P(st('notes').index('doc').getAll(id));
@@ -367,8 +370,8 @@ const S={doc:null,pdf:null,mode:'rf',zoom:1,paras:new Map(),boiler:new Set(),sec
 /* ---------- 书库 ---------- */
 async function renderLib(){
   const docs=(await dall('docs')).sort((a,b)=>(b.opened||b.added)-(a.opened||a.added));
-  const el=$('#docs');
-  if(!docs.length){el.innerHTML='<div class="empty">还没有书。点上面添加一份 PDF。</div>';return}
+  const el=$('#docs');renderRemote(docs);
+  if(!docs.length){el.innerHTML='<div class="empty">还没有书。点上面添加一份 PDF 或 EPUB。</div>';return}
   el.innerHTML=docs.map(d=>`<div class="doc" data-id="${d.id}"><div class="main"><h2>${esc(d.name)}</h2>
     <div class="meta">${d.kind==='epub'?'EPUB · ':''}${d.pages} 页 · 读到 p.${d.page||1}${d.study&&d.study.line?' · '+esc(d.study.line):''}</div>
     ${d.study&&d.study.q?`<div class="q">${esc(d.study.q)}</div>`:''}
@@ -380,11 +383,13 @@ async function docMenu(id){
   const d=await dget('docs',id);
   sheet(d.name,`<button class="btn" id="mExp">导出笔记（Markdown）</button>
     <div class="lbl">删除</div><p class="muted" style="font-size:14px">会删掉这本书和它的所有笔记、对谈记录。</p>
+    ${syncOn()&&d.fp?'<label class="row" style="font-size:14px;gap:6px"><input type="checkbox" id="mCloud" style="width:auto"> 同时删除其他设备上的笔记和记录</label>':''}
     <div class="row"><button class="btn" id="mDel" style="color:var(--accent)">删除这本书</button></div>`);
   $('#mExp').onclick=()=>exportMd(id);
   let armed=false;$('#mDel').onclick=async e=>{if(!armed){armed=true;e.target.textContent='再点一次确认删除';return}
     for(const n of await notesOf(id))await ddel('notes',n.id);
-    await ddel('files',id);await ddel('docs',id);await ddel('chats',id);closeSheet();renderLib();toast('已删除')}}
+    const cloud=$('#mCloud')&&$('#mCloud').checked;if(cloud&&d.fp)addTomb('D|'+d.fp);
+    await ddel('files',id);await ddel('docs',id);await ddel('chats',id);closeSheet();renderLib();toast(cloud?'已删除，其他设备会在下次同步时删除':'已从这台设备删除');if(cloud)syncNow()}}
 async function addFiles(files){
   for(const f of files){
     const isE=/epub/i.test(f.type)||/\.epub$/i.test(f.name);
@@ -394,17 +399,17 @@ async function addFiles(files){
     toast('正在添加：'+f.name,4000);
     if(isE){try{const E=await epubOpen(f);const X=await epubSections(E);
         await dput('files',new Blob([await f.arrayBuffer()],{type:'application/epub+zip'}),id);
-        await dput('docs',{id,kind:'epub',name:E.title||f.name.replace(/\.epub$/i,''),file:f.name,pages:X.pages,added:Date.now(),page:X.paged?(X.firstPg||1):1,study:{q:'',side:'',line:''},guides:[],
+        await dput('docs',{id,fp:await fpOf(f),kind:'epub',name:E.title||f.name.replace(/\.epub$/i,''),file:f.name,pages:X.pages,added:Date.now(),page:X.paged?(X.firstPg||1):1,study:{q:'',side:'',line:''},guides:[],
           biblio:{author:E.author,year:(E.date||'').slice(0,4),title:E.title,publisher:E.publisher,place:''}})}
       catch(e){toast('打不开这个 EPUB：'+e.message,4000)}continue}
     try{const buf=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf.slice(0),...PDFOPT}).promise;
       let name=f.name.replace(/\.pdf$/i,'');try{const m=await pdf.getMetadata();const t=m&&m.info&&m.info.Title;if(t&&t.trim().length>1&&!/^untitled|^microsoft/i.test(t))name=t.trim()}catch(e){}
       await dput('files',new Blob([buf],{type:'application/pdf'}),id);
       let au='';try{const m=await pdf.getMetadata();au=(m&&m.info&&m.info.Author)||''}catch(e){}
-      await dput('docs',{id,kind:'pdf',name,file:f.name,pages:pdf.numPages,added:Date.now(),page:1,mode:'rf',study:{q:'',side:'',line:''},guides:[],biblio:{author:au,year:'',title:name,publisher:'',place:''}});
+      await dput('docs',{id,fp:await fpOf(f),kind:'pdf',name,file:f.name,pages:pdf.numPages,added:Date.now(),page:1,mode:'rf',study:{q:'',side:'',line:''},guides:[],biblio:{author:au,year:'',title:name,publisher:'',place:''}});
       pdf.destroy()}catch(e){toast('打不开这个 PDF：'+e.message,4000)}}
   try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
-  renderLib()}
+  renderLib();if(syncOn())syncNow()}
 $('#file').onchange=e=>{addFiles([...e.target.files]);e.target.value=''};
 ['dragover','drop'].forEach(t=>document.addEventListener(t,e=>{e.preventDefault();if(t==='drop'&&!$('#lib').classList.contains('hide'))addFiles([...e.dataTransfer.files])}));
 
@@ -564,7 +569,7 @@ async function newNote(text,tag,fn){const sel=S.sel;const n={...selNote(sel),id:
   await saveNote(n);return n}
 async function saveNote(n){if(!n.id)n.id=uid();if(!n.at)n.at=Date.now();await dput('notes',n);
   const i=S.notes.findIndex(x=>x.id===n.id);if(i>=0)S.notes[i]=n;else S.notes.push(n);refreshFor(n)}
-async function removeNote(n){await ddel('notes',n.id);S.notes=S.notes.filter(x=>x.id!==n.id);refreshFor(n)}
+async function removeNote(n){await ddel('notes',n.id);addTomb('n|'+n.id);syncSoon();S.notes=S.notes.filter(x=>x.id!==n.id);refreshFor(n)}
 function refreshFor(n){if(isEp()){const s=S.secs[n.sec];if(!s)return;const b=s.querySelector('.body');if(!b.querySelector('.rf'))return;b.querySelectorAll('mark').forEach(m=>m.replaceWith(...m.childNodes));b.normalize();paintMarks(b,n.sec);return}refreshPage(n.page)}
 function refreshPage(p){const s=S.secs[p-1];if(!s)return;const b=s.querySelector('.body');if(b.querySelector('.rf p:not(.none)')){b.querySelectorAll('mark').forEach(m=>m.replaceWith(...m.childNodes));b.normalize();paintMarks(b,p)}}
 function paintMarks(b,p){
@@ -766,7 +771,15 @@ $('#bSet').onclick=()=>{
     <div class="lbl">Claude API 密钥</div><input id="kIn" type="password" placeholder="sk-ant-…" value="${esc(ls.get('key',''))}" autocomplete="off">
     <p class="muted" style="font-size:13px;margin-top:6px">密钥只保存在这台设备的浏览器里，不会上传到仓库。AI 请求从手机直接发给 Anthropic。</p>
     <div class="lbl">模型</div><select id="mIn">${MODELS.map(([k,v])=>`<option value="${k}" ${ls.get('model',MODELS[0][0])===k?'selected':''}>${v}</option>`).join('')}</select>
-    <div class="row"><button class="btn pri" id="kSave">保存</button><button class="btn" id="kTest">测试连接</button></div><div id="kOut" class="msg"></div>`);
+    <div class="row"><button class="btn pri" id="kSave">保存</button><button class="btn" id="kTest">测试连接</button></div><div id="kOut" class="msg"></div>
+    <div class="lbl" style="margin-top:22px">多设备同步（GitHub 私有仓库）</div>
+    <input id="syR" placeholder="仓库，如 prima-bottle/reader-sync" value="${esc(ls.get('syRepo',''))}" autocomplete="off">
+    <input id="syT" type="password" placeholder="GitHub 令牌（github_pat_…）" value="${esc(ls.get('syToken',''))}" autocomplete="off" style="margin-top:8px">
+    <p class="muted" style="font-size:13px;margin-top:6px">同步笔记、划线、术语、引用、表达、导读、研究、档案、对话和阅读位置。PDF / EPUB 文件不上传，每台设备各添加一次，按文件内容自动对上。令牌只存在这台设备上。</p>
+    <div class="row"><button class="btn pri" id="sySave">保存并同步</button><button class="btn" id="syNow">立即同步</button><button class="btn" id="syOff">关闭</button></div><div id="syOut" class="msg">${esc(ls.get('syMsg',''))}</div>`);
+  $('#sySave').onclick=async()=>{const r=$('#syR').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/$/,'');ls.set('syRepo',r);ls.set('syToken',$('#syT').value.trim());$('#syOut').textContent='同步中…';await syncNow(true);$('#syOut').textContent=ls.get('syMsg','')};
+  $('#syNow').onclick=async()=>{$('#syOut').textContent='同步中…';await syncNow(true);$('#syOut').textContent=ls.get('syMsg','')};
+  $('#syOff').onclick=()=>{ls.set('syToken','');$('#syT').value='';syncStatus('');$('#syOut').textContent='已关闭同步（数据仍在仓库里）'};
   $('#kSave').onclick=()=>{ls.set('aimode',$('#aIn').value);ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);toast('已保存')};
   $('#kTest').onclick=async()=>{ls.set('aimode','api');$('#aIn').value='api';ls.set('key',$('#kIn').value.trim());ls.set('model',$('#mIn').value);$('#kOut').textContent='连接中…';
     try{await claude({max:30,messages:[{role:'user',content:'回复“连接正常”四个字。'}],onText:t=>{$('#kOut').textContent=t}})}catch(e){$('#kOut').textContent=e.message}}};
@@ -1093,8 +1106,140 @@ function sheet(t,html){$('#arcBack').classList.add('hide');$('#shT').textContent
 function closeSheet(){$('#sheet').classList.add('hide');$('#mask').classList.add('hide')}
 $('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
 
+/* ---------- 多设备同步（GitHub 私有仓库） ---------- */
+const SY={busy:false,again:false,timer:null,applying:false,cache:new Map(),tomb:{},chatUp:{},remote:null};
+const SYNC_META=['study','guides','biblio','tutorLog','page'];
+const SYNC_ARR=['glossary','cites','questions','archives'];
+const syncCfg=()=>({repo:ls.get('syRepo',''),token:ls.get('syToken','')});
+const syncOn=()=>{const c=syncCfg();return !!(c.repo&&c.token)};
+const upOf=x=>x?(x.up||x.at||0):0;
+const jsonNoUp=x=>JSON.stringify(x,(k,v)=>k==='up'?undefined:v);
+async function fpOf(blob){const head=await blob.slice(0,1<<20).arrayBuffer();const h=new Uint8Array(await crypto.subtle.digest('SHA-256',head));return blob.size.toString(36)+'-'+[...h.slice(0,8)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function addTomb(k){SY.tomb[k]=Date.now();dputRaw('meta',SY.tomb,'tomb')}
+function stamp(s,v,k){
+  if(SY.applying)return;const now=Date.now();
+  if(s==='notes'){v.up=now;return}
+  if(s==='chats'){SY.chatUp[k]=now;dputRaw('meta',SY.chatUp,'chatUp');return}
+  if(s==='docs'){const id=v.id;v.fup=v.fup||{};
+    for(const f of SYNC_META){const key=`f|${id}|${f}`,j=JSON.stringify(v[f]??null);if(SY.cache.has(key)&&SY.cache.get(key)!==j)v.fup[f]=now;SY.cache.set(key,j)}
+    for(const f of SYNC_ARR){const pre=`i|${id}|${f}|`,seen=new Set();
+      for(const it of v[f]||[]){if(!it||!it.id)continue;seen.add(String(it.id));const key=pre+it.id,j=jsonNoUp(it);if(SY.cache.get(key)!==j){it.up=now;SY.cache.set(key,j)}}
+      for(const key of [...SY.cache.keys()])if(key.startsWith(pre)){const iid=key.slice(pre.length);if(!seen.has(iid)){SY.cache.delete(key);addTomb(`L|${id}|${f}|${iid}`)}}}
+    return}
+  if(s==='meta'&&k==='phrases'){const seen=new Set();
+    for(const it of v||[]){seen.add(it.id);const key='p|'+it.id,j=jsonNoUp(it);if(SY.cache.get(key)!==j){it.up=now;SY.cache.set(key,j)}}
+    for(const key of [...SY.cache.keys()])if(key.startsWith('p|')){const iid=key.slice(2);if(!seen.has(iid)){SY.cache.delete(key);addTomb('p|'+iid)}}}}
+async function primeCache(){
+  SY.cache.clear();
+  for(const d of await dall('docs')){for(const f of SYNC_META)SY.cache.set(`f|${d.id}|${f}`,JSON.stringify(d[f]??null));
+    for(const f of SYNC_ARR)for(const it of d[f]||[])if(it&&it.id)SY.cache.set(`i|${d.id}|${f}|${it.id}`,jsonNoUp(it))}
+  for(const it of PHR)SY.cache.set('p|'+it.id,jsonNoUp(it))}
+async function ensureFps(){for(const d of await dall('docs')){if(d.fp)continue;const b=await dget('files',d.id);if(!b)continue;d.fp=await fpOf(b);await dputRaw('docs',d);if(S.doc&&S.doc.id===d.id)S.doc.fp=d.fp}}
+async function localSnap(){
+  const docs=await dall('docs'),notes=await dall('notes'),id2fp={};for(const d of docs)if(d.fp)id2fp[d.id]=d.fp;
+  const L={at:Date.now(),docs:{},notes:{},chats:{},phrases:{},lines:await getLines(),tomb:{}};
+  for(const [k,v] of Object.entries(SY.tomb)){if(k.startsWith('L|')){const [,id,f,...it]=k.split('|');if(id2fp[id])L.tomb[`d|${id2fp[id]}|${f}|${it.join('|')}`]=v}else L.tomb[k]=v}
+  const isDef=v=>v==null||v===1||v===''||(Array.isArray(v)&&!v.length)||(typeof v==='object'&&!Array.isArray(v)&&Object.values(v).every(x=>!x));
+  for(const d of docs){if(!d.fp)continue;const o={meta:{name:d.name,kind:d.kind,pages:d.pages},fup:{...(d.fup||{})},items:{}};
+    for(const f of SYNC_META){if(d[f]!==undefined)o.meta[f]=d[f];if(o.fup[f]==null)o.fup[f]=isDef(d[f])?0:1}
+    for(const f of SYNC_ARR){o.items[f]={};for(const it of d[f]||[])if(it&&it.id)o.items[f][it.id]=it}
+    L.docs[d.fp]=o;const ch=await dget('chats',d.id);if(ch&&ch.length)L.chats[d.fp]={list:ch,up:SY.chatUp[d.id]||1}}
+  for(const n of notes){const fp=id2fp[n.docId];if(!fp)continue;const c={...n,fp};delete c.docId;L.notes[n.id]=c}
+  for(const p of PHR)L.phrases[p.id]=p;
+  return L}
+function mergeMap(a,b,tomb,pre){a=a||{};b=b||{};const out={};
+  for(const id of new Set([...Object.keys(a),...Object.keys(b)])){const x=a[id],y=b[id];const w=!x?y:!y?x:(upOf(y)>upOf(x)?y:x);if((tomb[pre+id]||0)>=upOf(w))continue;out[id]=w}return out}
+function mergeSnap(L,R){
+  R={docs:{},notes:{},chats:{},phrases:{},lines:[],tomb:{},...(R||{})};
+  const tomb={...R.tomb};for(const [k,v] of Object.entries(L.tomb))tomb[k]=Math.max(tomb[k]||0,v);
+  const M={v:1,at:Date.now(),tomb,docs:{},chats:{},notes:mergeMap(L.notes,R.notes,tomb,'n|'),phrases:mergeMap(L.phrases,R.phrases,tomb,'p|'),lines:[...new Set([...(R.lines||[]),...(L.lines||[])])]};
+  for(const fp of new Set([...Object.keys(L.docs),...Object.keys(R.docs)])){
+    const a=L.docs[fp],b=R.docs[fp];
+    const last=x=>x?Math.max(0,...Object.values(x.fup||{}),...SYNC_ARR.flatMap(f=>Object.values(x.items[f]||{}).map(upOf))):0;
+    if(tomb['D|'+fp]&&tomb['D|'+fp]>=Math.max(last(a),last(b)))continue;
+    if(!a||!b){M.docs[fp]=a||b;continue}
+    const o={meta:{...a.meta},fup:{...a.fup},items:{}};
+    for(const f of new Set([...Object.keys(a.meta),...Object.keys(b.meta)])){const ua=(a.fup||{})[f]||0,ub=(b.fup||{})[f]||0;
+      if(ub>ua||!(f in a.meta)||(ub===ua&&JSON.stringify(b.meta[f]??'').length>JSON.stringify(a.meta[f]??'').length)){o.meta[f]=b.meta[f];o.fup[f]=ub}}
+    for(const f of SYNC_ARR)o.items[f]=mergeMap(a.items[f],b.items[f],tomb,`d|${fp}|${f}|`);
+    M.docs[fp]=o}
+  for(const fp of new Set([...Object.keys(L.chats),...Object.keys(R.chats)])){if(!M.docs[fp])continue;const a=L.chats[fp],b=R.chats[fp];M.chats[fp]=!a?b:!b?a:(b.up>a.up?b:a)}
+  for(const [id,n] of Object.entries(M.notes))if(!M.docs[n.fp])delete M.notes[id];
+  return M}
+async function applySnap(M,L){
+  SY.applying=true;
+  try{
+    const docs=await dall('docs'),fp2doc={};for(const d of docs)if(d.fp)fp2doc[d.fp]=d;
+    for(const [fp,o] of Object.entries(M.docs)){const d=fp2doc[fp];if(!d)continue;const Ld=L.docs[fp];d.fup=d.fup||{};
+      for(const f of SYNC_META){if(!(f in o.meta))continue;const lu=d.fup[f]||0,su=Ld?((Ld.fup||{})[f]||0):0;if(lu>su&&lu>1)continue;d[f]=o.meta[f];d.fup[f]=(o.fup||{})[f]||0}
+      for(const f of SYNC_ARR){const mi=o.items[f]||{},snap=(Ld&&Ld.items[f])||{};
+        const extra=(d[f]||[]).filter(it=>it&&it.id&&!(it.id in snap)&&!(it.id in mi));
+        const merged=Object.values(mi).map(it=>{const cur=(d[f]||[]).find(x=>x&&x.id===it.id);return cur&&upOf(cur)>upOf(it)?cur:it});
+        d[f]=[...merged,...extra].sort((x,y)=>(x.at||0)-(y.at||0))}
+      await dputRaw('docs',d)}
+    for(const [id,d] of Object.entries(fp2doc))if(!M.docs[id]&&L.docs[id]&&M.tomb['D|'+id]){for(const n of await notesOf(d.id))await ddel('notes',n.id);await ddel('files',d.id);await ddel('docs',d.id);await ddel('chats',d.id)}
+    const localNotes=await dall('notes');
+    for(const n of Object.values(M.notes)){const d=fp2doc[n.fp];if(!d)continue;const cur=localNotes.find(x=>x.id===n.id);if(cur&&upOf(cur)>upOf(n))continue;const c={...n,docId:d.id};delete c.fp;await dputRaw('notes',c)}
+    for(const n of localNotes)if(L.notes[n.id]&&!M.notes[n.id])await ddel('notes',n.id);
+    for(const [fp,c] of Object.entries(M.chats)){const d=fp2doc[fp];if(!d||!c)continue;if((SY.chatUp[d.id]||0)>((L.chats[fp]||{}).up||0))continue;await dputRaw('chats',c.list,d.id);SY.chatUp[d.id]=c.up}
+    await dputRaw('meta',SY.chatUp,'chatUp');
+    const extraP=PHR.filter(x=>!(x.id in L.phrases)&&!(x.id in M.phrases));
+    PHR=[...Object.values(M.phrases),...extraP].sort((x,y)=>(x.at||0)-(y.at||0));await dputRaw('meta',PHR,'phrases');
+    await dputRaw('meta',[...new Set([...(M.lines||[]),...(await getLines())])],'lines');
+    const fresh={};for(const [k,v] of Object.entries(SY.tomb))if(v>=L.at)fresh[k]=v;
+    SY.tomb={...M.tomb,...fresh};await dputRaw('meta',SY.tomb,'tomb');
+    SY.remote=M}
+  finally{SY.applying=false}
+  await primeCache();
+  if(S.open&&S.doc){const d=await dget('docs',S.doc.id);if(d){S.doc=d;S.notes=await notesOf(d.id);S.arcRefs=arcRefs(d);if($('#sheet').classList.contains('hide'))rerenderLoaded()}else closeDoc()}
+  if(!$('#lib').classList.contains('hide'))renderLib()}
+const GH='https://api.github.com';
+function b64enc(str){const b=new TextEncoder().encode(str);let s='';for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)}
+function b64dec(t){const bin=atob(t.replace(/\s/g,''));const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new TextDecoder().decode(u)}
+async function ghGet(){
+  const {repo,token}=syncCfg();const u=`${GH}/repos/${repo}/contents/reader-data.json`;const h={Authorization:'Bearer '+token,'X-GitHub-Api-Version':'2022-11-28'};
+  const r=await fetch(u,{headers:{...h,Accept:'application/vnd.github+json'},cache:'no-store'});
+  if(r.status===401)throw new Error('令牌无效或已过期');
+  if(r.status===404){const rr=await fetch(`${GH}/repos/${repo}`,{headers:h,cache:'no-store'});if(!rr.ok)throw new Error(rr.status===404?'找不到这个仓库：检查仓库名，以及令牌是否有这个仓库的权限':'访问仓库失败（'+rr.status+'）');return {sha:null,data:null}}
+  if(!r.ok)throw new Error('GitHub 返回 '+r.status);
+  const j=await r.json();let text;
+  if(j.content&&j.encoding==='base64')text=b64dec(j.content);
+  else{const r2=await fetch(u,{headers:{...h,Accept:'application/vnd.github.raw+json'},cache:'no-store'});if(!r2.ok)throw new Error('读取同步文件失败（'+r2.status+'）');text=await r2.text()}
+  return {sha:j.sha,data:JSON.parse(text)}}
+async function ghPut(data,sha){
+  const {repo,token}=syncCfg();
+  const r=await fetch(`${GH}/repos/${repo}/contents/reader-data.json`,{method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
+    body:JSON.stringify({message:'阅读器同步 '+new Date().toISOString().slice(0,16),content:b64enc(JSON.stringify(data)),...(sha?{sha}:{})})});
+  if(r.status===409||r.status===422)return null;
+  if(r.status===403)throw new Error('令牌没有写入权限：创建令牌时 Contents 要选 Read and write');
+  if(!r.ok)throw new Error('上传失败（'+r.status+'）');
+  return (await r.json()).content.sha}
+const canon=x=>Array.isArray(x)?'['+x.map(canon).join(',')+']':(x&&typeof x==='object')?'{'+Object.keys(x).filter(k=>x[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+canon(x[k])).join(',')+'}':JSON.stringify(x);
+const sameData=(a,b)=>{if(!a||!b)return false;const x={...a},y={...b};delete x.at;delete y.at;return canon(x)===canon(y)};
+function syncStatus(t){ls.set('syMsg',t);const b=$('#syncSt');if(!b)return;b.classList.toggle('hide',!syncOn());b.textContent=t||''}
+async function syncNow(manual){
+  if(!syncOn())return;if(SY.busy){SY.again=true;return}
+  SY.busy=true;clearTimeout(SY.timer);syncStatus('⟳ 同步中');
+  try{await ensureFps();
+    for(let k=0;k<4;k++){const R=await ghGet();const L=await localSnap();const M=mergeSnap(L,R.data);
+      if(!sameData(M,R.data)){const sha=await ghPut(M,R.sha);if(sha===null)continue}
+      await applySnap(M,L);const t=new Date();syncStatus('✓ 已同步 '+t.getHours()+':'+String(t.getMinutes()).padStart(2,'0'));if(manual)toast('同步完成');return}
+    throw new Error('和其他设备同时写入，稍后会自动重试')}
+  catch(e){syncStatus('⚠ 同步失败');ls.set('syMsg','同步失败：'+e.message);if(manual)toast('同步失败：'+e.message,6000)}
+  finally{SY.busy=false;if(SY.again){SY.again=false;setTimeout(()=>syncNow(),1500)}}}
+function syncSoon(){if(!syncOn()||SY.applying)return;clearTimeout(SY.timer);SY.timer=setTimeout(()=>syncNow(),20000)}
+document.addEventListener('visibilitychange',()=>{if(!syncOn())return;if(document.visibilityState==='hidden'){if(SY.timer){clearTimeout(SY.timer);SY.timer=null;syncNow()}}else syncNow()});
+$('#syncSt').onclick=()=>syncNow(true);
+function renderRemote(local){
+  const el=$('#rdocs');if(!el)return;const M=SY.remote;if(!M||!syncOn()){el.innerHTML='';return}
+  const have=new Set(local.map(d=>d.fp).filter(Boolean));const rest=Object.entries(M.docs).filter(([fp])=>!have.has(fp));
+  if(!rest.length){el.innerHTML='';return}
+  const cnt=fp=>Object.values(M.notes).filter(n=>n.fp===fp).length;
+  el.innerHTML='<div class="lbl" style="margin-top:18px">其他设备上的书（在这台设备上添加同一个文件，笔记就会自动出现）</div>'+rest.map(([fp,o])=>`<div class="doc" style="opacity:.7"><div class="main"><h2>${esc(o.meta.name||'未命名')}</h2><div class="meta">${o.meta.kind==='epub'?'EPUB · ':''}${cnt(fp)} 条笔记${o.meta.page?' · 读到 p.'+o.meta.page:''}</div></div></div>`).join('')}
+
 /* ---------- 启动 ---------- */
-(async()=>{db=await openDB();await loadPhr();renderLib();
+(async()=>{db=await openDB();await loadPhr();SY.tomb=(await dget('meta','tomb'))||{};SY.chatUp=(await dget('meta','chatUp'))||{};await primeCache();renderLib();
+  if(syncOn()){syncStatus(ls.get('syMsg','').startsWith('同步失败')?'⚠ 同步失败':'⟳');syncNow()}
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})})();
 </script>
 </body>
