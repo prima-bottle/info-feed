@@ -3,11 +3,7 @@ name: 每日信息台
 on:
   # GitHub 只认 UTC 时间。每个时段设两个触发点，覆盖冬令时和夏令时，
   # 先到的那次生成，后到的会自动跳过。
-  schedule:
-    - cron: "17 4 * * *"    # 早间：柏林冬令时 5:17 / 夏令时 6:17
-    - cron: "17 5 * * *"    # 早间备用：冬令时 6:17
-    - cron: "37 9 * * *"    # 午间：冬令时 10:37 / 夏令时 11:37
-    - cron: "37 10 * * *"   # 午间备用：冬令时 11:37
+  # 定时抓取改由 Claude 的定时任务触发（GitHub 自带的定时经常晚好几个小时）
   # 网页上的"抓取"按钮会开一个标题以「抓取」开头的 Issue，提交后立刻跑一次
   issues:
     types: [opened]
@@ -61,7 +57,7 @@ jobs:
         if: github.event_name == 'issues'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }} -c "已运行完成。如果是只抓取模式，到对话里让 Claude 编辑后再刷新网页" || true
+        run: gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }} -c "已抓取。Claude 的定时任务每小时检查一次，一小时内会编好，到时刷新网页" || true
       - name: 保存结果
         run: |
           git config user.name "info-feed bot"

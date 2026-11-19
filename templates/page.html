@@ -92,6 +92,7 @@ footer details{border:0}
 .thread .label .mine{margin-left:4px}
 .topline{display:flex;justify-content:space-between;align-items:center}
 .theme{font:inherit;font-size:13px;color:var(--muted);background:var(--chip);border:0;border-radius:999px;padding:4px 11px;cursor:pointer}
+.imgbox{position:relative}.imgbox .swap{position:absolute;right:8px;bottom:20px;font:inherit;font-size:12.5px;padding:4px 10px;border-radius:999px;border:0;background:rgba(0,0,0,.55);color:#fff;cursor:pointer}
 .artimg.ph{min-height:0;height:0;margin:0}.artimg.ph.loading{height:180px;margin:4px 0 12px}
 .artimg{display:block;width:100%;max-height:420px;object-fit:contain;background:var(--chip);border-radius:10px;margin:4px 0 12px}
 .art h2{font-size:20px}.art .by{font-size:13.5px;color:var(--muted);margin-bottom:10px}
@@ -261,7 +262,7 @@ footer details{border:0}
   <article class="card art" data-key="{{ a.key }}" data-ts="{{ a.ts }}" data-art='{{ a.fav_json }}'>
     <button class="favbtn">☆ 收藏</button>
     <span class="label">作品 {{ loop.index }} / {{ m.art|length }}</span>
-    {% if a.image %}<img class="artimg" src="{{ a.image }}" alt="{{ a.work }}" loading="lazy">{% else %}<div class="artimg ph" data-wiki="{{ a.wiki or '' }}" data-q="{{ a.en or '' }}"></div>{% endif %}
+    {% if a.image %}<img class="artimg" src="{{ a.image }}" alt="{{ a.work }}" loading="lazy">{% else %}<div class="artimg ph" data-t="{{ a.work_en or '' }}" data-wiki="{{ a.wiki or '' }}" data-q="{{ a.en or '' }}"></div>{% endif %}
     <h2>{{ a.work }}</h2>
     <div class="by">{{ a.creator }}{% if a.year %} · {{ a.year }}{% endif %}</div>
     {% if a.brief %}<h4>它要解决什么问题</h4><p>{{ a.brief }}</p>{% endif %}
@@ -407,7 +408,7 @@ if(saved)unlock(saved,true);
  function list(){const box=document.getElementById('favList');const xs=Object.values(fav).sort((x,y)=>y.saved-x.saved);
   if(!xs.length){box.innerHTML='<div class="end">还没有收藏。在作品卡片右上角点 ☆ 收藏。</div>';return}
   box.innerHTML=xs.map(a=>'<article class="card art"><button class="favbtn on" data-id="'+esc(idOf(a))+'">★ 取消收藏</button>'
-   +(a.image?'<img class="artimg" src="'+esc(a.image)+'" loading="lazy">':'<div class="artimg ph" data-wiki="'+esc(a.wiki||'')+'" data-q="'+esc(a.en||'')+'"></div>')
+   +(a.image?'<img class="artimg" src="'+esc(a.image)+'" loading="lazy">':'<div class="artimg ph" data-t="'+esc(a.work_en||'')+'" data-wiki="'+esc(a.wiki||'')+'" data-q="'+esc(a.en||'')+'"></div>')
    +'<h2>'+esc(a.work)+'</h2><div class="by">'+esc(a.creator)+(a.year?' · '+esc(a.year):'')+'</div>'
    +(a.brief?'<h4>它要解决什么问题</h4><p>'+esc(a.brief)+'</p>':'')
    +((a.decisions||[]).length?'<h4>创作者的关键决定</h4><ol>'+a.decisions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')
@@ -466,27 +467,48 @@ document.querySelectorAll('.acts').forEach(box=>{
       window.open('https://github.com/'+REPO+'/issues/new?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body),'_blank');
       acted[k]=Date.now();LS.set('acted',acted);btn.classList.add('done');btn.textContent=like?'♥ 已赞':'✓ 追踪中';
     })})});
-/* 艺术配图：手机浏览器直接去维基百科 / 维基共享资源找图，找到就记住 */
+/* 艺术配图：手机浏览器直接查维基数据（作品条目的图片）和维基共享资源；跳过人物条目，避免拿到作者头像；不对可以点「换一张」 */
 window.artImages=function(root){
-  let cache={};try{cache=JSON.parse(localStorage.getItem('artimg')||'{}')}catch(e){}
-  const W='https://en.wikipedia.org',C='https://commons.wikimedia.org';
+  let cache={};try{cache=JSON.parse(localStorage.getItem('artimg2')||'{}')}catch(e){}
+  const save=()=>{try{localStorage.setItem('artimg2',JSON.stringify(cache))}catch(e){}};
+  const WD='https://www.wikidata.org/w/api.php?format=json&origin=*&',C='https://commons.wikimedia.org/w/api.php?format=json&origin=*&',W='https://en.wikipedia.org/w/api.php?format=json&origin=*&';
   const get=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
-  async function find(wiki,q){
-    if(wiki){const j=await get(W+'/api/rest_v1/page/summary/'+encodeURIComponent(wiki.replace(/ /g,'_')));
-      const s=j&&(j.originalimage||j.thumbnail);if(s&&s.source)return s.source}
-    if(q){let j=await get(C+'/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=3&prop=imageinfo&iiprop=url|mime&iiurlwidth=900&gsrsearch='+encodeURIComponent(q));
-      const ps=j&&j.query?Object.values(j.query.pages).sort((a,b)=>a.index-b.index):[];
-      const im=ps.map(p=>(p.imageinfo||[])[0]).find(i=>i&&/image\/(jpeg|png|gif|webp)/.test(i.mime));
-      if(im)return im.thumburl||im.url;
-      j=await get(W+'/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=1&prop=pageimages&piprop=original&gsrsearch='+encodeURIComponent(q));
-      const p=j&&j.query&&Object.values(j.query.pages)[0];if(p&&p.original)return p.original.source}
-    return ''}
+  const fp=f=>'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f)+'?width=900';
+  const bad=/portrait|porträt|headshot|selfie|signature|signatur|logo of|grave|grab|\bbust\b/i;
+  async function wikidata(title){
+    const s=await get(WD+'action=wbsearchentities&language=en&limit=6&search='+encodeURIComponent(title));
+    const ids=s&&s.search?s.search.map(x=>x.id):[];if(!ids.length)return [];
+    const e=await get(WD+'action=wbgetentities&props=claims&ids='+ids.join('|'));if(!e||!e.entities)return [];
+    const out=[];ids.forEach(id=>{const c=(e.entities[id]||{}).claims||{};
+      const human=(c.P31||[]).some(x=>((x.mainsnak.datavalue||{}).value||{}).id==='Q5');if(human)return;
+      (c.P18||[]).forEach(x=>{const f=(x.mainsnak.datavalue||{}).value;if(f&&!bad.test(f))out.push(fp(f))})});
+    return out}
+  async function commons(q){
+    const j=await get(C+'action=query&generator=search&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|mime&iiurlwidth=900&gsrsearch='+encodeURIComponent(q));
+    const ps=j&&j.query?Object.values(j.query.pages).sort((a,b)=>a.index-b.index):[];
+    return ps.filter(p=>!bad.test(p.title)).map(p=>(p.imageinfo||[])[0]).filter(i=>i&&/image\/(jpeg|png|gif|webp)/.test(i.mime)).map(i=>i.thumburl||i.url)}
+  async function wikipage(t){
+    const j=await get(W+'action=query&prop=pageimages|pageprops&piprop=original&redirects=1&titles='+encodeURIComponent(t));
+    const p=j&&j.query&&Object.values(j.query.pages)[0];return p&&p.original?[p.original.source]:[]}
+  async function find(t,wiki,q){
+    let list=[];
+    if(t)list=list.concat(await wikidata(t));
+    if(q)list=list.concat(await commons(q));
+    if(wiki)list=list.concat(await wikipage(wiki));
+    return [...new Set(list)]}
   (root||document).querySelectorAll('.artimg.ph').forEach(async el=>{
-    const wiki=el.dataset.wiki,q=el.dataset.q,k=wiki+'|'+q;if(!wiki&&!q)return;
-    let src=cache[k];
-    if(src===undefined){el.classList.add('loading');src=await find(wiki,q);cache[k]=src;try{localStorage.setItem('artimg',JSON.stringify(cache))}catch(e){}}
-    el.classList.remove('loading');if(!src)return;
-    const img=document.createElement('img');img.className='artimg';img.src=src;img.loading='lazy';img.alt='';el.replaceWith(img)})};
+    const t=el.dataset.t||'',wiki=el.dataset.wiki||'',q=el.dataset.q||'',k=t+'|'+wiki+'|'+q;if(!t&&!wiki&&!q)return;
+    let c=cache[k];
+    if(!c){el.classList.add('loading');c={list:await find(t,wiki,q),i:0};cache[k]=c;save()}
+    el.classList.remove('loading');if(!c.list.length)return;
+    const box=document.createElement('div');box.className='imgbox';
+    const img=document.createElement('img');img.className='artimg';img.loading='lazy';img.alt='';
+    const show=()=>{img.src=c.list[c.i%c.list.length]};
+    img.onerror=()=>{c.list.splice(c.i%c.list.length,1);save();if(c.list.length)show();else box.remove()};
+    box.append(img);
+    if(c.list.length>1){const b=document.createElement('button');b.className='swap';b.textContent='换一张';
+      b.onclick=e=>{e.preventDefault();c.i=(c.i+1)%c.list.length;save();show()};box.append(b)}
+    show();el.replaceWith(box)})};
 artImages();
 /* 问 Claude：把这条整理成提问，交给手机上的 Claude App（走订阅，不花 API） */
 document.querySelectorAll('.acts .ask').forEach(btn=>btn.addEventListener('click',async ev=>{ev.preventDefault();ev.stopPropagation();

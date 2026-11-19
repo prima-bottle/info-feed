@@ -38,7 +38,7 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
         arts = d.get("art") or []
         arts = [arts] if isinstance(arts, dict) else arts
         m["art"] += [{**a, "ts": ts, "key": _key("art", date, a.get("work")),
-                      "fav_json": json.dumps({k: a.get(k) for k in ("work", "creator", "year", "image", "wiki", "en", "brief", "decisions",
+                      "fav_json": json.dumps({k: a.get(k) for k in ("work", "creator", "year", "image", "wiki", "en", "work_en", "brief", "decisions",
                                                                      "symbols", "takeaway", "ai_prompt", "ai_tips")},
                                              ensure_ascii=False)}
                      for a in arts if a.get("work")]
