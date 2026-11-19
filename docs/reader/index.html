@@ -273,7 +273,9 @@ function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('reader'
 const st=(s,m='readonly')=>db.transaction(s,m).objectStore(s);
 const dget=(s,k)=>P(st(s).get(k));
 const dputRaw=(s,v,k)=>P(k===undefined?st(s,'readwrite').put(v):st(s,'readwrite').put(v,k));
-async function dput(s,v,k){try{stamp(s,v,k)}catch(e){console.warn(e)}const r=await dputRaw(s,v,k);if(s==='docs'||s==='notes'||s==='chats'||(s==='meta'&&(k==='phrases'||k==='lines')))syncSoon();return r}
+async function dput(s,v,k){let info=null;try{info=stamp(s,v,k)}catch(e){console.warn(e)}const r=await dputRaw(s,v,k);
+  if(s==='docs'&&info&&!info.items&&!info.fresh&&info.meta.every(f=>f==='page')){if(info.meta.length)SY.posDirty=true}
+  else if(s==='docs'||s==='notes'||s==='chats'||(s==='meta'&&(k==='phrases'||k==='lines')))syncSoon();return r}
 const ddel=(s,k)=>P(st(s,'readwrite').delete(k));
 const dall=s=>P(st(s).getAll());
 const notesOf=id=>P(st('notes').index('doc').getAll(id));
@@ -574,12 +576,13 @@ function goPage(n){S.noHide=Date.now()+1600;document.body.classList.remove('hide
 let saveT,lastY=0,ticking=false;
 function savePos(){clearTimeout(saveT);saveT=setTimeout(()=>{if(S.doc&&S.open){S.doc.page=S.cur;dput('docs',S.doc)}},800)}
 addEventListener('scroll',()=>{if(ticking||!S.open)return;ticking=true;requestAnimationFrame(()=>{ticking=false;
-  const y=scrollY;if(Math.abs(y-lastY)>30){if(Date.now()>(S.noHide||0))document.body.classList.toggle('hidebars',y>lastY&&y>200&&!S.sel);lastY=y}
+  const y=scrollY;if(Math.abs(y-lastY)>30){if(!FINE&&Date.now()>(S.noHide||0))document.body.classList.toggle('hidebars',y>lastY&&y>200&&!S.sel);lastY=y}
   let n;if(isEp())n=curPageEp();else{
   let lo=0,hi=S.secs.length-1;while(lo<hi){const mid=(lo+hi+1)>>1;if(S.secs[mid].getBoundingClientRect().top<=innerHeight*.35)lo=mid;else hi=mid-1}
   n=lo+1}if(n!==S.cur){S.cur=n;if(document.activeElement!==$('#pgIn'))$('#pgIn').value=n;
     clearTimeout(saveT);saveT=setTimeout(()=>{S.doc.page=S.cur;dput('docs',S.doc)},800)}})},{passive:true});
-$('#view').addEventListener('click',e=>{if(e.target.closest('button,mark,a,abbr,.pbm'))return;if(!getSelection().toString())document.body.classList.toggle('hidebars')});
+const FINE=matchMedia('(hover:hover) and (pointer:fine)').matches;
+$('#view').addEventListener('click',e=>{if(FINE)return;if(e.target.closest('button,mark,a,abbr,.pbm'))return;if(!getSelection().toString())document.body.classList.toggle('hidebars')});
 $('#pgIn').onchange=e=>goPage(+e.target.value,false);
 $('#pgIn').onfocus=e=>e.target.select();
 document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{if(S.mode===b.dataset.m)return;const n=S.cur;S.mode=b.dataset.m;S.doc.mode=S.mode;dput('docs',S.doc);build();goPage(n)});
@@ -1054,6 +1057,8 @@ function applyGloss(root){
     while((m=glossRe.exec(s))){if(m.index>last)frag.append(s.slice(last,m.index));const g=glossMap.find(x=>m[0].startsWith(x.term.trim()));
       const ab=document.createElement('abbr');ab.className='gl';ab.dataset.g=g?g.id:'';ab.textContent=m[0];frag.append(ab);last=m.index+m[0].length}
     if(last<s.length)frag.append(s.slice(last));node.replaceWith(frag)}}
+function repaintMarks(){for(const s of S.secs){if(!s.dataset.ld)continue;const b=s.querySelector('.body');if(!b||!b.querySelector('.rf'))continue;
+  b.querySelectorAll('mark').forEach(m=>m.replaceWith(...m.childNodes));b.normalize();paintMarks(b,isEp()?+s.dataset.s:+s.dataset.p)}}
 function rerenderLoaded(){for(const s of S.secs)if(s.dataset.ld){delete s.dataset.ld;loadSec(s)}}
 function glossPop(id){const g=(S.doc.glossary||[]).find(x=>x.id===id);if(!g)return;
   sideSheet(g.term,`${g.def?`<div class="msg" style="margin-top:0">${fmt(g.def)}</div>`:'<p class="muted">还没写释义。</p>'}${g.ctx?`<div class="lbl">第一次记下时的语境 · ${locLabel(g)}</div><div class="quote">${esc(g.ctx.slice(0,500))}</div>`:''}
@@ -1196,12 +1201,12 @@ function stamp(s,v,k){
   if(SY.applying)return;const now=Date.now();
   if(s==='notes'){v.up=now;return}
   if(s==='chats'){SY.chatUp[k]=now;dputRaw('meta',SY.chatUp,'chatUp');return}
-  if(s==='docs'){const id=v.id;v.fup=v.fup||{};
-    for(const f of SYNC_META){const key=`f|${id}|${f}`,j=JSON.stringify(v[f]??null);if(SY.cache.has(key)&&SY.cache.get(key)!==j)v.fup[f]=now;SY.cache.set(key,j)}
+  if(s==='docs'){const id=v.id;v.fup=v.fup||{};const info={meta:[],items:false,fresh:false};
+    for(const f of SYNC_META){const key=`f|${id}|${f}`,j=JSON.stringify(v[f]??null);if(!SY.cache.has(key))info.fresh=true;else if(SY.cache.get(key)!==j){v.fup[f]=now;info.meta.push(f)}SY.cache.set(key,j)}
     for(const f of SYNC_ARR){const pre=`i|${id}|${f}|`,seen=new Set();
-      for(const it of v[f]||[]){if(!it||!it.id)continue;seen.add(String(it.id));const key=pre+it.id,j=jsonNoUp(it);if(SY.cache.get(key)!==j){it.up=now;SY.cache.set(key,j)}}
-      for(const key of [...SY.cache.keys()])if(key.startsWith(pre)){const iid=key.slice(pre.length);if(!seen.has(iid)){SY.cache.delete(key);addTomb(`L|${id}|${f}|${iid}`)}}}
-    return}
+      for(const it of v[f]||[]){if(!it||!it.id)continue;seen.add(String(it.id));const key=pre+it.id,j=jsonNoUp(it);if(SY.cache.get(key)!==j){it.up=now;SY.cache.set(key,j);info.items=true}}
+      for(const key of [...SY.cache.keys()])if(key.startsWith(pre)){const iid=key.slice(pre.length);if(!seen.has(iid)){SY.cache.delete(key);addTomb(`L|${id}|${f}|${iid}`);info.items=true}}}
+    return info}
   if(s==='meta'&&k==='phrases'){const seen=new Set();
     for(const it of v||[]){seen.add(it.id);const key='p|'+it.id,j=jsonNoUp(it);if(SY.cache.get(key)!==j){it.up=now;SY.cache.set(key,j)}}
     for(const key of [...SY.cache.keys()])if(key.startsWith('p|')){const iid=key.slice(2);if(!seen.has(iid)){SY.cache.delete(key);addTomb('p|'+iid)}}}}
@@ -1269,7 +1274,14 @@ async function applySnap(M,L){
     SY.remote=M}
   finally{SY.applying=false}
   await primeCache();
-  if(S.open&&S.doc){const d=await dget('docs',S.doc.id);if(d){S.doc=d;S.notes=await notesOf(d.id);S.arcRefs=arcRefs(d);if($('#sheet').classList.contains('hide'))rerenderLoaded()}else closeDoc()}
+  if(S.open&&S.doc){const d=await dget('docs',S.doc.id);
+    if(!d)closeDoc();
+    else{const sig=n=>JSON.stringify(n.map(x=>[x.id,x.quote,x.fn,x.text,x.tag,x.page,x.sec]).sort());
+      const oldN=sig(S.notes),oldG=JSON.stringify((S.doc.glossary||[]).map(g=>g.term).sort()),oldA=JSON.stringify((S.doc.archives||[]).map(a=>a.id));
+      const keepPage=S.doc.page;S.doc=d;S.doc.page=keepPage;S.notes=await notesOf(d.id);S.arcRefs=arcRefs(d);
+      const glCh=oldG!==JSON.stringify((d.glossary||[]).map(g=>g.term).sort())||oldA!==JSON.stringify((d.archives||[]).map(a=>a.id));
+      if(glCh)rerenderLoaded();
+      else if(oldN!==sig(S.notes))repaintMarks()}}
   if(!$('#lib').classList.contains('hide'))renderLib()}
 const GH='https://api.github.com';
 function b64enc(str){const b=new TextEncoder().encode(str);let s='';for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)}
@@ -1297,7 +1309,7 @@ const sameData=(a,b)=>{if(!a||!b)return false;const x={...a},y={...b};delete x.a
 function syncStatus(t){ls.set('syMsg',t);const b=$('#syncSt');if(!b)return;b.classList.toggle('hide',!syncOn());b.textContent=t||''}
 async function syncNow(manual){
   if(!syncOn())return;if(SY.busy){SY.again=true;return}
-  SY.busy=true;clearTimeout(SY.timer);syncStatus('⟳ 同步中');
+  SY.busy=true;clearTimeout(SY.timer);SY.timer=null;SY.posDirty=false;syncStatus('⟳ 同步中');
   try{await ensureFps();
     for(let k=0;k<4;k++){const R=await ghGet();const L=await localSnap();const M=mergeSnap(L,R.data);
       if(!sameData(M,R.data)){const sha=await ghPut(M,R.sha);if(sha===null)continue}
@@ -1307,7 +1319,8 @@ async function syncNow(manual){
   catch(e){syncStatus('⚠ 同步失败');ls.set('syMsg','同步失败：'+e.message);if(manual)toast('同步失败：'+e.message,6000)}
   finally{SY.busy=false;if(SY.again){SY.again=false;setTimeout(()=>syncNow(),1500)}}}
 function syncSoon(){if(!syncOn()||SY.applying)return;clearTimeout(SY.timer);SY.timer=setTimeout(()=>syncNow(),20000)}
-document.addEventListener('visibilitychange',()=>{if(!syncOn())return;if(document.visibilityState==='hidden'){if(SY.timer){clearTimeout(SY.timer);SY.timer=null;syncNow()}}else syncNow()});
+document.addEventListener('visibilitychange',()=>{if(!syncOn())return;if(document.visibilityState==='hidden'){if(SY.timer||SY.posDirty){clearTimeout(SY.timer);SY.timer=null;syncNow()}}else syncNow()});
+setInterval(()=>{if(syncOn()&&SY.posDirty&&document.visibilityState==='visible')syncNow()},5*60*1000);
 $('#syncSt').onclick=()=>syncNow(true);
 function renderRemote(local){
   const el=$('#rdocs');if(!el)return;const M=SY.remote;if(!M||!syncOn()){el.innerHTML='';return}
