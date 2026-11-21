@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": { "type": "redirect", "redirect": { "url": "https://prima-bottle.github.io/info-feed/focus/?from=home" } },
+    "condition": {
+      "regexFilter": "^https?://(www\\.)?bilibili\\.com/?(index\\.html)?([?#].*)?$",
+      "resourceTypes": ["main_frame"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": { "type": "redirect", "redirect": { "url": "https://prima-bottle.github.io/info-feed/focus/?from=popular" } },
+    "condition": {
+      "regexFilter": "^https?://(www\\.)?bilibili\\.com/(v/popular|v/channel|c/)",
+      "resourceTypes": ["main_frame"]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": { "type": "redirect", "redirect": { "url": "https://prima-bottle.github.io/info-feed/focus/?from=home" } },
+    "condition": {
+      "regexFilter": "^https?://m\\.bilibili\\.com/?([?#].*)?$",
+      "resourceTypes": ["main_frame"]
+    }
+  }
+]

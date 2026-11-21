@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "专注出口",
+  "version": "1.0.0",
+  "description": "点开 B站首页或热门时，先跳到信息台的「先停一下」页，把想走的冲动引回自己的项目。",
+  "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" },
+  "action": { "default_popup": "popup.html", "default_icon": { "16": "icons/16.png", "32": "icons/32.png" } },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["declarativeNetRequest", "storage", "alarms", "notifications"],
+  "host_permissions": ["*://*.bilibili.com/*"],
+  "declarative_net_request": {
+    "rule_resources": [{ "id": "block", "enabled": true, "path": "rules.json" }]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://prima-bottle.github.io/info-feed/focus/*"],
+      "js": ["relay.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://www.bilibili.com/*", "*://bilibili.com/*", "*://m.bilibili.com/*"],
+      "js": ["bili.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
