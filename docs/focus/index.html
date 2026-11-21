@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../icon-192.png">
+<title>先停一下 · 信息台</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --thread:#2f5d8a; --thread-soft:#e2ecf5;
+  --ok:#3d7a4a; --ok-soft:#e1efe3; --chip:#efe9e0; --radius:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37;
+  --ok:#7cc28a; --ok-soft:#1f3124; --chip:#2a2825;
+}}
+:root[data-theme=dark]{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --thread:#7fb0de; --thread-soft:#1d2a37;
+  --ok:#7cc28a; --ok-soft:#1f3124; --chip:#2a2825;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+main{max-width:640px;margin:0 auto;padding:28px 16px 60px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.top small{color:var(--muted);font-size:13px}
+.top a{font-size:13px;color:var(--muted)}
+h1{font-size:26px;line-height:1.3;margin:2px 0 18px}
+h2{font-size:17px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.label{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:8px}
+.muted{color:var(--muted);font-size:14px}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{border-color:var(--muted)}
+.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.primary:hover{opacity:.9}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+input,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+textarea{min-height:70px;resize:vertical}
+label.f{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+
+/* 下一步卡片 */
+#card .task{font-size:14px;color:var(--muted)}
+#card .end{font-size:15px;margin-top:2px}
+#card .step{font-size:21px;font-weight:700;line-height:1.4;margin-top:8px}
+#card .empty{font-size:15px;color:var(--muted)}
+.donecount{float:right;font-size:13px;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:6px}
+
+/* 四个原因 */
+.why{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.why button{padding:14px 12px;text-align:left;border-radius:12px;line-height:1.4}
+.why button b{display:block;font-size:16px}
+.why button span{font-size:13px;color:var(--muted)}
+.why button.on{border-color:var(--accent);background:var(--accent-soft)}
+.minor{margin-top:12px;font-size:14px;color:var(--muted)}
+.minor button{font-size:14px;padding:4px 10px}
+
+#answer{display:none}
+#answer.on{display:block}
+.big{font-size:44px;font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums;text-align:center;margin:10px 0}
+ul.tips{margin:6px 0 0 20px;font-size:15px}
+ul.todo{list-style:none}
+ul.todo li{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed var(--line);font-size:15px}
+ul.todo li:last-child{border-bottom:0}
+ul.todo li.done span{color:var(--muted);text-decoration:line-through}
+ul.todo li button{margin-left:auto;font-size:12px;padding:2px 8px;flex:none}
+.tag{font-size:12px;color:var(--muted);background:var(--chip);padding:1px 6px;border-radius:6px;margin-left:6px}
+
+/* 统计 */
+.bars div{display:flex;align-items:center;gap:8px;font-size:14px;margin:4px 0}
+.bars .n{width:4.5em;color:var(--muted)}
+.bars .b{height:10px;border-radius:5px;background:var(--accent);min-width:2px}
+.hours{display:flex;align-items:flex-end;gap:2px;height:60px;margin-top:8px}
+.hours i{flex:1;background:var(--thread);border-radius:2px 2px 0 0;min-height:1px;opacity:.8}
+.hlabels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+details summary{cursor:pointer;color:var(--muted);font-size:14px;list-style:none}
+details summary::before{content:"▸ "}details[open] summary::before{content:"▾ "}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+<script>try{const t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<main>
+<div class="top"><small id="now"></small><a href="../">← 信息台</a></div>
+<h1 id="title">先停一下。</h1>
+
+<!-- 下一步卡片 -->
+<section class="card" id="card"></section>
+
+<!-- 为什么想走 -->
+<section class="card">
+  <h2>你现在为什么想走？</h2>
+  <div class="why" id="why">
+    <button data-r="start"><b>刚坐下，进不去</b><span>还没开始就想先刷一下</span></button>
+    <button data-r="stuck"><b>卡住了</b><span>不知道下一步做什么</span></button>
+    <button data-r="tired"><b>累了 / 枯燥</b><span>做了一阵，脑子转不动</span></button>
+    <button data-r="reward"><b>想奖励自己</b><span>刚完成了一小段</span></button>
+  </div>
+  <div class="minor">其实是：
+    <button data-r="video">要找一个具体的视频</button>
+    <button data-r="scroll">就是想刷一会儿</button>
+  </div>
+</section>
+
+<section class="card" id="answer"></section>
+
+<!-- 今天的工作安排（和信息台「工作」用同一份加密数据） -->
+<section class="card" id="work">
+  <details id="workDetails"><summary>今天的工作安排</summary><div id="workBody" style="margin-top:10px"></div></details>
+</section>
+
+<!-- 记录 -->
+<section class="card">
+  <details id="statsDetails"><summary>这一周的记录</summary><div id="stats" style="margin-top:10px"></div></details>
+</section>
+<p class="note" id="extNote"></p>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(()=>{
+/* ========== 小工具 ========== */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const pad=n=>String(n).padStart(2,'0');
+const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=dstr(new Date());
+const hm=d=>pad(d.getHours())+':'+pad(d.getMinutes());
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),1800)}
+function copy(t){return (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('已复制')).catch(()=>{prompt('复制下面这段：',t)})}
+$('#now').textContent=new Date().toLocaleString('zh-CN',{weekday:'short',hour:'2-digit',minute:'2-digit'});
+
+/* ========== 和扩展通信（扩展没装时，页面也能单独用） ========== */
+let ext=null;const waiters={};let seq=0;
+window.addEventListener('message',e=>{
+  if(e.source!==window||!e.data||e.data.src!=='focus-ext')return;
+  if(e.data.type==='hello'){ext=e.data;renderExtNote()}
+  if(e.data.id&&waiters[e.data.id]){waiters[e.data.id](e.data);delete waiters[e.data.id]}
+});
+function send(type,extra){return new Promise(res=>{
+  if(!ext){res(null);return}
+  const id=++seq;waiters[id]=res;window.postMessage({src:'focus-page',type,id,...extra},location.origin);
+  setTimeout(()=>{if(waiters[id]){delete waiters[id];res(null)}},1500)})}
+window.postMessage({src:'focus-page',type:'hello'},location.origin);
+function renderExtNote(){
+  const n=$('#extNote');
+  if(!ext){n.innerHTML='没检测到「专注出口」扩展：B站首页不会自动跳到这里。安装方法见仓库里的 <a href="https://github.com/prima-bottle/info-feed/tree/main/focus-extension">focus-extension</a>。';return}
+  n.textContent=ext.passUntil>Date.now()?'扩展已连接 · B站放行到 '+hm(new Date(ext.passUntil)):'扩展已连接 · B站首页和热门在拦截中';
+}
+setTimeout(renderExtNote,800);
+/* 回去：有扩展就直接关掉这个标签页 */
+async function goBack(){
+  const r=await send('close');
+  if(!r){if(history.length>1)history.back();else toast('可以关掉这个标签页了')}
+}
+
+/* ========== 记录 ========== */
+const params=new URLSearchParams(location.search);
+const from=params.get('from');
+let log=LS.get('focusLog',[]);
+// 只留最近 60 天
+const cut=Date.now()-60*864e5;log=log.filter(x=>x.t>cut);
+let cur=null;
+if(from){cur={t:Date.now(),from,r:null};log.push(cur);LS.set('focusLog',log);
+  history.replaceState(null,'',location.pathname)}   // 刷新页面时不重复记
+function mark(r,note){
+  if(!cur){cur={t:Date.now(),from:'direct',r:null};log.push(cur)}
+  cur.r=r;if(note)cur.note=note;LS.set('focusLog',log);renderStats()}
+
+/* ========== 下一步卡片 ========== */
+let card=LS.get('focusCard',{task:'',end:'',step:''});
+let doneMap=LS.get('focusDone',{});
+const doneToday=()=>doneMap[today]||0;
+function saveCard(){LS.set('focusCard',card)}
+function renderCard(editing){
+  const el=$('#card');
+  const dc=doneToday()?'<span class="donecount">今天完成 '+doneToday()+' 个</span>':'';
+  if(editing||!card.step){
+    el.innerHTML=dc+'<span class="label">下一步卡片</span>'
+      +(card.step?'':'<p class="empty">还没有下一步。写下来，终点越具体越好。</p>')
+      +'<label class="f">在做什么</label><input id="cTask" placeholder="例：读《国家与革命》第二章" value="'+esc(card.task)+'">'
+      +'<label class="f">这一段的终点（做到哪就算完）</label><input id="cEnd" placeholder="例：读完第2节，写3句总结" value="'+esc(card.end)+'">'
+      +'<label class="f">第一步（2 分钟内能开始的动作）</label><input id="cStep" placeholder="例：打开PDF，读第一段" value="'+esc(card.step)+'">'
+      +'<div id="suggest"></div>'
+      +'<div class="row"><button class="primary" id="cSave">保存</button>'+(card.step?'<button id="cCancel">取消</button>':'')+'</div>';
+    $('#cSave').onclick=()=>{card={task:$('#cTask').value.trim(),end:$('#cEnd').value.trim(),step:$('#cStep').value.trim(),at:Date.now()};
+      saveCard();renderCard();toast('记好了')};
+    if($('#cCancel'))$('#cCancel').onclick=()=>renderCard();
+    renderSuggest();
+    return;
+  }
+  el.innerHTML=dc+'<span class="label">下一步卡片</span>'
+    +(card.task?'<div class="task">'+esc(card.task)+'</div>':'')
+    +(card.end?'<div class="end">终点：'+esc(card.end)+'</div>':'')
+    +'<div class="step">'+esc(card.step)+'</div>'
+    +'<div class="row"><button class="primary" id="cDone">✓ 完成了这一段</button><button id="cEdit">改一下</button></div>';
+  $('#cEdit').onclick=()=>renderCard(true);
+  $('#cDone').onclick=()=>{doneMap[today]=doneToday()+1;LS.set('focusDone',doneMap);
+    log.push({t:Date.now(),from:'card',r:'done',note:card.end||card.step});LS.set('focusLog',log);
+    card={task:card.task,end:'',step:''};saveCard();renderCard(true);renderStats();toast('完成一个 ✓ 写下一段')};
+}
+// 从工作安排里挑今天还没做的事，点一下填进卡片
+let todayItems=[];
+function renderSuggest(){
+  const box=$('#suggest');if(!box||!todayItems.length)return;
+  box.innerHTML='<label class="f">或者从今天的安排里选：</label>'+todayItems.slice(0,4).map((t,i)=>'<button class="sg" data-i="'+i+'" style="font-size:13px;padding:3px 10px;margin:0 6px 6px 0">'+esc(t)+'</button>').join('');
+  box.querySelectorAll('.sg').forEach(b=>b.onclick=()=>{$('#cTask').value=todayItems[+b.dataset.i];$('#cEnd').focus()});
+}
+renderCard();
+
+/* ========== 按原因分流 ========== */
+const A=$('#answer');
+function show(html){A.innerHTML=html;A.classList.add('on');A.scrollIntoView({behavior:'smooth',block:'start'})}
+let timer=null;
+function countdown(sec,elId,onEnd){clearInterval(timer);let left=sec;const el=$(elId);
+  const tick=()=>{el.textContent=pad(Math.floor(left/60))+':'+pad(left%60);if(left--<=0){clearInterval(timer);onEnd&&onEnd()}};
+  tick();timer=setInterval(tick,1000)}
+function chime(){try{const c=new (window.AudioContext||window.webkitAudioContext)();[0,.25].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();
+  o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,c.currentTime+d);g.gain.exponentialRampToValueAtTime(.2,c.currentTime+d+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+d+.6);o.connect(g).connect(c.destination);o.start(c.currentTime+d);o.stop(c.currentTime+d+.7)})}catch(e){}}
+const stepText=()=>card.step||'（还没写下一步：先在上面写一个）';
+async function pass(min){
+  const r=await send('pass',{minutes:min});
+  if(ext&&!r){toast('扩展没回应，再试一次');return}
+  location.href='https://www.bilibili.com/';
+}
+
+const handlers={
+  start(){
+    show('<span class="label">启动</span><h2>不用做完，只要开始。</h2>'
+      +'<p class="muted">只做这一个动作：</p><div class="big" style="font-size:22px;text-align:left;margin:8px 0">'+esc(stepText())+'</div>'
+      +'<p class="muted">开始后 5 分钟我提醒你一次；到时候想停就停。多数时候，开头那几分钟过去就进入状态了。</p>'
+      +'<div class="row"><button class="primary" id="go5">开始，5 分钟后提醒我</button><button id="goNow">直接回去</button></div><div class="big" id="t5" style="display:none"></div>');
+    $('#goNow').onclick=goBack;
+    $('#go5').onclick=async()=>{
+      const r=await send('remind',{minutes:5,title:'5 分钟到了',body:'进入状态了就继续；还是不想做，就把第一步拆得更小。'});
+      if(r){goBack();return}
+      // 没有扩展：在这个页面上倒计时
+      $('#t5').style.display='block';toast('切回去做吧，这页会在 5 分钟后响一声');
+      countdown(300,'#t5',()=>{chime();document.title='⏰ 5 分钟到了'});
+    };
+  },
+  stuck(){
+    show('<span class="label">卡住</span><h2>用一句话写下卡在哪。</h2>'
+      +'<p class="muted">写清楚卡在哪，往往就知道下一步了。</p>'
+      +'<textarea id="stuckT" placeholder="例：不明白作者说的「国家消亡」和「废除国家」有什么区别"></textarea>'
+      +'<div class="row"><button class="primary" id="sAsk">复制去问 Claude</button><button id="sStep">这就是下一步</button><button id="sBack">想通了，回去</button></div>');
+    const t=$('#stuckT');t.focus();
+    const note=()=>t.value.trim();
+    $('#sAsk').onclick=()=>{mark('stuck',note());
+      const q='我在做：'+(card.task||'（未填）')+'。这一段的终点：'+(card.end||'（未填）')+'。\n现在卡在：'+(note()||'（说不清）')+'\n帮我把卡住的地方拆开，只给我接下来一个能马上做的小步骤。';
+      copy(q);window.open('https://claude.ai/new','_blank')};
+    $('#sStep').onclick=()=>{if(!note()){t.focus();return}card.step=note();saveCard();renderCard();mark('stuck',note());toast('已设为下一步')};
+    $('#sBack').onclick=()=>{mark('stuck',note());goBack()};
+  },
+  tired(){
+    show('<span class="label">休息</span><h2>真休息，离开屏幕 5 分钟。</h2>'
+      +'<p class="muted">刷视频不算休息：眼睛和脑子还在接收信息，所以刷完更累、更没意思。</p>'
+      +'<ul class="tips"><li>站起来走一走，喝杯水</li><li>看窗外远处 20 秒</li><li>伸展肩膀和脖子</li></ul>'
+      +'<div class="big" id="tb">05:00</div>'
+      +'<div class="row"><button class="primary" id="bGo">开始休息</button><button id="b10">累坏了，休息 15 分钟</button></div><div id="bAfter"></div>');
+    const after=()=>{chime();document.title='休息结束';$('#bAfter').innerHTML='<p style="margin-top:10px">回来了。下一步是：<b>'+esc(stepText())+'</b></p><div class="row"><button class="primary" id="bBack">回去做</button><button id="bMore">还是不想做 → 卡住了</button></div>';
+      $('#bBack').onclick=goBack;$('#bMore').onclick=()=>pick('stuck')};
+    $('#bGo').onclick=()=>{countdown(300,'#tb',after);toast('走开吧，时间到了会响')};
+    $('#b10').onclick=()=>{countdown(900,'#tb',after);toast('走开吧，时间到了会响')};
+  },
+  reward(){
+    const n=doneToday();
+    show('<span class="label">奖励</span><h2>'+(n?'今天已经完成 '+n+' 段，该奖励。':'奖励可以，挑一个有终点的。')+'</h2>'
+      +'<p class="muted">首页推荐没有底，越刷越空；挑一个看完就结束的。</p>'
+      +'<div class="row"><a class="btn primary" href="../">看今天的信息台精选</a><button id="rVid">搜一个具体视频</button><button id="r10">刷 10 分钟（到时自动恢复拦截）</button></div>'
+      +(n?'':'<p class="note">刚完成了一段的话，先在上面点「✓ 完成了这一段」记一下。</p>'));
+    $('#rVid').onclick=()=>pick('video');
+    $('#r10').onclick=()=>pass(10);
+  },
+  video(){
+    show('<span class="label">找视频</span><h2>要看哪个？</h2>'
+      +'<p class="muted">搜索页和视频页不拦，只拦首页推荐和热门。</p>'
+      +'<form id="vf"><input id="vq" placeholder="输入关键词，回车搜索"></form>');
+    const q=$('#vq');q.focus();
+    $('#vf').onsubmit=e=>{e.preventDefault();const k=q.value.trim();if(!k)return;mark('video',k);
+      location.href='https://search.bilibili.com/all?keyword='+encodeURIComponent(k)};
+  },
+  scroll(){
+    show('<span class="label">就想刷</span><h2>可以，但先等 30 秒。</h2>'
+      +'<p class="muted">这 30 秒里如果改了主意，选上面的原因就行。到时间后放行 10 分钟，然后自动恢复拦截。</p>'
+      +'<div class="big" id="ts">00:30</div><div class="row" id="sRow"></div>');
+    countdown(30,'#ts',()=>{$('#sRow').innerHTML='<button class="primary" id="sGo">去刷 10 分钟</button><button id="sNo">算了，回去</button>';
+      $('#sGo').onclick=()=>pass(10);$('#sNo').onclick=goBack});
+  },
+};
+function pick(r){
+  document.querySelectorAll('[data-r]').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
+  clearInterval(timer);document.title='先停一下 · 信息台';
+  if(!['video','stuck'].includes(r))mark(r);   // 这两个等写了内容再记
+  else if(!cur||!cur.r)mark(r);
+  handlers[r]();
+}
+document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>pick(b.dataset.r));
+
+/* ========== 统计 ========== */
+const RN={start:'进不去',stuck:'卡住',tired:'累/枯燥',reward:'奖励',video:'找视频',scroll:'就想刷',null:'没选'};
+function renderStats(){
+  const since=Date.now()-7*864e5;
+  const week=log.filter(x=>x.t>since&&x.r!=='done');
+  const dones=log.filter(x=>x.t>since&&x.r==='done').length;
+  const todayN=week.filter(x=>dstr(new Date(x.t))===today).length;
+  if(!week.length){$('#stats').innerHTML='<p class="muted">这周还没有记录。</p>';return}
+  const cnt={};week.forEach(x=>{const k=x.r??'null';cnt[k]=(cnt[k]||0)+1});
+  const max=Math.max(...Object.values(cnt));
+  const hours=Array(24).fill(0);week.forEach(x=>hours[new Date(x.t).getHours()]++);const hmax=Math.max(...hours,1);
+  $('#stats').innerHTML='<p class="muted">近 7 天想点开 B站 '+week.length+' 次（今天 '+todayN+' 次），完成小段 '+dones+' 个。</p>'
+    +'<div class="bars" style="margin-top:8px">'+Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<div><span class="n">'+RN[k]+'</span><span class="b" style="width:'+(v/max*70)+'%"></span><span>'+v+'</span></div>').join('')+'</div>'
+    +'<p class="muted" style="margin-top:12px">按钟点</p><div class="hours">'+hours.map(h=>'<i style="height:'+(h/hmax*100)+'%"></i>').join('')+'</div><div class="hlabels"><span>0</span><span>6</span><span>12</span><span>18</span><span>23</span></div>'
+    +'<div class="row"><button id="exp">复制这周记录（发给 Claude 一起复盘）</button></div>';
+  $('#exp').onclick=()=>{
+    const lines=log.filter(x=>x.t>since).map(x=>{const d=new Date(x.t);return dstr(d).slice(5)+' '+hm(d)+' '+(x.r==='done'?'✓完成':RN[x.r??'null'])+(x.note?'：'+x.note:'')});
+    copy('这是我这周「想点开B站」的记录，帮我看看规律、下周重点调整哪一种情况：\n'+lines.join('\n'))};
+}
+renderStats();
+
+/* ========== 工作安排（解密 ../work.enc，密码和信息台共用） ========== */
+const b64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+async function dec(box,pw){const k0=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(box.salt),iterations:box.iter,hash:'SHA-256'},k0,{name:'AES-GCM',length:256},false,['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(box.iv)},k,b64(box.ct))))}
+const workDone=LS.get('workDone',{});
+const kid=(l,i)=>l.id+'|'+(i.date||'')+'|'+i.text;
+function renderWork(plan){
+  const all=[];plan.lines.forEach(l=>(l.items||[]).forEach(i=>all.push([l,i])));
+  const list=all.filter(([l,i])=>i.date&&i.date<=today&&i.kind!=='deadline'&&!(i.date<today&&workDone[kid(l,i)])&&(i.kind!=='read'||i.date===today));
+  todayItems=list.filter(([l,i])=>!workDone[kid(l,i)]).map(([l,i])=>i.text);
+  $('#workBody').innerHTML=list.length?'<ul class="todo">'+list.map(([l,i])=>{const d=workDone[kid(l,i)];
+      return '<li class="'+(d?'done':'')+'"><span>'+esc(i.text)+'<span class="tag">'+esc(l.title)+'</span>'+(i.date<today?'<span class="tag">逾期</span>':'')+'</span>'
+        +(d?'':'<button data-t="'+esc(i.text)+'">设为下一步</button>')+'</li>'}).join('')+'</ul>'
+    :'<p class="muted">今天没有排定的事。</p>';
+  $('#workBody').querySelectorAll('button[data-t]').forEach(b=>b.onclick=()=>{card={task:b.dataset.t,end:'',step:''};saveCard();renderCard(true);$('#card').scrollIntoView({behavior:'smooth'});$('#cEnd').focus()});
+  if(todayItems.length)$('#workDetails').open=true;
+  renderSuggest();
+}
+async function unlock(pw,silent){
+  try{const box=await (await fetch('../work.enc',{cache:'no-store'})).json();const plan=await dec(box,pw);
+    try{localStorage.setItem('workPass',pw)}catch(e){};renderWork(plan)}
+  catch(e){if(!silent){const i=$('#wpw');if(i){i.value='';i.placeholder='密码不对，再试一次'}}}
+}
+let saved='';try{saved=localStorage.getItem('workPass')||''}catch(e){}
+if(saved)unlock(saved,true);
+else{$('#workBody').innerHTML='<form id="wf" class="row" style="margin-top:0"><input id="wpw" type="password" placeholder="输入信息台「工作」的密码" style="flex:1;width:auto"><button class="primary">解锁</button></form><p class="note">这台电脑上解锁一次就会记住。</p>';
+  $('#wf').onsubmit=e=>{e.preventDefault();unlock($('#wpw').value.trim())}}
+
+/* 标题随来源变一下 */
+if(from==='popular')$('#title').textContent='热门榜也没有底。先停一下。';
+})();
+</script>
+</body>
+</html>
