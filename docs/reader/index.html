@@ -192,6 +192,21 @@ details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);
   body.has-side #selbar{bottom:calc(var(--peekH) + 8px)}
 }
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:60;max-width:90vw}
+
+/* 对局 */
+.gsteps{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
+.gstep{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.gstep.on{background:var(--accent);color:#fff;font-weight:600}
+.gstep.ok{background:var(--blue-soft);color:var(--blue)}
+.gconf{display:flex;align-items:center;gap:10px;margin:6px 0}.gconf input{flex:1}.gconf b{min-width:44px;text-align:right}
+.gbet{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:15px}
+.gq{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:8px;font-size:14.5px}
+.gq textarea,.gq input{margin-top:6px}
+.gans{font-size:13.5px;color:var(--muted);margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.gev{font-size:13.5px;border-left:3px solid var(--blue);padding:3px 8px;margin:6px 0}
+.gdiff{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:15px;line-height:1.7}
+.gdiff del{background:#f3c9bd;color:#7a2a12;text-decoration:line-through}
+.gdiff ins{background:#cfe8d3;color:#1d5a2a;text-decoration:none}
 </style>
 </head>
 <body>
@@ -218,6 +233,7 @@ details.ai{margin-top:12px}details.ai summary{font-size:13px;color:var(--muted);
     <button class="ib" id="bBack">‹</button>
     <div class="title" id="title"></div>
     <button class="ib" id="bToc">目录</button>
+    <button class="ib" id="bGame">对局</button>
     <button class="ib" id="bStudy">研究</button>
     <button class="ib" id="bNotes">笔记</button>
     <button class="ib" id="bFont">Aa</button>
@@ -1176,6 +1192,7 @@ async function importPack(j){
   if(j.questions){d.questions=d.questions||[];let c=0;for(const q of j.questions){if(!d.questions.some(x=>x.id===q.id)){d.questions.push({done:false,at:Date.now(),...q});c++}}n.push(c+' 个导读问题/任务')}
   if(j.glossary){d.glossary=d.glossary||[];let c=0;for(const g of j.glossary){if(!d.glossary.some(x=>x.term===g.term)){d.glossary.push({id:g.id||uid(),at:Date.now(),page:0,...g});c++}}n.push(c+' 个术语')}
   if(j.biblio){d.biblio=d.biblio||{};for(const [k,v] of Object.entries(j.biblio))if(v&&(!d.biblio[k]||j.biblioOverwrite))d.biblio[k]=v;n.push('书目信息')}
+  if(j.rounds){d.rounds=d.rounds||[];let c=0;for(const r of j.rounds){const i=d.rounds.findIndex(x=>x.id===r.id);if(i<0){d.rounds.push(r);c++}else{d.rounds[i]={...r,st:d.rounds[i].st}}}n.push(c+' 个对局')}
   if(j.archive){d.archives=d.archives||[];const a=j.archive;if(!d.archives.some(x=>x.id===a.id))d.archives.push(a);S.arcRefs=arcRefs(d)}
   await dput('docs',d);rerenderLoaded();toast('学习包已导入：'+n.join('、'),4000);qSheet()}
 
@@ -1191,7 +1208,7 @@ $('#shX').onclick=()=>closeSheet();$('#mask').onclick=()=>closeSheet();
 /* ---------- 多设备同步（GitHub 私有仓库） ---------- */
 const SY={busy:false,again:false,timer:null,applying:false,cache:new Map(),tomb:{},chatUp:{},remote:null,files:{},uploading:false,down:{}};
 const SYNC_META=['study','guides','biblio','tutorLog','page'];
-const SYNC_ARR=['glossary','cites','questions','archives'];
+const SYNC_ARR=['glossary','cites','questions','archives','rounds'];
 const syncCfg=()=>({repo:ls.get('syRepo',''),token:ls.get('syToken','')});
 const syncOn=()=>{const c=syncCfg();return !!(c.repo&&c.token)};
 const upOf=x=>x?(x.up||x.at||0):0;
@@ -1378,5 +1395,6 @@ async function deleteRemoteFile(fp){const f=SY.files[fp]||(SY.remote&&(SY.remote
   if(syncOn()){syncStatus(ls.get('syMsg','').startsWith('同步失败')?'⚠ 同步失败':'⟳');syncNow()}
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})})();
 </script>
+<script src="game.js?v=1"></script>
 </body>
 </html>
