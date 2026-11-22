@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../icon-192.png">
+<title>卡组 · 阅读器</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6; --chip:#efe9e0;
+  --paper:#f3ebdc;
+  --labor:#c2402a; --capital:#2f5d8a; --neutral:#3d7a4a; --combo:#9a5b1e;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29; --chip:#2a2825; --paper:#24211d;
+  --labor:#e57a55; --capital:#7fb0de; --neutral:#7cc28a; --combo:#d9a05b;
+}}
+:root[data-theme=dark]{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29; --chip:#2a2825; --paper:#24211d;
+  --labor:#e57a55; --capital:#7fb0de; --neutral:#7cc28a; --combo:#d9a05b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+header h1{font-size:22px;flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--chip);font-size:14px;white-space:nowrap;text-decoration:none}
+.sub{color:var(--muted);font-size:14px;margin-bottom:14px}
+.state{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.side{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;border-left:4px solid}
+.side.labor{border-left-color:var(--labor)}.side.capital{border-left-color:var(--capital)}
+.side b{font-size:14px}.side span{font-size:13.5px;color:var(--muted);margin-right:10px;white-space:nowrap}
+.side span em{font-style:normal;color:var(--ink);font-weight:600}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:4px 11px;border-radius:999px;background:var(--chip);font-size:14px}
+.chip.on{background:var(--ink);color:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+@media (max-width:520px){.grid{grid-template-columns:1fr 1fr;gap:12px}}
+
+/* 卡牌 */
+.card{perspective:1200px;aspect-ratio:3/4;border-radius:14px;outline:none}
+.card .in{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.card.flip .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:14px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.front{border:5px solid var(--fc)}
+.front img{width:100%;height:100%;object-fit:cover;display:block;background:var(--paper)}
+.badge{position:absolute;left:8px;top:8px;display:flex;gap:4px}
+.badge i{font-style:normal;font-size:11.5px;padding:2px 7px;border-radius:999px;background:rgba(20,18,16,.72);color:#f6efe3;backdrop-filter:blur(2px)}
+.tag-rust{position:absolute;right:8px;top:8px;font-size:11.5px;padding:2px 7px;border-radius:999px;background:#8a3b12;color:#fff}
+.name{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;font-size:14px;font-weight:700;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.72));text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.back{transform:rotateY(180deg);background:var(--paper);border:5px solid var(--fc);display:flex;flex-direction:column;font-size:13px;line-height:1.55}
+.back .hd{padding:9px 11px 7px;border-bottom:2px solid var(--fc)}
+.back .hd h3{font-size:15px;line-height:1.35}
+.back .hd .k{font-size:12px;color:var(--muted)}
+.back .bd{flex:1;overflow:auto;padding:8px 11px 10px;-webkit-overflow-scrolling:touch}
+.q{font-family:"Courier New",Courier,"Noto Sans Mono",monospace;font-size:12.5px;background:rgba(255,255,255,.45);border-left:3px solid var(--fc);padding:5px 8px;margin:4px 0 2px;border-radius:0 6px 6px 0}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]) .q{background:rgba(0,0,0,.25)}}
+:root[data-theme=dark] .q{background:rgba(0,0,0,.25)}
+.src{font-size:11.5px;color:var(--muted);margin-bottom:6px}
+.src .ok{color:var(--neutral);font-weight:700}
+.lb{font-weight:700;font-size:12px;color:var(--fc);margin-top:6px}
+.todo{color:var(--muted);font-style:italic}
+.rustbox{margin-top:8px;padding:6px 8px;border:1px dashed #8a3b12;border-radius:8px;font-size:12.5px}
+.ft{padding:6px 11px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;gap:6px;align-items:center}
+.ft button,.ft a{font-size:11.5px;text-decoration:underline;color:var(--muted)}
+.empty{color:var(--muted);text-align:center;padding:40px}
+.help{color:var(--muted);font-size:13px;margin-top:18px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>卡组</h1>
+    <a class="btn" href="./">← 阅读器</a>
+  </header>
+  <div class="sub" id="sub"></div>
+  <div class="state" id="state"></div>
+  <div class="chips" id="flt"></div>
+  <div class="grid" id="grid"></div>
+  <p class="help">点击卡牌翻面。锈蚀的卡代表读错了的证据，修正理解后会变回干净的正面。</p>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+(function(){try{const t=JSON.parse(localStorage.getItem('theme')||'""');if(t)document.documentElement.dataset.theme=t}catch(e){}})();
+
+const FACTION={labor:['劳方','--labor'],capital:['资方','--capital'],neutral:['证据·中立','--neutral'],combo:['组合技','--combo']};
+const RARITY={ore:'🪨 铁矿石',pig:'🔶 生铁',steel:'⚪ 钢',pending:'待判定'};
+const FILTERS=[['all','全部'],['labor','劳方'],['capital','资方'],['neutral','证据·中立'],['combo','组合技'],['rust','锈蚀']];
+let deck=null,flt='all',showRust={};
+
+fetch('cards/deck.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{deck=d;render()}).catch(()=>{$('#grid').innerHTML='<div class="empty">卡组数据加载失败</div>'});
+
+function render(){
+  $('#sub').textContent=`${deck.deck} · ${deck.stage} · 更新于 ${deck.updated}`;
+  const st=(k,o)=>`<div class="side ${k}"><b>${FACTION[k][0]}</b><br>${Object.entries(o).map(([a,b])=>`<span>${esc(a)} <em>${esc(b)}</em></span>`).join('')}</div>`;
+  $('#state').innerHTML=st('labor',deck.state.labor)+st('capital',deck.state.capital);
+  $('#flt').innerHTML=FILTERS.map(([k,t])=>`<button class="chip ${k===flt?'on':''}" data-k="${k}">${t}</button>`).join('');
+  const list=deck.cards.filter(c=>flt==='all'||(flt==='rust'?(c.pair&&c.status==='rusted'):c.faction===flt));
+  $('#grid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">这一类还没有卡</div>';
+}
+
+function card(c){
+  const rusted=c.pair&&c.status==='rusted';
+  const viewRust=rusted||showRust[c.id];
+  const name=viewRust&&c.rust?c.rust.name:c.name;
+  const img=viewRust&&c.rust?c.rust.img:c.img;
+  const [fn,fv]=FACTION[c.faction];
+  const quotes=(c.quotes||[]).map(q=>`<div class="q">${esc(q.de)}</div><div class="src">— ${esc(q.src)} ${q.verified?'<span class="ok">✓ 已核对</span>':'<span>待核对</span>'}</div>`).join('');
+  let rustInfo='';
+  if(c.pair&&c.rust){
+    rustInfo=`<div class="rustbox"><b>锈面「${esc(c.rust.name)}」</b><br>${esc(c.rust.misread)}<br>${rusted?esc(c.rust.unlock||''):esc(c.rust.fixed||'')}</div>`;
+  }
+  const backName=rusted?`${esc(c.rust.name)} <span class="k">（锈蚀，修正后为「${esc(c.name)}」）</span>`:esc(c.name);
+  return `<div class="card" tabindex="0" role="button" aria-label="${esc(name)}，点击翻面" data-id="${c.id}" style="--fc:var(${fv})">
+    <div class="in">
+      <div class="face front">
+        <img src="cards/${esc(img)}" alt="${esc(name)}" loading="lazy">
+        <div class="badge"><i>${fn}</i><i>${RARITY[c.rarity]||''}</i></div>
+        ${rusted?'<div class="tag-rust">待修正</div>':''}
+        <div class="name">${esc(name)}</div>
+      </div>
+      <div class="face back">
+        <div class="hd"><h3>${backName}</h3><div class="k">${fn} · ${esc(c.type)} · ${RARITY[c.rarity]||''}</div></div>
+        <div class="bd">
+          ${quotes}
+          <div class="lb">效果</div><div>${esc(c.effect)}</div>
+          ${c.side?`<div class="lb">副作用 / 限制</div><div>${esc(c.side)}</div>`:''}
+          <div class="lb">我的转述</div><div>${c.paraphrase?esc(c.paraphrase):'<span class="todo">待你用自己的话写</span>'}</div>
+          ${rustInfo}
+        </div>
+        <div class="ft"><span>${esc(c.dropped)}</span>
+          <span>${c.pair&&c.status==='corrected'?`<button data-rust="${c.id}">${showRust[c.id]?'看正面':'看锈面'}</button> · `:''}<a href="cards/${esc(img)}" target="_blank" rel="noopener">原图</a></span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+document.addEventListener('click',e=>{
+  const f=e.target.closest('#flt .chip');if(f){flt=f.dataset.k;render();return}
+  const r=e.target.closest('[data-rust]');if(r){e.stopPropagation();const id=r.dataset.rust;showRust[id]=!showRust[id];render();return}
+  if(e.target.closest('.ft a'))return;
+  const c=e.target.closest('.card');if(c)c.classList.toggle('flip');
+});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('card')){e.preventDefault();e.target.classList.toggle('flip')}
+});
+</script>
+</body>
+</html>

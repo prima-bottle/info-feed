@@ -1,0 +1,150 @@
+{
+  "deck": "杜伊斯堡视频 · 阅读游戏",
+  "stage": "第 1 关 · 社会计划的战场",
+  "updated": "2026-11-22",
+  "state": {
+    "labor": {"组织度": 4, "激进度": 4, "公众支持": 5},
+    "capital": {"时间": 6, "公众支持": 4}
+  },
+  "cards": [
+    {
+      "id": "buy-time",
+      "name": "用以购买时间的提前退休证明",
+      "faction": "capital",
+      "type": "机制卡",
+      "rarity": "pending",
+      "img": "img/buy-time.webp",
+      "quotes": [
+        {"de": "Dahinter stand auch die Absicht, dem harten Kern militanter Aktivisten die Basis zu entziehen …", "src": "Raphael 2019, S. 193", "verified": true},
+        {"de": "… Frühverrentungsregelungen als Ausweg für ältere Industriearbeiter beschlossen und damit nicht zuletzt den Sozialprotesten dieser Jahre die Spitze nahmen …", "src": "Raphael 2019, S. 240", "verified": true}
+      ],
+      "effect": "对方组织度 −2，激进度 −1；己方时间 +2。",
+      "side": "",
+      "paraphrase": "",
+      "dropped": "第 1 周 · 回溯发卡（第 1–5 局）"
+    },
+    {
+      "id": "flex-hours",
+      "name": "灵活工时协议",
+      "faction": "capital",
+      "type": "机制卡",
+      "rarity": "pending",
+      "img": "img/flex-hours.webp",
+      "quotes": [
+        {"de": "Wesentlicher Erfolg für die Unternehmerseite war aber, dass per Betriebsvereinbarung die Wochenarbeitszeit variabel gestaltet werden konnte …", "src": "Raphael 2019, S. 189", "verified": true}
+      ],
+      "effect": "谈判下放到工厂层面：对方组织度 −1；己方时间 +1。",
+      "side": "",
+      "paraphrase": "Die Arbeitgeber erzielten auch ihren Erfolg, dass sie die Arbeitskraft in einem Zeitraum flexibler einsetzen konnten.",
+      "dropped": "第 1 周 · 回溯发卡（第 3 局）"
+    },
+    {
+      "id": "safety-island",
+      "name": "工厂安全岛",
+      "faction": "capital",
+      "type": "机制卡",
+      "rarity": "pending",
+      "img": "img/safety-island.webp",
+      "quotes": [
+        {"de": "Der Industriebetrieb als Stabilitätsanker und als Gegenwelt zu den Distanz- und Ohnmachtserfahrungen in Gesellschaft und Politik …", "src": "Raphael 2019, S. 418", "verified": true}
+      ],
+      "effect": "岛内：己方公众支持 +1，对方激进度 −1。",
+      "side": "岛外的人不受保护：与“转包链”类卡同时在场时，效果反转。",
+      "paraphrase": "",
+      "dropped": "第 1 周 · 回溯发卡（第 7 章）"
+    },
+    {
+      "id": "mobilisation-traces",
+      "name": "动员的痕迹",
+      "faction": "labor",
+      "type": "证据卡",
+      "rarity": "pending",
+      "img": "img/mobilisation-traces.webp",
+      "quotes": [
+        {"de": "Vor allem in den Frühverrentungslösungen, die in die Sozialpläne vieler Krisenbranchen Eingang fanden, kann man die direkten lebenspraktischen Spuren dieser Mobilisierungsereignisse wiedererkennen.", "src": "Raphael 2019, S. 193", "verified": true}
+      ],
+      "effect": "己方公众支持 +1；可抵消一张“社会计划是恩赐”类叙事卡。",
+      "side": "双刃：同一页紧接着就是“购买时间”的那一句。",
+      "paraphrase": "",
+      "dropped": "第 1 周 · 回溯发卡（第 4 局）"
+    },
+    {
+      "id": "riesenbeteiligung",
+      "name": "巨大的参与和热情",
+      "faction": "labor",
+      "type": "证据卡",
+      "rarity": "pig",
+      "img": "img/riesenbeteiligung.webp",
+      "quotes": [
+        {"de": "Im Streik hat man einfach … unter den Stahlarbeitern Solidarität gespürt. Also, wir hatten eine Riesenbeteiligung und auch … eine Begeisterung.", "src": "《Hüttenfunk》[00:23]，Willi Segerath", "verified": true}
+      ],
+      "effect": "己方激进度 +1：证明钢铁工人中确实存在过斗争性。",
+      "side": "限制：查清是哪一次罢工之前，不能用于 1985 年梅德里希的论证。",
+      "paraphrase": "工会代表提到了抗争，而且说工人高度参与，对罢工有热情。",
+      "dropped": "第 1 周 · 局 1（小胜）"
+    },
+    {
+      "id": "erosion",
+      "pair": true,
+      "status": "corrected",
+      "faction": "capital",
+      "type": "证据卡",
+      "rarity": "ore",
+      "name": "劳动的侵蚀",
+      "img": "img/erosion-clean.webp",
+      "rust": {
+        "name": "衣服上的东西",
+        "img": "img/erosion-rust.webp",
+        "misread": "当时理解为：工厂工人反对长工时是共识。",
+        "fixed": "第 1 周 · 局 1 德语练习：正确理解了这句话。"
+      },
+      "quotes": [
+        {"de": "Und man merkte schon selbst in jungen Jahren: Das bleibt, je länger man dabei ist, nicht in den Klamotten stecken.", "src": "《Hüttenfunk》[00:49]", "verified": true}
+      ],
+      "effect": "资方公众支持 +1：劳动对身体的消耗，让“提前退休是解脱”的说法更有说服力。",
+      "side": "",
+      "paraphrase": "热、毒气、灰尘不会只留在衣服上，会进入身体。",
+      "dropped": "第 1 周 · 局 1"
+    },
+    {
+      "id": "not-silent",
+      "pair": true,
+      "status": "rusted",
+      "faction": "neutral",
+      "type": "证据卡",
+      "rarity": "pending",
+      "name": "并非悄无声息",
+      "img": "img/not-silent-clean.webp",
+      "rust": {
+        "name": "说削就削",
+        "img": "img/not-silent-rust.webp",
+        "misread": "当时理解为：政府说削减社会福利就削减，工会只能被动应付。",
+        "unlock": "修正条件：在收拢文档里用自己的话正确重写 S. 238 f. 这一句。"
+      },
+      "quotes": [
+        {"de": "Der Abbau dieser Netze sozialer Sicherheit vollzog sich dann in den 1980er und 1990er Jahren keineswegs lautlos, sondern war ein politisch hoch umstrittener Prozess.", "src": "Raphael 2019, S. 238 f.", "verified": true}
+      ],
+      "effect": "修正后：揭示削减是一个被争夺的过程，劳方公众支持 +1。",
+      "side": "锈蚀状态：使用时己方可信度 −1。",
+      "paraphrase": "",
+      "dropped": "第 1 周 · 第 6 局（第 4 章）"
+    },
+    {
+      "id": "three-layers",
+      "name": "三层瓦解机制",
+      "faction": "combo",
+      "type": "组合技",
+      "rarity": "pending",
+      "img": "img/three-layers.webp",
+      "quotes": [
+        {"de": "保留箭矢：… in der Defensive, hatten aber ihre Organisation auf einem deutlich höheren Niveau stabilisiert …", "src": "Raphael 2019, S. 244", "verified": true},
+        {"de": "挫其锋锐：… dem harten Kern militanter Aktivisten die Basis zu entziehen … / … den Sozialprotesten dieser Jahre die Spitze nahmen …", "src": "Raphael 2019, S. 193 / S. 240", "verified": true},
+        {"de": "画歪靶子：… per Betriebsvereinbarung die Wochenarbeitszeit variabel gestaltet …", "src": "Raphael 2019, S. 189", "verified": true}
+      ],
+      "effect": "需同时持有组成卡。使用时：对方激进度 −2，组织度 −1。",
+      "side": "“画歪靶子”一层目前更多是你的判断：S. 189 只直接支撑“谈判下放到工厂层面”。",
+      "paraphrase": "瓦解意味着削弱内部组织度，卸除工人斗争对社会的即时冲击和颠覆诉求，用争取来的时间软化抗争，把斗争的方向限缩到制度可控的范围内。",
+      "dropped": "第 1 周 · 收拢局"
+    }
+  ]
+}
