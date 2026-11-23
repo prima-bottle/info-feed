@@ -69,7 +69,7 @@ async function gameSheet(id){
       <textarea data-rc="${i}" style="min-height:44px" placeholder="先凭记忆写，不看笔记" ${a.shown?'disabled':''}>${esc(a.a||'')}</textarea>
       ${a.shown?`<div class="gans">参考：${esc(q.a)}　${a.ok==null?`<button class="btn sm" data-ok="${i}|1">✓ 想起来了</button><button class="btn sm" data-ok="${i}|0">✗ 没想起</button>`:(a.ok?'✓ 想起来了':'✗ 没想起')}</div>`:`<button class="btn sm" data-show="${i}">看参考</button>`}</div>`}).join('');
   const cps=(r.checkpoints||[]).map((c,i)=>`<div class="gq"><a class="pl" data-p="${c.page}" href="#">p.${c.page} ↗</a> ${esc(c.q)}
-      <input data-cp="${i}" value="${esc((st.cp||{})[i]||'')}" placeholder="一行就够"></div>`).join('');
+      <div class="row"><input data-cp="${i}" value="${esc((st.cp||{})[i]||'')}" placeholder="一行就够"><button class="btn sm" data-cps="${i}">保存</button></div></div>`).join('');
   const chat=st.chat||[];
   const d=st.bet&&st.revised?gDiff(st.bet.text,st.revised.text):null;
   sideSheet('对局',`
@@ -79,7 +79,7 @@ async function gameSheet(id){
 
     <div class="lbl" id="gS1">① 押注：读之前，你现在的立场</div>
     ${st.bet?`<div class="gbet">${esc(st.bet.text)}<span class="muted">　把握 ${st.bet.conf}%</span></div>`:
-      `<textarea id="gBet" style="min-height:56px" placeholder="一句话。押了就不能改，读完再改写"></textarea>${conf('gBetC')}<div class="row"><button class="btn pri" id="gBetGo">押注</button></div>`}
+      `<textarea id="gBet" style="min-height:56px" placeholder="一句话。押了就不能改，读完再改写">${esc((st.drafts||{}).bet||'')}</textarea>${conf('gBetC')}<div class="row"><button class="btn pri" id="gBetGo">押注</button></div>`}
 
     ${(r.recall||[]).length&&st.bet?`<div class="lbl" id="gS2">② 热身：凭记忆回答</div>${recall}${!st.recallDone?`<div class="row"><button class="btn" id="gRcDone">热身完成</button></div>`:''}`:''}
 
@@ -91,57 +91,63 @@ async function gameSheet(id){
     ${ev.length?ev.map(n=>`<div class="gev"><a class="pl" data-p="${n.page||((n.sec??0)+1)}" href="#">${esc(locLabel(n))}</a> 「${esc((n.quote||'').slice(0,160))}」${n.text?`<div class="muted">${esc(n.text)}</div>`:''}</div>`).join(''):'<p class="muted" style="font-size:13.5px">在正文里选中文字点“划线”，就会出现在这里。不用另外抄。</p>'}
     <div class="lbl">查错：局包或 AI 说错的地方</div>
     ${(st.catches||[]).map(c=>`<div class="gev">🔍 ${esc(c.text)}</div>`).join('')}
-    <div class="row"><input id="gCatch" placeholder="例：地图说 p.41 讲的是……，其实原文是……"><button class="btn sm" id="gCatchGo">记下</button></div>
+    <div class="row"><input id="gCatch" value="${esc((st.drafts||{}).catch||'')}" placeholder="例：地图说 p.41 讲的是……，其实原文是……"><button class="btn sm" id="gCatchGo">记下</button></div>
     ${!st.readDone?`<div class="row"><button class="btn pri" id="gReadDone">读完了，进入对决</button></div>`:''}`:''}
 
     ${st.readDone?`
     <div class="lbl" id="gS4">④ 对决（不限时、不限句数）</div>
     <div id="gc">${chat.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
-    ${chat.length?`<textarea id="gIn" placeholder="回击。可以贴原文、写页码"></textarea><div class="row"><button class="btn pri" id="gGo">发送</button></div>`:`<div class="row"><button class="btn pri" id="gStart">开始对决</button></div>`}`:''}
+    ${chat.length?`<textarea id="gIn" placeholder="回击。可以贴原文、写页码">${esc((st.drafts||{}).duel||'')}</textarea><div class="row"><button class="btn pri" id="gGo">发送</button></div>`:`<div class="row"><button class="btn pri" id="gStart">开始对决</button></div>`}`:''}
 
     ${chat.length>=2?`
     <div class="lbl" id="gS5">⑤ 改写：现在的立场</div>
     ${st.revised?`<div class="gdiff"><div class="muted" style="font-size:12.5px">押注 · ${st.bet.conf}%</div><div>${d.a}</div><div class="muted" style="font-size:12.5px;margin-top:6px">改写 · ${st.revised.conf}%</div><div>${d.b}</div></div>
       <div class="row"><button class="btn sm" id="gReEdit">再改一次</button>${!st.verdict?'<button class="btn pri sm" id="gJudge">请求判定</button>':''}</div>`:
-      `<textarea id="gRev" style="min-height:56px">${esc(st.bet.text)}</textarea>${conf('gRevC',st.bet.conf)}<div class="row"><button class="btn pri" id="gRevGo">提交改写</button></div>`}
+      `<textarea id="gRev" style="min-height:56px">${esc((st.drafts||{}).rev??st.bet.text)}</textarea>${conf('gRevC',st.bet.conf)}<div class="row"><button class="btn pri" id="gRevGo">提交改写</button></div>`}
     ${st.verdict?`<div class="lbl">判定</div><div class="guide">${fmt(st.verdict)}</div>`:''}`:''}
   `);
   const sb=$('#shB');
   {const keep=GSCROLL&&GSCROLL.id===r.id&&GSCROLL.step===step;const tgt=$('#gS'+step);
    if(keep)sb.scrollTop=GSCROLL.top;else if(tgt&&step>1)tgt.scrollIntoView({block:'start'});
    GSCROLL={id:r.id,step,top:sb.scrollTop};sb.onscroll=()=>{GSCROLL.top=sb.scrollTop}}
+  const RR=()=>gRounds().find(y=>y.id===r.id)||r,ST=()=>gNow(RR());
   const bindConf=id=>{const x=$('#'+id);if(x)x.oninput=()=>$('#'+id+'V').textContent=x.value+'%'};bindConf('gBetC');bindConf('gRevC');
   sb.onclick=async e=>{
     const pl=e.target.closest('a.pl');if(pl){e.preventDefault();closeSheet();goPage(+pl.dataset.p);setBack('← 回到对局',()=>gameSheet(r.id));return}
     const go=e.target.closest('[data-go]');if(go){const t=$('#gS'+go.dataset.go);if(t)t.scrollIntoView({block:'start',behavior:'smooth'});else toast('这一步还没解锁');return}
     const rb=e.target.closest('[data-r]');if(rb){gameSheet(rb.dataset.r);return}
     if(e.target.id==='gLog'){gLogSheet();return}
-    const sh=e.target.closest('[data-show]');if(sh){const i=+sh.dataset.show;st.recall=st.recall||[];const ta=sb.querySelector(`[data-rc="${i}"]`);st.recall[i]={a:ta.value.trim(),shown:true};await gSave();gameSheet(r.id);return}
-    const ok=e.target.closest('[data-ok]');if(ok){const [i,v]=ok.dataset.ok.split('|');st.recall[+i].ok=v==='1';await gSave();gameSheet(r.id);return}
+    const sh=e.target.closest('[data-show]');if(sh){const i=+sh.dataset.show;ST().recall=ST().recall||[];const ta=sb.querySelector(`[data-rc="${i}"]`);ST().recall[i]={a:ta.value.trim(),shown:true};await gSave();gameSheet(r.id);return}
+    const ok=e.target.closest('[data-ok]');if(ok){const [i,v]=ok.dataset.ok.split('|');ST().recall[+i].ok=v==='1';await gSave();gameSheet(r.id);return}
   };
-  sb.querySelectorAll('[data-cp]').forEach(x=>x.onchange=async()=>{st.cp=st.cp||{};st.cp[x.dataset.cp]=x.value.trim();await gSave()});
+  // 输入即保存（停顿 0.6 秒），另有“保存”按钮；不会因为同步或翻页丢字
+  const saveCp=async x=>{const t=ST();t.cp=t.cp||{};t.cp[x.dataset.cp]=x.value.trim();await gSave()};
+  let cpT=null;sb.querySelectorAll('[data-cp]').forEach(x=>{x.oninput=()=>{clearTimeout(cpT);cpT=setTimeout(()=>saveCp(x),600)};x.onchange=()=>saveCp(x)});
+  sb.querySelectorAll('[data-cps]').forEach(bt=>bt.onclick=async()=>{const x=sb.querySelector(`[data-cp="${bt.dataset.cps}"]`);clearTimeout(cpT);await saveCp(x);bt.textContent='已保存 ✓';setTimeout(()=>bt.textContent='保存',1500)});
+  const draft=(id,k)=>{const x=$('#'+id);if(!x)return;let t=null;x.oninput=()=>{clearTimeout(t);t=setTimeout(async()=>{const o=ST();o.drafts=o.drafts||{};o.drafts[k]=x.value;await gSave()},600)}};
+  draft('gBet','bet');draft('gCatch','catch');draft('gRev','rev');draft('gIn','duel');
   const on=(id,f)=>{const b=$('#'+id);if(b)b.onclick=f};
-  on('gBetGo',async()=>{const t=$('#gBet').value.trim();if(!t){toast('先写一句立场');return}st.bet={text:t,conf:+$('#gBetC').value,at:Date.now()};await gSave();gameSheet(r.id)});
-  on('gRcDone',async()=>{st.recallDone=true;await gSave();gameSheet(r.id)});
-  on('gCatchGo',async()=>{const t=$('#gCatch').value.trim();if(!t)return;st.catches=st.catches||[];st.catches.push({id:uid(),text:t,at:Date.now()});await gSave();gameSheet(r.id);toast('记下了，判定时会核对')});
-  on('gReadDone',async()=>{st.readDone=true;await gSave();gameSheet(r.id)});
+  on('gBetGo',async()=>{const t=$('#gBet').value.trim();if(!t){toast('先写一句立场');return}ST().bet={text:t,conf:+$('#gBetC').value,at:Date.now()};if(ST().drafts)delete ST().drafts.bet;await gSave();gameSheet(r.id)});
+  on('gRcDone',async()=>{ST().recallDone=true;await gSave();gameSheet(r.id)});
+  on('gCatchGo',async()=>{const t=$('#gCatch').value.trim();if(!t)return;ST().catches=ST().catches||[];ST().catches.push({id:uid(),text:t,at:Date.now()});if(ST().drafts)delete ST().drafts.catch;await gSave();gameSheet(r.id);toast('记下了，判定时会核对')});
+  on('gReadDone',async()=>{ST().readDone=true;await gSave();gameSheet(r.id)});
   const talk=async q=>{
-    st.chat=st.chat||[];const box=$('#gc');
-    if(q){st.chat.push({role:'user',content:q});box.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div>`)}
+    ST().chat=ST().chat||[];const box=$('#gc');
+    if(q){ST().chat.push({role:'user',content:q});box.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div>`)}
     box.insertAdjacentHTML('beforeend','<div class="msg a">…</div>');const out=box.lastElementChild;out.scrollIntoView({block:'nearest'});
-    const msgs=st.chat.length?st.chat.map(m=>({role:m.role,content:m.content})):[{role:'user',content:'我读完了，请发起攻击。'}];
+    const msgs=ST().chat.length?ST().chat.map(m=>({role:m.role,content:m.content})):[{role:'user',content:'我读完了，请发起攻击。'}];
     if(msgs[0].role!=='user')msgs.unshift({role:'user',content:'我读完了，请发起攻击。'});
-    try{const a=await claude({task:'tutor',max:1500,system:gSys(r,'duel'),messages:msgs,onText:t=>{out.innerHTML=fmt(t)}});st.chat.push({role:'assistant',content:a});await gSave();gameSheet(r.id);$('#gIn')&&$('#gIn').focus()}
-    catch(err){if(q)st.chat.pop();out.className='msg e';out.textContent=err.message}};
+    try{const a=await claude({task:'tutor',max:1500,system:gSys(RR(),'duel'),messages:msgs,onText:t=>{out.innerHTML=fmt(t)}});ST().chat.push({role:'assistant',content:a});await gSave();gameSheet(r.id);$('#gIn')&&$('#gIn').focus()}
+    catch(err){if(q)ST().chat.pop();out.className='msg e';out.textContent=err.message}};
   on('gStart',()=>talk(''));
-  on('gGo',()=>{const q=$('#gIn').value.trim();if(!q)return;$('#gIn').value='';talk(q)});
-  on('gRevGo',async()=>{const t=$('#gRev').value.trim();if(!t)return;st.revised={text:t,conf:+$('#gRevC').value,at:Date.now()};await gSave();gameSheet(r.id)});
-  on('gReEdit',async()=>{delete st.revised;delete st.verdict;await gSave();gameSheet(r.id)});
+  on('gGo',()=>{const q=$('#gIn').value.trim();if(!q)return;$('#gIn').value='';if(ST().drafts)delete ST().drafts.duel;talk(q)});
+  on('gRevGo',async()=>{const t=$('#gRev').value.trim();if(!t)return;ST().revised={text:t,conf:+$('#gRevC').value,at:Date.now()};if(ST().drafts)delete ST().drafts.rev;await gSave();gameSheet(r.id)});
+  on('gReEdit',async()=>{delete ST().revised;delete ST().verdict;await gSave();gameSheet(r.id)});
   on('gJudge',async()=>{const b=$('#gJudge');b.disabled=true;b.textContent='判定中…';
     const box=document.createElement('div');box.className='guide';sb.append(box);box.scrollIntoView({block:'nearest'});
-    const msgs=[...(st.chat||[]).map(m=>({role:m.role,content:m.content})),{role:'user',content:'请对这一局做判定。'+((st.catches||[]).length?'\n我记下的查错：\n'+st.catches.map(c=>'- '+c.text).join('\n'):'')}];
+    const msgs=[...(ST().chat||[]).map(m=>({role:m.role,content:m.content})),{role:'user',content:'请对这一局做判定。'+((ST().catches||[]).length?'\n我记下的查错：\n'+ST().catches.map(c=>'- '+c.text).join('\n'):'')}];
     if(msgs[0].role!=='user')msgs.unshift({role:'user',content:'（对决开始）'});
-    try{const v=await claude({task:'tutor',max:1800,system:gSys(r,'judge'),messages:msgs,onText:t=>{box.innerHTML=fmt(t)}});st.verdict=v;st.done=Date.now();await gSave();gameSheet(r.id)}
+    try{const v=await claude({task:'tutor',max:1800,system:gSys(RR(),'judge'),messages:msgs,onText:t=>{box.innerHTML=fmt(t)}});ST().verdict=v;ST().done=Date.now();await gSave();gameSheet(r.id)}
     catch(err){box.className='msg e';box.textContent=err.message;b.disabled=false;b.textContent='请求判定'}});
 }
 
