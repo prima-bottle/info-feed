@@ -99,6 +99,7 @@ async function gameSheet(id){
     ${st.readDone?`
     <div class="lbl" id="gS4">④ 对决（不限时、不限句数）</div>
     <div id="gc">${chat.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
+    ${chat.filter(m=>m.role==='user').length>=3&&!st.revised?'<div class="muted" style="font-size:13px;margin:6px 0">已经交锋 3 个回合。核心问题打完了就可以去 ⑤ 改写和结算；想继续也可以接着打。</div>':''}
     ${chat.length?`<textarea id="gIn" placeholder="回击。可以贴原文、写页码">${esc((st.drafts||{}).duel||'')}</textarea><div class="row"><button class="btn pri" id="gGo">发送</button></div>`:`<div class="row"><button class="btn pri" id="gStart">开始对决</button></div>`}`:''}
 
     ${chat.length>=2?`
