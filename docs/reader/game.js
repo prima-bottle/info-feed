@@ -3,7 +3,7 @@
    依赖 index.html 里的全局函数：$, esc, fmt, toast, uid, dput, sheet, claude, goPage, setBack, closeSheet, locLabel, S */
 
 const GKIND={read:'阅读局',testimony:'证词局',expedition:'远征局',boss:'Boss 战'};
-let GCUR=null;
+let GCUR=null,GSCROLL=null;
 
 function gRounds(){return (S.doc&&S.doc.rounds||[]).slice().sort((a,b)=>(a.no||0)-(b.no||0))}
 function gSave(){return dput('docs',S.doc)}
@@ -62,7 +62,7 @@ async function gameSheet(id){
   if(!rs.length){sideSheet('对局',`<p class="muted" style="font-size:14px">这本书还没有对局包。对局包会随同步出现在这里，也可以在“研究”里导入学习包。</p>`);return}
   const r=rs.find(x=>x.id===(id||GCUR))||rs.find(x=>!(x.st&&x.st.verdict))||rs[rs.length-1];GCUR=r.id;const st=gNow(r);
   const step=!st.bet?1:!st.recallDone&&(r.recall||[]).length?2:!st.readDone?3:!(st.chat||[]).length?4:5;
-  const pill=(n,t)=>`<span class="gstep ${step===n?'on':step>n?'ok':''}">${step>n?'✓':n} ${t}</span>`;
+  const pill=(n,t)=>`<span class="gstep ${step===n?'on':step>n?'ok':''}" data-go="${n}" style="cursor:pointer">${step>n?'✓':n} ${t}</span>`;
   const conf=(id,v)=>`<div class="gconf"><input type="range" id="${id}" min="0" max="100" step="5" value="${v??60}"><b id="${id}V">${v??60}%</b></div>`;
   const ev=gEvidence(r);
   const recall=(r.recall||[]).map((q,i)=>{const a=(st.recall||[])[i]||{};return `<div class="gq"><div>${i+1}. ${esc(q.q)}</div>
@@ -77,14 +77,14 @@ async function gameSheet(id){
     <div class="qhead"><b>局 ${r.no} · ${esc(r.title)}</b>　<span class="muted">${GKIND[r.kind]||''}${r.pages?` · p.${r.pages[0]}–${r.pages[1]}`:''}</span><br>${esc(r.question)}</div>
     <div class="gsteps">${pill(1,'押注')}${(r.recall||[]).length?pill(2,'热身'):''}${pill(3,'阅读')}${pill(4,'对决')}${pill(5,'改写')}</div>
 
-    <div class="lbl">① 押注：读之前，你现在的立场</div>
+    <div class="lbl" id="gS1">① 押注：读之前，你现在的立场</div>
     ${st.bet?`<div class="gbet">${esc(st.bet.text)}<span class="muted">　把握 ${st.bet.conf}%</span></div>`:
       `<textarea id="gBet" style="min-height:56px" placeholder="一句话。押了就不能改，读完再改写"></textarea>${conf('gBetC')}<div class="row"><button class="btn pri" id="gBetGo">押注</button></div>`}
 
-    ${(r.recall||[]).length&&st.bet?`<div class="lbl">② 热身：凭记忆回答</div>${recall}${!st.recallDone?`<div class="row"><button class="btn" id="gRcDone">热身完成</button></div>`:''}`:''}
+    ${(r.recall||[]).length&&st.bet?`<div class="lbl" id="gS2">② 热身：凭记忆回答</div>${recall}${!st.recallDone?`<div class="row"><button class="btn" id="gRcDone">热身完成</button></div>`:''}`:''}
 
     ${st.bet&&(st.recallDone||!(r.recall||[]).length)?`
-    <div class="lbl">③ 阅读</div>
+    <div class="lbl" id="gS3">③ 阅读</div>
     ${r.map?`<div class="guide">${fmt(r.map)}</div>`:''}
     ${cps?`<div class="muted" style="font-size:13px;margin:6px 0">每读完一处，回答一行“为什么”：</div>${cps}`:''}
     <div class="lbl">证据：本局范围内你的划线（${ev.length}）</div>
@@ -95,21 +95,25 @@ async function gameSheet(id){
     ${!st.readDone?`<div class="row"><button class="btn pri" id="gReadDone">读完了，进入对决</button></div>`:''}`:''}
 
     ${st.readDone?`
-    <div class="lbl">④ 对决（不限时、不限句数）</div>
+    <div class="lbl" id="gS4">④ 对决（不限时、不限句数）</div>
     <div id="gc">${chat.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${fmt(m.content)}</div>`).join('')}</div>
     ${chat.length?`<textarea id="gIn" placeholder="回击。可以贴原文、写页码"></textarea><div class="row"><button class="btn pri" id="gGo">发送</button></div>`:`<div class="row"><button class="btn pri" id="gStart">开始对决</button></div>`}`:''}
 
     ${chat.length>=2?`
-    <div class="lbl">⑤ 改写：现在的立场</div>
+    <div class="lbl" id="gS5">⑤ 改写：现在的立场</div>
     ${st.revised?`<div class="gdiff"><div class="muted" style="font-size:12.5px">押注 · ${st.bet.conf}%</div><div>${d.a}</div><div class="muted" style="font-size:12.5px;margin-top:6px">改写 · ${st.revised.conf}%</div><div>${d.b}</div></div>
       <div class="row"><button class="btn sm" id="gReEdit">再改一次</button>${!st.verdict?'<button class="btn pri sm" id="gJudge">请求判定</button>':''}</div>`:
       `<textarea id="gRev" style="min-height:56px">${esc(st.bet.text)}</textarea>${conf('gRevC',st.bet.conf)}<div class="row"><button class="btn pri" id="gRevGo">提交改写</button></div>`}
     ${st.verdict?`<div class="lbl">判定</div><div class="guide">${fmt(st.verdict)}</div>`:''}`:''}
   `);
   const sb=$('#shB');
+  {const keep=GSCROLL&&GSCROLL.id===r.id&&GSCROLL.step===step;const tgt=$('#gS'+step);
+   if(keep)sb.scrollTop=GSCROLL.top;else if(tgt&&step>1)tgt.scrollIntoView({block:'start'});
+   GSCROLL={id:r.id,step,top:sb.scrollTop};sb.onscroll=()=>{GSCROLL.top=sb.scrollTop}}
   const bindConf=id=>{const x=$('#'+id);if(x)x.oninput=()=>$('#'+id+'V').textContent=x.value+'%'};bindConf('gBetC');bindConf('gRevC');
   sb.onclick=async e=>{
     const pl=e.target.closest('a.pl');if(pl){e.preventDefault();closeSheet();goPage(+pl.dataset.p);setBack('← 回到对局',()=>gameSheet(r.id));return}
+    const go=e.target.closest('[data-go]');if(go){const t=$('#gS'+go.dataset.go);if(t)t.scrollIntoView({block:'start',behavior:'smooth'});else toast('这一步还没解锁');return}
     const rb=e.target.closest('[data-r]');if(rb){gameSheet(rb.dataset.r);return}
     if(e.target.id==='gLog'){gLogSheet();return}
     const sh=e.target.closest('[data-show]');if(sh){const i=+sh.dataset.show;st.recall=st.recall||[];const ta=sb.querySelector(`[data-rc="${i}"]`);st.recall[i]={a:ta.value.trim(),shown:true};await gSave();gameSheet(r.id);return}
