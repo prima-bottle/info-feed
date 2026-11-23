@@ -1,12 +1,5 @@
 [
  {
-  "id": "u13",
-  "title": "多部门联合印发《实施全面节约战略行动方案》，人民日报和政府网转发。条目只有标题，没有具体措施，官方定调是“节约”。",
-  "keywords": [],
-  "context": "多部门联合印发《实施全面节约战略行动方案》，人民日报和政府网转发。条目只有标题，没有具体措施，官方定调是“节约”。\n来源：中国政府网\nhttps://news.google.com/rss/articles/CBMid0FVX3lxTE1MTHoyVGllWnFCa0t0bXpWYm0waWpvcm5QZTUyRm82M252OFNHR3lHVWUzRGd4ZmwzYU13cEstcWJzak51M1UwRDNLMVFjT1BfMGFtZDZCanJrc285b3BuNUNSS0wyTGllN25aLW9oYW9SdDcxZ3lB?oc=5\n\n（来自信息台 2026-11-06。想取消就把这个 Issue 关掉。）",
-  "user": true
- },
- {
   "id": "u16",
   "title": "匈牙利公开共产党时期档案，最多 6 万名前特工身份被披露。（Hacker News 热门，链接 Euronews）",
   "keywords": [],
@@ -67,6 +60,13 @@
   "title": "nd：按新情报法，修车厂、运输公司和租车公司要向联邦情报局和宪法保卫局提供车辆传感器数据，并且不得声张。",
   "keywords": [],
   "context": "nd：按新情报法，修车厂、运输公司和租车公司要向联邦情报局和宪法保卫局提供车辆传感器数据，并且不得声张。\n来源：nd\nhttps://www.nd-aktuell.de/artikel/1204045.neues-nachrichtendienstrecht-deutsche-geheimdienste-haben-jetzt-zugriff-auf-sensoren-in-autos.html\n\n（来自信息台 2026-11-21。想取消就把这个 Issue 关掉。）",
+  "user": true
+ },
+ {
+  "id": "u41",
+  "title": "35小时工作周之争：雇主方公开要求退出",
+  "keywords": [],
+  "context": "雇主协会主席要求告别35小时工作周，BILD 称争论「升级」；与此同时 IG Metall 在北德和巴伐利亚扩大罢工。WELT 的标题引语则说，不能让雇员为工资高低负责。几条都只有标题，具体方案还不清楚。\n来源：ms-aktuell\nhttps://ms-aktuell.de/welt/35-stunden-woche-22-11-2026/\n\n（来自信息台 2026-11-22。想取消就把这个 Issue 关掉。）",
   "user": true
  }
 ]
