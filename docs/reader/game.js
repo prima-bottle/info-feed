@@ -29,10 +29,12 @@ function gEvidence(r){
 function gSys(r,mode){
   const st=gNow(r);const ev=gEvidence(r);
   const evTxt=ev.length?ev.map(n=>`[${locLabel(n)}]「${(n.quote||'').slice(0,300)}」${n.text?' — 批注：'+n.text:''}`).join('\n'):'（这一局还没有划线）';
+  const rc=(r.recall||[]).map((q,i)=>{const a=(st.recall||[])[i]||{};return `问：${q.q}\n答：${a.a||'（没写）'}${a.ok==null?'':a.ok?'（自评：想起来了）':'（自评：没想起）'}\n参考：${q.a}`}).join('\n');
   const cp=(r.checkpoints||[]).map((c,i)=>`p.${c.page} 问：${c.q}\n答：${(st.cp||{})[i]||'（没答）'}`).join('\n');
   const base=`你是牛津导师制里的导师，也是阅读游戏的对手和裁判。学生在读《${S.doc.name}》，这是第 ${r.no} 局「${r.title}」（${GKIND[r.kind]||'阅读局'}）。
 本局问题：${r.question}
 学生开局押注的立场：${st.bet?st.bet.text+`（把握 ${st.bet.conf}%）`:'（还没押注）'}
+学生热身（凭记忆回答）：\n${rc||'（无）'}
 学生在阅读中回答的"为什么"：\n${cp||'（无）'}
 学生的划线与批注（本局证据，只能用这些和他已解锁的卡）：\n${evTxt}
 ${r.hand?'学生已解锁的卡：'+r.hand.join('、'):''}
@@ -117,7 +119,7 @@ async function gameSheet(id){
     const go=e.target.closest('[data-go]');if(go){const t=$('#gS'+go.dataset.go);if(t)t.scrollIntoView({block:'start',behavior:'smooth'});else toast('这一步还没解锁');return}
     const rb=e.target.closest('[data-r]');if(rb){gameSheet(rb.dataset.r);return}
     if(e.target.id==='gLog'){gLogSheet();return}
-    const sh=e.target.closest('[data-show]');if(sh){const i=+sh.dataset.show;ST().recall=ST().recall||[];const ta=sb.querySelector(`[data-rc="${i}"]`);ST().recall[i]={a:ta.value.trim(),shown:true};await gSave();gameSheet(r.id);return}
+    const sh=e.target.closest('[data-show]');if(sh){const i=+sh.dataset.show;ST().recall=ST().recall||[];const ta=sb.querySelector(`[data-rc="${i}"]`);ST().recall[i]={...(ST().recall[i]||{}),a:ta.value.trim(),shown:true};await gSave();gameSheet(r.id);return}
     const ok=e.target.closest('[data-ok]');if(ok){const [i,v]=ok.dataset.ok.split('|');ST().recall[+i].ok=v==='1';await gSave();gameSheet(r.id);return}
   };
   // 输入即保存（停顿 0.6 秒），另有“保存”按钮；不会因为同步或翻页丢字
@@ -128,7 +130,9 @@ async function gameSheet(id){
   draft('gBet','bet');draft('gCatch','catch');draft('gRev','rev');draft('gIn','duel');
   const on=(id,f)=>{const b=$('#'+id);if(b)b.onclick=f};
   on('gBetGo',async()=>{const t=$('#gBet').value.trim();if(!t){toast('先写一句立场');return}ST().bet={text:t,conf:+$('#gBetC').value,at:Date.now()};if(ST().drafts)delete ST().drafts.bet;await gSave();gameSheet(r.id)});
-  on('gRcDone',async()=>{ST().recallDone=true;await gSave();gameSheet(r.id)});
+  const saveRc=()=>{const t=ST();t.recall=t.recall||[];sb.querySelectorAll('[data-rc]').forEach(x=>{const i=+x.dataset.rc;if(x.disabled)return;t.recall[i]={...(t.recall[i]||{}),a:x.value.trim()}})};
+  let rcT=null;sb.querySelectorAll('[data-rc]').forEach(x=>x.oninput=()=>{clearTimeout(rcT);rcT=setTimeout(async()=>{saveRc();await gSave()},600)});
+  on('gRcDone',async()=>{saveRc();ST().recallDone=true;await gSave();gameSheet(r.id)});
   on('gCatchGo',async()=>{const t=$('#gCatch').value.trim();if(!t)return;ST().catches=ST().catches||[];ST().catches.push({id:uid(),text:t,at:Date.now()});if(ST().drafts)delete ST().drafts.catch;await gSave();gameSheet(r.id);toast('记下了，判定时会核对')});
   on('gReadDone',async()=>{ST().readDone=true;await gSave();gameSheet(r.id)});
   const talk=async q=>{
