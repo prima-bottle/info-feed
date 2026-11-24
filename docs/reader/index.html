@@ -1403,6 +1403,6 @@ async function deleteRemoteFile(fp){const f=SY.files[fp]||(SY.remote&&(SY.remote
   if(syncOn()){syncStatus(ls.get('syMsg','').startsWith('同步失败')?'⚠ 同步失败':'⟳');syncNow()}
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})})();
 </script>
-<script src="game.js?v=3"></script>
+<script src="game.js?v=5"></script>
 </body>
 </html>
