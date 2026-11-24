@@ -238,17 +238,18 @@
   {
    "id": "who-all",
    "pair": true,
-   "status": "rusted",
+   "status": "corrected",
    "name": "同样受益的三方",
    "faction": "neutral",
    "type": "证据卡",
-   "rarity": "pending",
+   "rarity": "ore",
    "img": "img/who-all-clean.webp",
    "rust": {
     "name": "谁是'所有人'",
     "img": "img/who-all-rust.webp",
     "misread": "当时理解为：“所有人都受益”包括纳税人和被提前退休的工人本人。",
-    "unlock": "修正条件：在热身里答对“同样受益的是哪几方”（局 4 热身第 2 题）。"
+    "unlock": "修正条件：在热身里答对“同样受益的是哪几方”（局 4 热身第 2 题）。",
+    "fixed": "第 1 周 · 局 4 热身：答对“企业、劳资双方和国家”。"
    },
    "quotes": [
     {
@@ -360,17 +361,18 @@
   {
    "id": "paper",
    "pair": true,
-   "status": "rusted",
+   "status": "corrected",
    "name": "Nein, das glaube ich nicht",
    "faction": "neutral",
    "type": "证据卡",
-   "rarity": "pending",
+   "rarity": "ore",
    "img": "img/paper-clean.webp",
    "rust": {
     "name": "纸上的团结",
     "img": "img/paper-rust.webp",
     "misread": "当时理解为：Judith 没说跨厂斗争不可能，只说团结停留在纸上。",
-    "unlock": "修正条件：在热身里答对 Judith 被直接问到时的回答（局 4 热身第 1 题）。"
+    "unlock": "修正条件：在热身里答对 Judith 被直接问到时的回答（局 4 热身第 1 题）。",
+    "fixed": "第 1 周 · 局 4 热身：答对 Judith 的回答 »Nein, das glaube ich nicht«。"
    },
    "quotes": [
     {
