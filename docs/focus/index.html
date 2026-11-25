@@ -106,7 +106,7 @@ details summary::before{content:"▸ "}details[open] summary::before{content:"�
   </div>
   <div class="minor">其实是：
     <button data-r="video">要找一个具体的视频</button>
-    <button data-r="scroll">就是想刷一会儿</button>
+    <button data-r="scroll">就是想看点东西</button>
   </div>
 </section>
 
@@ -154,7 +154,7 @@ window.postMessage({src:'focus-page',type:'hello'},location.origin);
 function renderExtNote(){
   const n=$('#extNote');
   if(!ext){n.innerHTML='没检测到「专注出口」扩展：B站首页不会自动跳到这里。安装方法见仓库里的 <a href="https://github.com/prima-bottle/info-feed/tree/main/focus-extension">focus-extension</a>。';return}
-  n.textContent=ext.passUntil>Date.now()?'扩展已连接 · B站放行到 '+hm(new Date(ext.passUntil)):'扩展已连接 · B站首页和热门在拦截中';
+  n.textContent='扩展已连接 · B站全站拦截中'+(ext.ups?'（白名单 '+ext.ups+' 位 UP 主）':'')+(ext.player?'':' · 扩展是旧版，请更新');
 }
 setTimeout(renderExtNote,800);
 /* 回去：有扩展就直接关掉这个标签页 */
@@ -228,11 +228,14 @@ function chime(){try{const c=new (window.AudioContext||window.webkitAudioContext
   o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,c.currentTime+d);g.gain.exponentialRampToValueAtTime(.2,c.currentTime+d+.02);
   g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+d+.6);o.connect(g).connect(c.destination);o.start(c.currentTime+d);o.stop(c.currentTime+d+.7)})}catch(e){}}
 const stepText=()=>card.step||'（还没写下一步：先在上面写一个）';
-async function pass(min){
-  const r=await send('pass',{minutes:min});
-  if(ext&&!r){toast('扩展没回应，再试一次');return}
-  location.href='https://www.bilibili.com/';
+/* 想看东西：打开扩展里的德语剧播放器（本地剧集文件夹） */
+async function series(){
+  if(cur){cur.series=1;LS.set('focusLog',log)}
+  const r=ext&&ext.player?await send('openPlayer'):null;
+  if(!r)toast(ext?'扩展没回应：请到扩展页更新「专注出口」':'没装「专注出口」扩展，打不开剧集');
 }
+const seriesBtn='<button class="primary" id="goSeries">▶ 看一集德语剧</button>';
+const bindSeries=()=>{$('#goSeries').onclick=series};
 
 const handlers={
   start(){
@@ -276,26 +279,26 @@ const handlers={
   reward(){
     const n=doneToday();
     show('<span class="label">奖励</span><h2>'+(n?'今天已经完成 '+n+' 段，该奖励。':'奖励可以，挑一个有终点的。')+'</h2>'
-      +'<p class="muted">首页推荐没有底，越刷越空；挑一个看完就结束的。</p>'
-      +'<div class="row"><a class="btn primary" href="../">看今天的信息台精选</a><button id="rVid">搜一个具体视频</button><button id="r10">刷 10 分钟（到时自动恢复拦截）</button></div>'
+      +'<p class="muted">奖励自己一集德语剧：看完这一集就停，顺便练了听力。</p>'
+      +'<div class="row">'+seriesBtn+'<a class="btn" href="../">看今天的信息台精选</a></div>'
       +(n?'':'<p class="note">刚完成了一段的话，先在上面点「✓ 完成了这一段」记一下。</p>'));
-    $('#rVid').onclick=()=>pick('video');
-    $('#r10').onclick=()=>pass(10);
+    bindSeries();
   },
   video(){
-    show('<span class="label">找视频</span><h2>要看哪个？</h2>'
-      +'<p class="muted">搜索页和视频页不拦，只拦首页推荐和热门。</p>'
-      +'<form id="vf"><input id="vq" placeholder="输入关键词，回车搜索"></form>');
+    show('<span class="label">找视频</span><h2>B站全站都关了。想看什么，先记下来。</h2>'
+      +'<p class="muted">如果是做事要用的教程，把 UP 主告诉 Claude 加进白名单；只是好奇的，攒到周末一起处理。</p>'
+      +'<textarea id="vq" placeholder="例：PLC 编程入门的某个 UP 主 / 某个具体视频"></textarea>'
+      +'<div class="row"><button class="primary" id="vSave">记下，回去做事</button><button id="vSeries">记下，看一集德语剧</button></div>');
     const q=$('#vq');q.focus();
-    $('#vf').onsubmit=e=>{e.preventDefault();const k=q.value.trim();if(!k)return;mark('video',k);
-      location.href='https://search.bilibili.com/all?keyword='+encodeURIComponent(k)};
+    const save=()=>{const k=q.value.trim();if(!k){q.focus();return false}mark('video',k);return true};
+    $('#vSave').onclick=()=>{if(save())goBack()};
+    $('#vSeries').onclick=()=>{if(save())series()};
   },
   scroll(){
-    show('<span class="label">就想刷</span><h2>可以，但先等 30 秒。</h2>'
-      +'<p class="muted">这 30 秒里如果改了主意，选上面的原因就行。到时间后放行 10 分钟，然后自动恢复拦截。</p>'
-      +'<div class="big" id="ts">00:30</div><div class="row" id="sRow"></div>');
-    countdown(30,'#ts',()=>{$('#sRow').innerHTML='<button class="primary" id="sGo">去刷 10 分钟</button><button id="sNo">算了，回去</button>';
-      $('#sGo').onclick=()=>pass(10);$('#sNo').onclick=goBack});
+    show('<span class="label">想看东西</span><h2>那就看一集德语剧。</h2>'
+      +'<p class="muted">从上次停下的地方接着放，看完这一集就停。</p>'
+      +'<div class="row">'+seriesBtn+'<button id="sNo">算了，回去</button></div>');
+    bindSeries();$('#sNo').onclick=goBack;
   },
 };
 function pick(r){
@@ -308,7 +311,7 @@ function pick(r){
 document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>pick(b.dataset.r));
 
 /* ========== 统计 ========== */
-const RN={start:'进不去',stuck:'卡住',tired:'累/枯燥',reward:'奖励',video:'找视频',scroll:'就想刷',null:'没选'};
+const RN={start:'进不去',stuck:'卡住',tired:'累/枯燥',reward:'奖励',video:'找视频',scroll:'想看东西',null:'没选'};
 function renderStats(){
   const since=Date.now()-7*864e5;
   const week=log.filter(x=>x.t>since&&x.r!=='done');
@@ -318,12 +321,12 @@ function renderStats(){
   const cnt={};week.forEach(x=>{const k=x.r??'null';cnt[k]=(cnt[k]||0)+1});
   const max=Math.max(...Object.values(cnt));
   const hours=Array(24).fill(0);week.forEach(x=>hours[new Date(x.t).getHours()]++);const hmax=Math.max(...hours,1);
-  $('#stats').innerHTML='<p class="muted">近 7 天想点开 B站 '+week.length+' 次（今天 '+todayN+' 次），完成小段 '+dones+' 个。</p>'
+  $('#stats').innerHTML='<p class="muted">近 7 天想点开 B站 '+week.length+' 次（今天 '+todayN+' 次），其中转去看德语剧 '+week.filter(x=>x.series).length+' 次，完成小段 '+dones+' 个。</p>'
     +'<div class="bars" style="margin-top:8px">'+Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<div><span class="n">'+RN[k]+'</span><span class="b" style="width:'+(v/max*70)+'%"></span><span>'+v+'</span></div>').join('')+'</div>'
     +'<p class="muted" style="margin-top:12px">按钟点</p><div class="hours">'+hours.map(h=>'<i style="height:'+(h/hmax*100)+'%"></i>').join('')+'</div><div class="hlabels"><span>0</span><span>6</span><span>12</span><span>18</span><span>23</span></div>'
     +'<div class="row"><button id="exp">复制这周记录（发给 Claude 一起复盘）</button></div>';
   $('#exp').onclick=()=>{
-    const lines=log.filter(x=>x.t>since).map(x=>{const d=new Date(x.t);return dstr(d).slice(5)+' '+hm(d)+' '+(x.r==='done'?'✓完成':RN[x.r??'null'])+(x.note?'：'+x.note:'')});
+    const lines=log.filter(x=>x.t>since).map(x=>{const d=new Date(x.t);return dstr(d).slice(5)+' '+hm(d)+' '+(x.r==='done'?'✓完成':RN[x.r??'null'])+(x.note?'：'+x.note:'')+(x.series?' → 看德语剧':'')});
     copy('这是我这周「想点开B站」的记录，帮我看看规律、下周重点调整哪一种情况：\n'+lines.join('\n'))};
 }
 renderStats();
@@ -358,7 +361,7 @@ else{$('#workBody').innerHTML='<form id="wf" class="row" style="margin-top:0"><i
   $('#wf').onsubmit=e=>{e.preventDefault();unlock($('#wpw').value.trim())}}
 
 /* 标题随来源变一下 */
-if(from==='popular')$('#title').textContent='热门榜也没有底。先停一下。';
+
 })();
 </script>
 </body>

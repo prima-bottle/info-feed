@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>德语剧 · 专注出口</title>
+<link rel="icon" href="icons/32.png">
+<link rel="stylesheet" href="player.css">
+</head>
+<body>
+<main>
+  <div class="top"><small id="today"></small><a href="https://prima-bottle.github.io/info-feed/focus/">← 先停一下</a></div>
+  <h1>看一集德语剧</h1>
+  <p class="muted sub">看完这一集就停。</p>
+
+  <!-- 还没选文件夹 / 需要重新授权 -->
+  <section class="card" id="gate" hidden>
+    <p id="gateText"></p>
+    <div class="row"><button class="primary" id="gateBtn"></button></div>
+    <p class="note" id="gateNote"></p>
+  </section>
+
+  <!-- 播放 -->
+  <section id="stage" hidden>
+    <div class="now"><b id="nowTitle"></b><span id="nowSeason" class="muted"></span></div>
+    <video id="video" controls preload="metadata"></video>
+    <div class="bar">
+      <span class="muted">速度</span>
+      <button data-rate="0.75">0.75</button><button data-rate="1" class="on">1</button><button data-rate="1.25">1.25</button>
+      <span class="sep"></span>
+      <button id="back10" title="← 键">−10 秒</button>
+      <button id="subBtn" title="S 键" hidden>字幕：开</button>
+      <span class="sep"></span>
+      <button id="closeBtn">停，回去做事</button>
+    </div>
+    <p class="note">空格 播放/暂停 · ←/→ 后退/前进 5 秒 · S 字幕开关</p>
+  </section>
+
+  <!-- 看完一集 -->
+  <section class="card done" id="ended" hidden>
+    <h2>这一集看完了。</h2>
+    <p class="muted" id="endedText"></p>
+    <div class="row"><button class="primary" id="endBack">回去做下一步</button><button id="endNext" class="quiet"></button></div>
+  </section>
+
+  <!-- 剧集列表 -->
+  <section id="library" hidden>
+    <div class="card" id="resume"></div>
+    <div id="seasons"></div>
+    <p class="note">剧集文件夹：<span id="rootName"></span> · <button class="link" id="repick">换一个文件夹</button></p>
+  </section>
+</main>
+<script src="player.js"></script>
+</body>
+</html>

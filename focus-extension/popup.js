@@ -1,11 +1,7 @@
-chrome.storage.local.get({ passUntil: 0, hideRecs: true }, ({ passUntil, hideRecs }) => {
-  const st = document.getElementById('state');
-  if (passUntil > Date.now()) {
-    const d = new Date(passUntil);
-    st.textContent = 'B站放行中，到 ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' 恢复拦截';
-  } else {
-    st.textContent = '拦截中：B站首页、热门、分区页';
-  }
+chrome.storage.local.get({ ups: [], hideRecs: true }, ({ ups, hideRecs }) => {
+  document.getElementById('state').textContent = ups.length
+    ? 'B站全站拦截中；白名单 ' + ups.length + ' 位 UP 主：' + ups.map(u => u.name || u.mid).join('、')
+    : 'B站全站拦截中（白名单为空）';
   const cb = document.getElementById('hide');
   cb.checked = hideRecs;
   cb.onchange = () => chrome.runtime.sendMessage({ type: 'setHideRecs', value: cb.checked });

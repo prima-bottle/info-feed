@@ -1,0 +1,45 @@
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#1d1c1a; --muted:#6f6a62; --line:#e6e0d6;
+  --accent:#c2502d; --accent-soft:#f6e3db; --ok:#3d7a4a; --ok-soft:#e1efe3; --chip:#efe9e0;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#141413; --card:#1f1e1c; --ink:#ece8e1; --muted:#9a948a; --line:#2e2c29;
+  --accent:#e57a55; --accent-soft:#3a2720; --ok:#7cc28a; --ok-soft:#1f3124; --chip:#2a2825;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+.top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.top a{color:var(--muted)}
+h1{font-size:24px;margin-top:2px}
+.sub{margin-bottom:16px}
+h2{font-size:18px;margin-bottom:4px}
+.muted{color:var(--muted);font-size:14px}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card.done{border-color:var(--ok);background:var(--ok-soft)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 12px}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600;padding:8px 16px}
+button.quiet{font-size:13px;color:var(--muted);border-color:transparent;background:none}
+button.link{border:0;background:none;padding:0;color:var(--muted);text-decoration:underline;font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.now{display:flex;gap:10px;align-items:baseline;margin-bottom:8px}
+video{width:100%;max-height:70vh;background:#000;border-radius:12px;display:block}
+video::cue{font-size:1.15em;background:rgba(0,0,0,.65)}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.bar button{font-size:14px;padding:4px 10px}
+.bar button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sep{width:12px}
+.resume b{font-size:19px}
+.season{margin-bottom:14px}
+.season h3{font-size:15px;margin:0 0 6px;color:var(--muted);font-weight:600}
+ul.eps{list-style:none;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+ul.eps li{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+ul.eps li:last-child{border-bottom:0}
+ul.eps li:hover{background:var(--chip)}
+ul.eps li .name{flex:1}
+ul.eps li.watched .name{color:var(--muted)}
+.prog{width:80px;height:5px;border-radius:3px;background:var(--line);overflow:hidden;flex:none}
+.prog i{display:block;height:100%;background:var(--accent)}
+.tick{color:var(--ok);font-size:14px;flex:none;width:3.5em;text-align:right}

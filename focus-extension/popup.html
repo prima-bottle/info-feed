@@ -7,16 +7,18 @@ body{width:250px;margin:0;padding:14px;font:14px/1.5 -apple-system,"Microsoft Ya
 h1{font-size:15px;margin:0 0 6px}
 #state{color:#6f6a62;margin-bottom:10px}
 label{display:flex;gap:6px;align-items:center;margin:8px 0}
-a{display:block;margin-top:10px;padding:7px 10px;border-radius:8px;background:#1d1c1a;color:#f6f3ee;text-align:center;text-decoration:none}
+a{display:block;margin-top:8px;padding:7px 10px;border-radius:8px;background:#1d1c1a;color:#f6f3ee;text-align:center;text-decoration:none}
+a.light{background:#fffdf9;color:#1d1c1a;border:1px solid #e6e0d6}
 small{display:block;color:#6f6a62;margin-top:10px}
 </style>
 </head>
 <body>
 <h1>专注出口</h1>
 <div id="state">…</div>
-<label><input type="checkbox" id="hide"> 视频页隐藏推荐</label>
-<a href="https://prima-bottle.github.io/info-feed/focus/" target="_blank">打开「先停一下」页</a>
-<small>想临时放行，请在「先停一下」页里选原因；这里故意不给快捷开关。</small>
+<label><input type="checkbox" id="hide"> 白名单视频页隐藏推荐</label>
+<a href="player.html" target="_blank">▶ 看一集德语剧</a>
+<a class="light" href="https://prima-bottle.github.io/info-feed/focus/" target="_blank">打开「先停一下」页</a>
+<small>B站没有放行开关。要加白名单 UP 主，告诉 Claude。</small>
 <script src="popup.js"></script>
 </body>
 </html>
