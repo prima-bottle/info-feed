@@ -42,7 +42,8 @@ def main() -> None:
     for p in raws:
         enrich.update(load(DATA / "enrich" / p.name, {}).get("items", {}))
     dropped = gists = 0
-    for p in raws:  # 合并今天所有抓取，去重、去掉已经编过的
+    extras = sorted((DATA / "extra").glob(f"{date}-*.json"))  # 本地助手从你电脑抓的来源（Reddit、V2EX 等）
+    for p in raws + extras:  # 合并今天所有抓取，去重、去掉已经编过的
         for it in load(p, {}).get("items", []):
             if it["id"] in seen or it["id"] in ids:
                 continue

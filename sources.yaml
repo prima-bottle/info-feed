@@ -127,13 +127,15 @@ feeds:
   - {name: Hyperallergic, url: "https://hyperallergic.com/feed/", section: 艺术, max: 2, stance: "美国独立艺术媒体，关注艺术与政治"}
   - {name: The Public Domain Review, url: "https://publicdomainreview.org/rss.xml", section: 艺术, max: 2, stance: "公有领域的历史图像与文献"}
   # AI 实操（「AI 工作台」栏目用）：技巧、别人的工作流、本地部署、引发思考的长文
-  - {name: r/LocalLLaMA, url: "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day", section: AI实操, max: 6, stance: "本地部署和开源模型的玩家社区"}
-  - {name: r/ClaudeAI, url: "https://www.reddit.com/r/ClaudeAI/top/.rss?t=day", section: AI实操, max: 4, stance: "Claude 用户社区，技巧和工作流"}
+  - {name: r/LocalLLaMA, url: "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day", section: AI实操, max: 6, local_only: true, stance: "本地部署和开源模型的玩家社区"}
+  - {name: r/ClaudeAI, url: "https://www.reddit.com/r/ClaudeAI/top/.rss?t=day", section: AI实操, max: 4, local_only: true, stance: "Claude 用户社区，技巧和工作流"}
   - {name: HN AI 讨论, url: "https://hnrss.org/newest?q=LLM+OR+Claude+OR+Ollama+OR+%22local+model%22+OR+agent+OR+Whisper&points=60", section: AI实操, max: 5, stance: "程序员社区里讨论热烈的 AI 帖子"}
   - {name: One Useful Thing, url: "https://www.oneusefulthing.org/feed", section: AI实操, max: 2, stance: "沃顿教授 Ethan Mollick，AI 在工作和教育中的实际用法"}
   - {name: Latent Space, url: "https://www.latent.space/feed", section: AI实操, max: 2, stance: "AI 工程师播客和长文"}
   - {name: Hugging Face 博客, url: "https://huggingface.co/blog/feed.xml", section: AI实操, max: 3, stance: "开源模型平台官方博客，教程多"}
   - {name: 少数派, url: "https://sspai.com/feed", section: AI实操, max: 5, stance: "中文效率工具和工作流社区"}
+  - {name: r/ChatGPTPro, url: "https://www.reddit.com/r/ChatGPTPro/top/.rss?t=day", section: AI实操, max: 3, local_only: true, stance: "重度用户分享的提示词和工作流"}
+  - {name: V2EX 分享创造, url: "https://www.v2ex.com/feed/create.xml", section: AI实操, max: 4, local_only: true, stance: "中文开发者展示自己做的工具"}
   - {name: 宝玉, url: "https://baoyu.io/feed.xml", section: AI实操, max: 3, stance: "中文 AI 实践者，翻译和提示词经验"}
   - {name: 科技爱好者周刊, url: "https://www.ruanyifeng.com/blog/atom.xml", section: AI实操, max: 1, stance: "阮一峰每周的工具和文章推荐"}
   # AI 与极客

@@ -1,3 +1,5 @@
 requests>=2.31
 trafilatura>=1.12
 googlenewsdecoder>=0.1
+feedparser>=6.0
+PyYAML>=6.0

@@ -337,7 +337,7 @@ document.querySelector('main').addEventListener('touchstart',e=>{sx=e.touches[0]
 document.querySelector('main').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
  if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const cur=order.indexOf(document.querySelector('.tab.on').dataset.p);
  const n=cur+(dx<0?1:-1);if(n>=0&&n<order.length)show(order[n])}},{passive:true});
-document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+document.querySelectorAll('#chips .chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('#chips .chip').forEach(x=>x.classList.toggle('on',x===c));
  document.querySelectorAll('.brief').forEach(b=>b.style.display=!c.dataset.s||b.dataset.s===c.dataset.s?'':'none')});
 
 document.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.preventDefault();const t=b.parentElement.innerText.replace(/^复制|已复制/,'').trim();

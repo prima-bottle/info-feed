@@ -178,9 +178,38 @@ def maybe_trigger_fetch(cfg: dict, state: dict) -> None:
             log(f"触发抓取 {t}：{'成功' if r.returncode == 0 else '失败 ' + r.stderr.strip()[:120]}")
 
 
+def fetch_local_feeds(state: dict) -> bool:
+    """抓 sources.yaml 里标了 local_only 的来源（Reddit、V2EX 等屏蔽 GitHub 服务器的网站），每两小时一次。"""
+    if time.time() - state.get("local_fetch", 0) < 2 * 3600:
+        return False
+    import yaml
+    from feed.fetch import parse_feed
+    state["local_fetch"] = time.time()
+    cfg = yaml.safe_load((ROOT / "sources.yaml").read_text(encoding="utf-8"))
+    items = []
+    for f in cfg.get("feeds", []):
+        if not f.get("local_only"):
+            continue
+        try:
+            items += parse_feed(f["url"], f, "article", f.get("max", 5), 36)
+        except Exception as ex:  # noqa: BLE001
+            log(f"抓 {f['name']} 失败：{str(ex)[:80]}")
+    if not items:
+        return False
+    out = ROOT / "data" / "extra" / (dt.datetime.now().strftime("%Y-%m-%d-%H%M") + ".json")
+    out.parent.mkdir(exist_ok=True)
+    out.write_text(json.dumps({"items": items}, ensure_ascii=False), encoding="utf-8")
+    log(f"本地来源抓到 {len(items)} 条")
+    return True
+
+
 def tick(cfg: dict, state: dict) -> None:
     maybe_trigger_fetch(cfg, state)
     git("pull", "--rebase", "-q")
+    if fetch_local_feeds(state):
+        git("add", "data/extra")
+        git("commit", "-q", "-m", "本地来源", check=False)
+        git("push", "-q", check=False)
     today = dt.date.today().isoformat()
     raws = sorted(p for p in (ROOT / "data" / "raw").glob(f"{today}-*.json") if p.stem.split("-")[-1].isdigit())
     todo = [p for p in raws if not (ROOT / "data" / "enrich" / p.name).exists()]

@@ -213,6 +213,8 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
     items, status = [], []
 
     for f in cfg.get("feeds", []):
+        if f.get("local_only"):  # GitHub 的服务器被这些网站屏蔽，改由你电脑上的本地助手抓
+            continue
         if f.get("enabled", True) is False:
             continue
         try:
