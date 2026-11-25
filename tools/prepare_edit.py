@@ -59,10 +59,19 @@ def main() -> None:
     merged = DATA / "raw" / f"{date}-merged.json"
     merged.write_text(json.dumps({"items": items, "status": load(raws[-1], {}).get("status", [])}, ensure_ascii=False))
     cfg["threads"] = [t for t in cfg.get("threads", []) if not t.get("user")] + load(DATA / "user_threads.json", [])
+    course = cfg.get("ai_course", [])
+    done = load(DATA / "aicourse.json", [])
+    nxt = len(done) % len(course) if course else 0
+    aw_hist = load(DATA / "aiwork.json", [])
+    ai_part = ("## AI 工作台\n"
+               + (f"AI 入门课：已讲 {len(done)} 课。" + (f"这期（早间版）讲第 {len(done) + 1} 课：{course[nxt]}。" if mode == "full" else "增量版不讲新课。")
+                  + "\n课表：" + "；".join(f"{i + 1}. {c}" for i, c in enumerate(course)) + "\n" if course else "")
+               + "「AI 工作台」最近讲过的条目（不要重复）：" + "；".join(x["title"] for x in aw_hist[-60:]) + "\n"
+               + "AI 工作台的条目不必是今天的新闻：AI实操板块里可能有几周前的好文章，同样值得讲；条目不够时也可以从 AI 板块里挑。\n\n")
     out = (f"# 编辑材料 {date}（{'早间完整版' if mode == 'full' else '增量更新'}）\n\n"
            f"## 读者\n{PROFILE}\n\n## 媒体立场卡\n{_stances(cfg)}\n\n"
            f"## 长期主线（id 以 u 开头的是读者自己点了追踪的，优先找后续）\n{_threads(cfg, load(DATA / 'threads.json', {}))}\n\n"
-           + _art(cfg, load(DATA / "art.json", []), date)
+           + _art(cfg, load(DATA / "art.json", []), date) + ai_part
            + (f"## 本地模型预处理\n已去掉 {dropped} 条无关条目；{gists} 条的摘要换成了从原网页全文提炼的要点（以【全文要点】开头），可以放心引用其中的具体事实。\n\n" if enrich else "")
            + f"## 今天的条目（{len(items)} 条，每行一个 JSON）\n{_compact(items)}\n\n"
            + (SCHEMA if mode == "full" else SCHEMA + "\n\n" + UPDATE_SCHEMA)

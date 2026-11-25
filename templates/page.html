@@ -85,6 +85,7 @@ h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;let
 footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
 footer details{border:0}
 .acts{display:flex;gap:8px;margin-top:10px}
+.awpast{padding:10px 0;border-top:1px solid var(--line)}.awpast:first-of-type{border-top:0}.lesson summary{cursor:pointer;font-size:15.5px}.lesson[open] summary{margin-bottom:8px}
 .steps{margin:6px 0 6px 20px;font-size:15px;line-height:1.6}.aw-meta{font-size:13px;color:var(--muted)}
 .ask{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
 .act{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
@@ -151,7 +152,7 @@ footer details{border:0}
   <button class="tab" data-p="work">工作</button>
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
-  {% if m.aiwork %}<button class="tab" data-p="aiwork">AI 工作台</button>{% endif %}
+  {% if m.aiwork or course or aw_groups %}<button class="tab" data-p="aiwork">AI 工作台</button>{% endif %}
   {% if video_groups or shorts %}<button class="tab" data-p="video">视频</button>{% endif %}
   <button class="tab" data-p="art">艺术</button>
   <button class="tab" data-p="de">德语·创作</button>
@@ -304,6 +305,32 @@ footer details{border:0}
     {{ acts('a'~w.key, w.title, w.what, w.item_ids or [], track=False) }}
   </article>
   {% endfor %}
+  {% if course %}
+  <h3 class="sub">AI 入门课 · 已讲 {{ course|length }} / {{ course_total }} 课</h3>
+  {% for c in course|reverse %}
+  <details class="card lesson"{% if loop.first %} open{% endif %}><summary><b>第 {{ c.no or loop.revindex }} 课</b> {{ c.title }} <span class="aw-meta">{{ c.date[5:] }}</span></summary>
+    <p>{{ c.concept }}</p>
+    {% if c.how %}<ol class="steps">{% for h in c.how %}<li>{{ h }}</li>{% endfor %}</ol>{% endif %}
+    {% if c.for_you %}<div class="foryou">{{ c.for_you }}</div>{% endif %}
+    {% if c.pitfalls %}<p class="aw-meta">注意：{{ c.pitfalls }}</p>{% endif %}
+    {% if c.try %}<p><b>课后练习：</b>{{ c.try }}</p>{% endif %}
+    {% if c.links %}<div class="srcs">{% for l in c.links %}<a class="src" href="{{ l.link }}" target="_blank" rel="noopener">{{ l.source }} ↗</a>{% endfor %}</div>{% endif %}
+  </details>
+  {% endfor %}
+  {% endif %}
+  {% if aw_groups %}
+  <h3 class="sub">往期 AI 工作台</h3>
+  {% for k, xs in aw_groups %}
+  <details class="card"><summary><b>{{ k }}</b> <span class="aw-meta">{{ xs|length }} 条</span></summary>
+    {% for x in xs %}
+    <div class="awpast"><div class="aw-meta">{{ x.date[5:] }}{% if x.area %} · {{ x.area }}{% endif %}</div>
+      <b>{{ x.title }}</b><p>{{ x.what }}</p>{% if x.use %}<div class="foryou">{{ x.use }}</div>{% endif %}
+      {% if x.links %}<div class="srcs">{% for l in x.links %}<a class="src" href="{{ l.link }}" target="_blank" rel="noopener">{{ l.source }} ↗</a>{% endfor %}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </details>
+  {% endfor %}
+  {% endif %}
   <div class="end"><span class="dot">·</span>AI 工作台就这些</div>
 </section>
 

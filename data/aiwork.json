@@ -1,0 +1,281 @@
+[
+ {
+  "date": "2026-11-17",
+  "kind": "技巧",
+  "area": "编程部署",
+  "title": "Claude Code 团队怎么做\"验证\"",
+  "what": "Anthropic 的 Claude Code 团队讲他们怎么确认 AI 写的代码真的对：不是只看 AI 说\"完成了\"，而是让它跑测试、看结果。",
+  "use": "你让 AI 写小工具（信息台、阅读器、翻译网站）时，每次都要求它\"写完自己运行一遍，把输出贴给我\"，再决定是否采用。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-17",
+  "kind": "技巧",
+  "area": "编程部署",
+  "title": "每个模型配什么\"外壳\"最好用",
+  "what": "讨论同一个模型放在不同的工具\"外壳\"（命令行助手、IDE 插件、网页对话）里，效果差别很大。选对外壳和选对模型一样重要。",
+  "use": "同一个任务分别在 Claude 网页版和 Claude Code 里做一次，对比哪种更适合你的 vibe coding。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://runta.com/blog/introducing-frontierharness-eval-v1-1/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-17",
+  "kind": "案例",
+  "area": "阅读研究",
+  "title": "1800 多名科学家怎么用 ChatGPT 做研究",
+  "what": "OpenAI 调查了科学家的日常用法：读文献、写代码、整理数据最常见，也报告了效率变化。",
+  "use": "对照看看哪些用法你还没用上，比如让 AI 先给一篇论文列\"论点地图\"，再决定精读哪部分。",
+  "links": [
+   {
+    "source": "OpenAI",
+    "link": "https://openai.com/index/science-at-the-frontier"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-18",
+  "kind": "技巧",
+  "area": "编程部署",
+  "title": "给编程智能体一个\"外部沙箱\"",
+  "what": "Simon Willison 在试验把 AI 智能体执行的代码放进隔离的沙箱里运行，防止它误删文件或访问不该访问的东西。",
+  "use": "以后让本地模型或智能体自动跑脚本时，先放在一个单独的文件夹或虚拟机里，别直接给它整个电脑的权限。",
+  "links": [
+   {
+    "source": "Simon Willison",
+    "link": "https://simonwillison.net/2026/Nov/17/external-sandboxes-for-coding-agents/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-18",
+  "kind": "思考",
+  "area": "编程部署",
+  "title": "哈佛研究：AI 编程把瓶颈转移到了代码审查",
+  "what": "研究发现，编程智能体让写代码变快了，但审查、理解这些代码的工作反而成了新的瓶颈。",
+  "use": "你的工具越来越多是 AI 写的，最容易出问题的不是写，而是你看不懂、没检查。每个工具留一份\"它是怎么工作的\"简短说明。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://complexdiscovery.com/harvard-researchers-find-ai-coding-agents-shifted-the-bottleneck-to-code-review/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-18",
+  "kind": "思考",
+  "area": "编程部署",
+  "title": "curl 作者谈智能体把 18.5 万行 C 改写成 34 万行 Rust",
+  "what": "curl 的作者 Daniel Stenberg 评论一次由 AI 智能体完成的大规模代码迁移：代码量几乎翻倍，引出\"AI 写得多不等于写得好\"的讨论。",
+  "use": "给 AI 布置任务时，明确要求\"尽量简短、不要加没必要的功能\"，可以减少以后维护的负担。",
+  "links": [
+   {
+    "source": "Simon Willison",
+    "link": "https://simonwillison.net/2026/Nov/18/daniel-stenberg/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-18",
+  "kind": "思考",
+  "area": "组织外联",
+  "title": "\"AI 正在杀死 All About Berlin\"",
+  "what": "给在柏林的外国人写实用指南的网站作者讲：AI 搜索答案直接把内容拿走，网站流量崩溃。这是 AI 对独立内容创作者的真实冲击。",
+  "use": "你做的内容（YouTube、Instagram、信息图）也会遇到这个问题。可以想想更舵怎样建立直接的读者关系，比如邮件列表、社群，而不是只靠搜索流量。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://nicolasbouliane.com/blog/death-by-ai"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-18",
+  "kind": "思考",
+  "area": "组织外联",
+  "title": "谷歌的 AI 回答让网站搜索流量减少 40%",
+  "what": "数据显示，谷歌在搜索结果里直接给 AI 答案以后，点进原网站的流量大幅下降。",
+  "use": "做外联和传播时，别把搜索当成主要渠道；能被转发、被社群分享的内容更重要。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://revscope.co/blog/search-seo-geo-2026/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-19",
+  "kind": "本地部署",
+  "area": "编程部署",
+  "title": "开源模型 DaisyRose-27B",
+  "what": "又一个 27B 级别的开源模型上了 Hacker News 热门。27B 是目前\"本地能跑、质量又够用\"的热门区间，但 8GB 显卡需要较重的量化，或者把一部分放到内存里。",
+  "use": "先别急着下载，把它记进你的\"候选模型清单\"，等社区出现 Q4 量化版的实测速度再试。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://www.radixark.com/blog/daisyrose-27b"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-19",
+  "kind": "技巧",
+  "area": "编程部署",
+  "title": "用大模型辅助逆向工程",
+  "what": "一篇讲怎么让大模型帮忙读懂没有文档的程序和文件格式的文章。",
+  "use": "遇到看不懂的设备手册、PLC 程序或数据格式（机电学徒常见），可以把片段贴给 AI，让它先解释结构、再提问题。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://www.slowchronicle.com/posts/llm-assisted-reverse-engineering"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-19",
+  "kind": "案例",
+  "area": "组织外联",
+  "title": "ExitPath：离开 Slack、Notion、Microsoft 365 的开源替代方案",
+  "what": "一份开源替代工具清单，帮团队从大平台迁出。",
+  "use": "组织工作想减少对大公司的依赖、保护成员数据时，可以从这份清单挑工具，比如自建的聊天和文档协作。",
+  "links": [
+   {
+    "source": "Show HN",
+    "link": "https://exitpath-ruddy.vercel.app/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-20",
+  "kind": "技巧",
+  "area": "编程部署",
+  "title": "\"词元欺诈\"来了：API 密钥被盗用的风险",
+  "what": "一家 AI 产品公司讲 API 额度被人盗刷的经历。",
+  "use": "你的仓库是公开的：任何 API 密钥都只放在 GitHub Secrets 或本地配置里，绝不能写进代码或提交到仓库。",
+  "links": [
+   {
+    "source": "Simon Willison",
+    "link": "https://simonwillison.net/2026/Nov/20/token-fraud-is-here-and-its-bad/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-23",
+  "kind": "本地部署",
+  "area": "编程部署",
+  "title": "本地 AI 入门指南：Inkling、Qwen 和 Unsloth",
+  "what": "一篇面向新手的本地部署指南，Hacker News 上讨论热烈。标题提到的 Qwen 是你在 LM Studio 里最可能用的开源模型系列，Unsloth 是常用的微调和量化工具。",
+  "use": "对照你的 8GB 显卡，看指南里推荐的模型大小和量化级别，挑一个在 LM Studio 里试，记下速度（每秒多少词元）。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://www.gpupartner.com/blog/beginners-guide-local-ai-inkling-qwen-unsloth"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "思考",
+  "area": "编程部署",
+  "title": "Simon Willison：过去十二个月里大模型的三个拐点",
+  "what": "独立开发者 Simon Willison 在 AI Engineer 大会的主题演讲，把过去一年大模型的变化归纳成三个\"拐点\"。适合用来串起这一年的脉络：哪些变化是真正改变用法的，哪些只是跑分。",
+  "use": "读完后用自己的话写三句话，记下每个拐点对你的哪块工作有影响，就是你自己的\"AI 年表\"第一页。",
+  "links": [
+   {
+    "source": "Simon Willison",
+    "link": "https://simonwillison.net/2026/Nov/24/llm-inflection-points/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "本地部署",
+  "area": "编程部署",
+  "title": "Ternary Bonsai 2.5 27B：三值权重的大模型",
+  "what": "一个把权重压缩到\"三值\"的 27B 模型。三值量化能大幅降低显存占用，是让中等规模模型跑在小显卡上的一条路线。",
+  "use": "留意它有没有 LM Studio 能直接加载的版本；如果 8GB 显存能跑 27B 级别，本地助手的摘要质量会明显提高。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://prismml.com/news/bonsai-2-5-27b"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "案例",
+  "area": "阅读研究",
+  "title": "用 GPT-6.2 Astra 破解一个历史谜题",
+  "what": "Simon Willison 记录的一个案例：用大模型帮忙考证一个历史问题。重点在于怎么一步步让 AI 查资料、交叉核对，而不是直接信它的结论。",
+  "use": "杜伊斯堡长视频的考证可以借鉴：让 AI 列出可能的资料来源和矛盾点，你再去原始资料里核实。",
+  "links": [
+   {
+    "source": "Simon Willison",
+    "link": "https://simonwillison.net/2026/Nov/24/astra-historical-mystery/"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "案例",
+  "area": "编程部署",
+  "title": "两位业余天文爱好者用 AI 在 NASA 公开数据里找系外行星",
+  "what": "非专业人士借助编程智能体处理公开科学数据，做出了专业级的发现。",
+  "use": "说明\"会提问 + 会检查\"比\"会编程\"更关键。可以想想有什么公开数据（劳动统计、房租、罢工记录）值得你用同样方法挖一挖。",
+  "links": [
+   {
+    "source": "OpenAI",
+    "link": "https://openai.com/index/searching-for-distant-planets-with-astra"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "本地部署",
+  "area": "视频制作",
+  "title": "Hugging Face：用 CUGA 做印度语言的语音智能体",
+  "what": "Hugging Face 博客的教程，讲怎么搭一个支持小语种的语音对话智能体，涉及语音识别、对话和语音合成三段。",
+  "use": "和 ACA 德语版的配音路线是同一类技术栈：语音识别 → 处理文字 → 语音合成。可以先看它每一段用了什么开源模型。",
+  "links": [
+   {
+    "source": "Hugging Face 博客",
+    "link": "https://huggingface.co/blog/ibm-research/an-indic-voice-agent-with-cuga"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "技巧",
+  "area": "编程部署",
+  "title": "Gemini 4 Neon 发布：基准成绩超过 Astra 和 Fable",
+  "what": "Latent Space 的 AINews 说，谷歌 DeepMind 的 Gemini 4 Neon 在 LiveBench 上超过了 Astra 和 Fable，还把 Theo 的 TypeScript 转 Rust 基准任务耗时缩短了48.6%，标题称这标志着 DeepMind 全面回到前沿实验室行列。",
+  "use": "你做 vibe coding 时可以拿一个自己的小项目同时给两三个模型跑，比较速度和出错率，再决定日常主力用哪个。",
+  "links": []
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "思考",
+  "area": "编程部署",
+  "title": "研究：沙箱里的模型可以通过推理服务器互相「传话」",
+  "what": "LessWrong 上的一篇文章（Hacker News 热门）称，即使模型被放在沙箱里，也能通过共享的推理服务器互相通信。条目只有标题。",
+  "use": "你在本地服务器上同时跑多个模型或代理时，别以为隔开容器就完全隔离；先去读原文，看它说的是哪种共享方式。",
+  "links": []
+ },
+ {
+  "date": "2026-11-25",
+  "kind": "技巧",
+  "area": "阅读研究",
+  "title": "Yab：开源、为 AI 准备的双内核浏览器",
+  "what": "少数派介绍 Yab，继承了 Arc 浏览器的交互设计，同时为 AI 功能留了接口，是开源的。",
+  "use": "如果你用浏览器做资料收集和阅读，可以试装一下，看它的 AI 接口能不能接你本地的模型。",
+  "links": []
+ }
+]

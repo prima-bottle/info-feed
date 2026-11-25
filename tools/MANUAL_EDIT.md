@@ -17,5 +17,6 @@
    - 只根据条目标题和摘要写，不要编造细节；拿不准的写"据报道"或不写。
    - 艺术 10 件，每件都要填 `work_en`（作品本身的英文/原文标题，不带作者）、`en`（英文作品名 + 作者）；`wiki` 只填作品本身的维基条目，没有就留空，绝不填作者条目（会配上作者头像）。不要和已讲过的重复。
    - 简讯 20–40 条；精选 4–6 篇；主线只写有新进展的。
+   - 「AI 工作台」5–8 条（技巧、案例、本地部署、思考四类都照顾到，可以用几周前的好文章，不要和 data/aiwork.json 里讲过的重复）；早间版另写 AI 入门课的下一课（lesson），材料里会写明是第几课。
 4. 发布：`python tools/manual_publish.py <RAW_FILE> digest.json full|update`
 5. 提交推送：`git add docs data && git commit -m "日期 手动编辑版" && git pull --rebase && git push`

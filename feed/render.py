@@ -99,6 +99,16 @@ def render(edition: dict, cfg: dict, history: dict, root: Path, archive: list[st
     video_groups = [(g, groups[g], g in folded) for g in order]
     shorts = sorted([it for it in items.values() if it["kind"] == "short"], key=lambda x: -x["published"])
 
+    def _load(name, default):
+        p = root / "data" / name
+        return json.loads(p.read_text()) if p.exists() else default
+    today_titles = {x.get("title") for x in m["aiwork"]}
+    aw_past = [x for x in reversed(_load("aiwork.json", [])) if not (x["date"] == edition["date"] and x["title"] in today_titles)]
+    aw_groups: dict[str, list] = {}
+    for x in aw_past:
+        aw_groups.setdefault(x.get("kind") or "其他", []).append(x)
+    course = _load("aicourse.json", [])
+    course_total = len(cfg.get("ai_course", []))
     runs = sorted(edition["runs"], key=lambda r: r["ts"])
     d = dt.date.fromisoformat(edition["date"])
     run_label = " · ".join(("早间 " if r["mode"] == "full" else "更新 ") + r["label"] for r in runs)
@@ -110,4 +120,6 @@ def render(edition: dict, cfg: dict, history: dict, root: Path, archive: list[st
         video_groups=video_groups, shorts=shorts[:12], hooks=hooks,
         status=status, ok_count=sum(s["ok"] for s in status),
         fail_count=sum(not s["ok"] for s in status), archive=archive,
+        aw_groups=[(k, aw_groups[k]) for k in ["技巧", "案例", "本地部署", "思考"] if k in aw_groups] + [(k, v) for k, v in aw_groups.items() if k not in ("技巧", "案例", "本地部署", "思考")],
+        course=course, course_total=course_total,
     )

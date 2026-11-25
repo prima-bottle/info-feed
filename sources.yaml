@@ -36,6 +36,24 @@ threads:
     keywords: [Metall- und Elektroindustrie, Gesamtmetall, Warnstreik, Tarifrunde, IG Metall, Metall NRW, Düsseldorf]
 
 # ---------- 艺术赏析：每周一个主题轮换，每天精读一件作品 ----------
+ai_course:   # 「AI 工作台」里的入门课：每期早间版讲下一课，讲完一轮从头按新进展重讲
+  - 大模型是怎么工作的：词元、上下文窗口、为什么会编造
+  - 提示词基本功：角色、任务、材料、格式、例子
+  - 让 AI 读长材料：上传文件、分段提问、引用核对
+  - 记忆与项目：系统提示、项目知识、让 AI 记住你的工作方式
+  - 工具调用与智能体：AI 怎么"动手"做事
+  - 检索增强（RAG）：让 AI 查你自己的资料库
+  - 本地部署入门：模型大小、量化、显存和速度
+  - LM Studio 和本地接口：把本地模型接进自己的小工具
+  - 语音转文字：Whisper、字幕和会议记录
+  - 文字转语音与声音克隆：配音工作流，以及授权和伦理
+  - 翻译工作流：术语表、风格一致、人工校对
+  - 图像生成：提示词结构、风格控制、版权边界
+  - 视频制作里的 AI：把转写、翻译、配音、字幕、剪辑串起来
+  - 自动化编排：脚本、n8n、定时任务
+  - vibe coding：让 AI 帮你写小工具的方法和陷阱
+  - 评估与核查：怎么判断 AI 的输出靠不靠谱
+  - AI 与劳动、组织：在社会运动里的用法和风险
 art_themes:
   - 政治海报与宣传画（构成主义、1968 巴黎 Atelier Populaire、古巴 OSPAAAL、中国宣传画、波兰海报学派）
   - 字体与标语（标语排版、手写字、字体如何传达立场）
@@ -127,17 +145,17 @@ feeds:
   - {name: Hyperallergic, url: "https://hyperallergic.com/feed/", section: 艺术, max: 2, stance: "美国独立艺术媒体，关注艺术与政治"}
   - {name: The Public Domain Review, url: "https://publicdomainreview.org/rss.xml", section: 艺术, max: 2, stance: "公有领域的历史图像与文献"}
   # AI 实操（「AI 工作台」栏目用）：技巧、别人的工作流、本地部署、引发思考的长文
-  - {name: r/LocalLLaMA, url: "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day", section: AI实操, max: 6, local_only: true, stance: "本地部署和开源模型的玩家社区"}
+  - {name: r/LocalLLaMA, url: "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day", section: AI实操, max: 6, local_only: true, max_age_h: 168, stance: "本地部署和开源模型的玩家社区"}
   - {name: r/ClaudeAI, url: "https://www.reddit.com/r/ClaudeAI/top/.rss?t=day", section: AI实操, max: 4, local_only: true, stance: "Claude 用户社区，技巧和工作流"}
   - {name: HN AI 讨论, url: "https://hnrss.org/newest?q=LLM+OR+Claude+OR+Ollama+OR+%22local+model%22+OR+agent+OR+Whisper&points=60", section: AI实操, max: 5, stance: "程序员社区里讨论热烈的 AI 帖子"}
-  - {name: One Useful Thing, url: "https://www.oneusefulthing.org/feed", section: AI实操, max: 2, stance: "沃顿教授 Ethan Mollick，AI 在工作和教育中的实际用法"}
-  - {name: Latent Space, url: "https://www.latent.space/feed", section: AI实操, max: 2, stance: "AI 工程师播客和长文"}
-  - {name: Hugging Face 博客, url: "https://huggingface.co/blog/feed.xml", section: AI实操, max: 3, stance: "开源模型平台官方博客，教程多"}
+  - {name: One Useful Thing, url: "https://www.oneusefulthing.org/feed", section: AI实操, max: 3, max_age_h: 2160, stance: "沃顿教授 Ethan Mollick，AI 在工作和教育中的实际用法"}
+  - {name: Latent Space, url: "https://www.latent.space/feed", section: AI实操, max: 3, max_age_h: 2160, stance: "AI 工程师播客和长文"}
+  - {name: Hugging Face 博客, url: "https://huggingface.co/blog/feed.xml", section: AI实操, max: 4, max_age_h: 2160, stance: "开源模型平台官方博客，教程多"}
   - {name: 少数派, url: "https://sspai.com/feed", section: AI实操, max: 5, stance: "中文效率工具和工作流社区"}
   - {name: r/ChatGPTPro, url: "https://www.reddit.com/r/ChatGPTPro/top/.rss?t=day", section: AI实操, max: 3, local_only: true, stance: "重度用户分享的提示词和工作流"}
   - {name: V2EX 分享创造, url: "https://www.v2ex.com/feed/create.xml", section: AI实操, max: 4, local_only: true, stance: "中文开发者展示自己做的工具"}
-  - {name: 宝玉, url: "https://baoyu.io/feed.xml", section: AI实操, max: 3, stance: "中文 AI 实践者，翻译和提示词经验"}
-  - {name: 科技爱好者周刊, url: "https://www.ruanyifeng.com/blog/atom.xml", section: AI实操, max: 1, stance: "阮一峰每周的工具和文章推荐"}
+  - {name: 宝玉, url: "https://baoyu.io/feed.xml", section: AI实操, max: 3, max_age_h: 2160, stance: "中文 AI 实践者，翻译和提示词经验"}
+  - {name: 科技爱好者周刊, url: "https://www.ruanyifeng.com/blog/atom.xml", section: AI实操, max: 2, max_age_h: 2160, stance: "阮一峰每周的工具和文章推荐"}
   # AI 与极客
   - {name: Simon Willison, url: "https://simonwillison.net/atom/everything/", section: AI, stance: "独立开发者博客"}
   - {name: Hacker News 热门, url: "https://hnrss.org/frontpage?points=150", section: AI, stance: "程序员社区热门"}

@@ -68,6 +68,19 @@ def main() -> None:
             art_hist.append({"date": date, "work": a["work"], "creator": a.get("creator", "")})
     (DATA / "art.json").write_text(json.dumps(art_hist[-300:], ensure_ascii=False, indent=1))
 
+    links = {it["id"]: {"source": it["source"], "link": it["link"]} for it in items}
+    aw = digest.get("aiwork") or {}
+    if aw.get("items"):
+        aw_hist = load(DATA / "aiwork.json", [])
+        aw_hist += [{"date": date, **{k: x.get(k, "") for k in ("kind", "area", "title", "what", "use")},
+                     "links": [links[i] for i in x.get("item_ids", []) if i in links]} for x in aw["items"] if x.get("title")]
+        (DATA / "aiwork.json").write_text(json.dumps(aw_hist[-500:], ensure_ascii=False, indent=1))
+    les = digest.get("lesson") or {}
+    if les.get("title"):
+        course = load(DATA / "aicourse.json", [])
+        course.append({"date": date, **{k: les.get(k) for k in ("no", "title", "concept", "how", "for_you", "pitfalls", "try")},
+                       "links": [links[i] for i in les.get("item_ids", []) if i in links]})
+        (DATA / "aicourse.json").write_text(json.dumps(course, ensure_ascii=False, indent=1))
     seen = load(DATA / "seen.json", {})
     for it in raw.get("items", []):
         seen[it["id"]] = time.time()

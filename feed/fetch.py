@@ -218,7 +218,7 @@ def fetch_all(cfg: dict, data_dir: Path) -> tuple[list[dict], list[dict]]:
         if f.get("enabled", True) is False:
             continue
         try:
-            got = parse_feed(f["url"], f, "article", f.get("max", s["max_items_per_source"]), s["max_age_hours"])
+            got = parse_feed(f["url"], f, "article", f.get("max", s["max_items_per_source"]), f.get("max_age_h", s["max_age_hours"]))
             items += got
             status.append({"source": f["name"], "ok": True, "count": len(got)})
         except Exception as ex:  # noqa: BLE001
