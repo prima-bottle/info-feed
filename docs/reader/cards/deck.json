@@ -390,6 +390,95 @@
    "side": "锈蚀状态：使用时己方可信度 −1。",
    "paraphrase": "",
    "dropped": "第 1 周 · 局 3"
+  },
+  {
+   "id": "residence",
+   "name": "居留绑在岗位上",
+   "faction": "neutral",
+   "type": "证据卡",
+   "rarity": "pig",
+   "img": "img/residence.webp",
+   "quotes": [
+    {
+     "de": "Laut Arbeitsvertrag und Visum sollte ich zwei Jahre in Deutschland bleiben.",
+     "src": "Huneke 2011（bpb），阅读器 p.2（Ali Başar 原话）",
+     "verified": true
+    },
+    {
+     "de": "Dass sich seine Lage von der seiner deutschen Kollegen unterscheidet, weil sein Aufenthalt und damit sein Glück an die Arbeitsstelle geknüpft sind, stört ihn nicht.",
+     "src": "Huneke 2011（bpb），阅读器 p.4（作者 Huneke 的叙述）",
+     "verified": true
+    }
+   ],
+   "effect": "揭示“网内”的条件：对方“移民工人一视同仁”类叙事失效。",
+   "side": "绑定持续到 90 年代初入籍（p.5）。证词里没有它被用来对付他的例子。",
+   "paraphrase": "入籍之前，他的居留以工作为前提。",
+   "dropped": "第 1 周 · 局 4"
+  },
+  {
+   "id": "sleepless",
+   "name": "那一夜没合眼",
+   "faction": "neutral",
+   "type": "证据卡",
+   "rarity": "ore",
+   "img": "img/sleepless.webp",
+   "quotes": [
+    {
+     "de": "In der Nacht darauf tat ich kein Auge zu: Ich war sicher, sie würden mich in die Türkei zurückschicken, alle dachten das.",
+     "src": "Huneke 2011（bpb），阅读器 p.5（Ali Başar 原话）",
+     "verified": true
+    }
+   ],
+   "effect": "恐惧本身就是约束：己方“挫其锋锐”类卡效果 +1。",
+   "side": "第二天老板笑了，什么都没发生：证明的是恐惧，不是制度的实际运作。",
+   "paraphrase": "",
+   "dropped": "第 1 周 · 局 4"
+  },
+  {
+   "id": "saved",
+   "name": "德国救了我的命",
+   "faction": "capital",
+   "type": "叙事卡",
+   "rarity": "ore",
+   "img": "img/saved.webp",
+   "quotes": [
+    {
+     "de": "Deutschland hat mir das Leben gerettet, so würde ich das sagen, und es ist eine Heimat für uns geworden.",
+     "src": "Huneke 2011（bpb），阅读器 p.5（Ali Başar 原话）",
+     "verified": true
+    }
+   ],
+   "effect": "对方公众支持 +1。你认真对待了它，可以作为反方最强证词引用。",
+   "side": "他的比较基准是 Dersim 的贫困和暴力（p.2、p.4）。",
+   "paraphrase": "",
+   "dropped": "第 1 周 · 局 4"
+  },
+  {
+   "id": "fast",
+   "pair": true,
+   "status": "rusted",
+   "name": "免得被说是差工人",
+   "faction": "neutral",
+   "type": "证据卡",
+   "rarity": "pending",
+   "img": "img/fast-clean.webp",
+   "rust": {
+    "name": "快一点，为了居留？",
+    "img": "img/fast-rust.webp",
+    "misread": "当时理解为：他总要比同事快一点，是因为怕居留和工作表现绑定、被赶走。",
+    "unlock": "修正条件：在下一局热身或收拢文档里，说出原文给的动机。"
+   },
+   "quotes": [
+    {
+     "de": "Immer ein bisschen schneller sein als die Kollegen, damit niemand sagen kann, er sei ein schlechter Arbeiter – das hatte Ali Başar sich fest vorgenommen.",
+     "src": "Huneke 2011（bpb），阅读器 p.4（作者叙述）",
+     "verified": true
+    }
+   ],
+   "effect": "修正后：他的快是为了名声，也让同事要求他放慢——工人内部的张力，劳资双方都可引用。",
+   "side": "锈蚀状态：使用时己方可信度 −1。",
+   "paraphrase": "",
+   "dropped": "第 1 周 · 局 4"
   }
  ]
 }
