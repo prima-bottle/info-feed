@@ -20,7 +20,7 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
     date = edition["date"]
     runs = sorted(edition["runs"], key=lambda r: -r["ts"])
     titles = {t["id"]: t["title"] for t in cfg.get("threads", [])}
-    m = {"art": [], "headline": "", "picks": [], "briefs": [], "german": [], "creative": [],
+    m = {"aiwork": [], "experiment": None, "art": [], "headline": "", "picks": [], "briefs": [], "german": [], "creative": [],
          "hooks": {}, "items": {}, "threads": {}, "status": runs[0]["status"] if runs else []}
 
     for r in runs:
@@ -42,6 +42,10 @@ def merge(edition: dict, cfg: dict, history: dict) -> dict:
                                                                      "symbols", "takeaway", "ai_prompt", "ai_tips")},
                                              ensure_ascii=False)}
                      for a in arts if a.get("work")]
+        aw = d.get("aiwork") or {}
+        m["aiwork"] += [{**x, "ts": ts, "key": _key("w", date, x.get("title"))} for x in aw.get("items", []) if x.get("title")]
+        if not m["experiment"] and (aw.get("experiment") or {}).get("title"):
+            m["experiment"] = {**aw["experiment"], "key": _key("x", date, aw["experiment"]["title"])}
         m["german"] += d.get("german", [])
         m["creative"] += d.get("creative", [])
         for t in d.get("threads", []):

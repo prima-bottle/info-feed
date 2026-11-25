@@ -85,6 +85,7 @@ h3.sub{font-size:14px;color:var(--muted);font-weight:600;margin:18px 4px 8px;let
 footer{max-width:680px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:var(--muted)}
 footer details{border:0}
 .acts{display:flex;gap:8px;margin-top:10px}
+.steps{margin:6px 0 6px 20px;font-size:15px;line-height:1.6}.aw-meta{font-size:13px;color:var(--muted)}
 .ask{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
 .act{font:inherit;font-size:13px;padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer}
 .act.done{border-color:var(--accent);color:var(--accent)}
@@ -150,6 +151,7 @@ footer details{border:0}
   <button class="tab" data-p="work">工作</button>
   <button class="tab" data-p="threads">主线</button>
   <button class="tab" data-p="briefs">简讯</button>
+  {% if m.aiwork %}<button class="tab" data-p="aiwork">AI 工作台</button>{% endif %}
   {% if video_groups or shorts %}<button class="tab" data-p="video">视频</button>{% endif %}
   <button class="tab" data-p="art">艺术</button>
   <button class="tab" data-p="de">德语·创作</button>
@@ -280,6 +282,29 @@ footer details{border:0}
   {% if artb %}<h3 class="sub">设计与艺术动态</h3>
   {% for b in artb %}<a class="brief" href="{{ items[b.item_id].link if b.item_id in items else '#' }}" target="_blank" rel="noopener"><div class="meta">{{ items[b.item_id].source if b.item_id in items else '艺术' }}</div>{{ b.text }}</a>{% endfor %}{% endif %}
   <div class="end"><span class="dot">·</span>艺术看完了</div>
+</section>
+
+<section class="panel" id="aiwork">
+  {% if m.experiment %}
+  <article class="card" data-key="{{ m.experiment.key }}"><span class="label">这周试试</span>
+    <h2>{{ m.experiment.title }}</h2>
+    <ol class="steps">{% for st in m.experiment.steps or [] %}<li>{{ st }}</li>{% endfor %}</ol>
+    {% if m.experiment.time %}<p class="aw-meta">大约 {{ m.experiment.time }}</p>{% endif %}
+    {{ sources(m.experiment.item_ids or []) }}
+  </article>
+  {% endif %}
+  <div class="chips" id="awchips"><button class="chip on" data-k="">全部</button>{% for k in ["技巧","案例","本地部署","思考"] %}<button class="chip" data-k="{{ k }}">{{ k }}</button>{% endfor %}</div>
+  {% for w in m.aiwork %}
+  <article class="card aw" data-k="{{ w.kind }}" data-key="{{ w.key }}" data-ts="{{ w.ts }}">
+    <span class="label">{{ w.kind }}{% if w.area %} · {{ w.area }}{% endif %}</span>
+    <h2>{{ w.title }}</h2>
+    <p>{{ w.what }}</p>
+    {% if w.use %}<div class="foryou">{{ w.use }}</div>{% endif %}
+    {{ sources(w.item_ids or []) }}
+    {{ acts('a'~w.key, w.title, w.what, w.item_ids or [], track=False) }}
+  </article>
+  {% endfor %}
+  <div class="end"><span class="dot">·</span>AI 工作台就这些</div>
 </section>
 
 <section class="panel" id="de">
@@ -524,6 +549,9 @@ window.artImages=function(root){
       b.onclick=e=>{e.preventDefault();c.i=(c.i+1)%c.list.length;save();show()};box.append(b)}
     show();el.replaceWith(box)})};
 artImages();
+/* AI 工作台按类别筛选 */
+(function(){const cs=document.querySelectorAll('#awchips .chip');cs.forEach(c=>c.onclick=()=>{cs.forEach(x=>x.classList.toggle('on',x===c));
+  document.querySelectorAll('.card.aw').forEach(a=>a.style.display=!c.dataset.k||a.dataset.k===c.dataset.k?'':'none')})})();
 /* 问 Claude：把这条整理成提问，交给手机上的 Claude App（走订阅，不花 API） */
 document.querySelectorAll('.acts .ask').forEach(btn=>btn.addEventListener('click',async ev=>{ev.preventDefault();ev.stopPropagation();
   const b=btn.parentNode;
