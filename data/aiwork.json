@@ -277,5 +277,103 @@
   "what": "少数派介绍 Yab，继承了 Arc 浏览器的交互设计，同时为 AI 功能留了接口，是开源的。",
   "use": "如果你用浏览器做资料收集和阅读，可以试装一下，看它的 AI 接口能不能接你本地的模型。",
   "links": []
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "技巧",
+  "area": "视频制作",
+  "title": "NotebookLM「视频概览」的完整创作流程",
+  "what": "宝玉公开了 NotebookLM 视频概览功能背后的创作技能和系统提示，流程分三步：收集上下文、生成审阅卡片、再生成视频。",
+  "use": "做 ACA 德语版或杜伊斯堡长视频时，可以照这三步搭自己的提示词：先让 AI 整理材料，再出一张张要点卡片给你审，最后才写解说稿。",
+  "links": [
+   {
+    "source": "宝玉",
+    "link": "https://baoyu.io/blog/2026-10-20/notebooklm-video-overview-system-prompt"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "案例",
+  "area": "阅读研究",
+  "title": "用 AI 做一张两千年的中国历史地图",
+  "what": "少数派作者用 AI 协助，把两千年中国历史做成一张地图，想陪读者「走一遍故纸堆里的万里江山」（只有导语，具体工具见原文）。",
+  "use": "历史纪录片可以借这个思路：让 AI 先把文献里的地名和年代整理成表，再交给地图工具出图；第一步是挑一个朝代试做。",
+  "links": [
+   {
+    "source": "少数派",
+    "link": "https://sspai.com/post/117510"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "案例",
+  "area": "编程部署",
+  "title": "把《桃花源记》做成可游历的3D网页",
+  "what": "宝玉用 GPT 6 Astra 做了一个可交互、能跟着原文游历的3D网页，再配真人朗诵、SRT 字幕，用 Codex 补完体验，文中附提示词。",
+  "use": "做历史纪录片的配套网页时可以参考：原文、朗读、字幕三件套同步。先读他的提示词，挑一段短文本试做。",
+  "links": [
+   {
+    "source": "宝玉",
+    "link": "https://baoyu.io/blog/gpt-6-astra-peach-blossom-land"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "本地部署",
+  "area": "编程部署",
+  "title": "在一张显卡上一步步提速 Inkling 2 Mini",
+  "what": "Hugging Face 博客记录了在单张 RTX PRO 6000 上「爬山式」优化 Inkling 2 Mini 推理速度的过程（只有标题）。",
+  "use": "这张卡比你的显卡大得多，但调优思路（一次只改一个参数、量化、批量大小）通用；读的时候记下每一步提速多少，回去在 LM Studio 里对照。",
+  "links": [
+   {
+    "source": "Hugging Face 博客",
+    "link": "https://huggingface.co/blog/inkling-2-mini-inference-hillclimb"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "思考",
+  "area": "阅读研究",
+  "title": "科学家在哪里给 AI 智能体划线",
+  "what": "Hugging Face 博客讨论科研人员愿意把哪些工作交给 AI 智能体、哪些坚持自己做（只有标题）。",
+  "use": "可以拿来对照你自己的阅读研究流程：列一张表，哪些步骤交给 AI（摘要、找出处），哪些必须自己读。",
+  "links": [
+   {
+    "source": "Hugging Face 博客",
+    "link": "https://huggingface.co/blog/allenai/where-scientists-draw-the-line-on-ai-agents"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "思考",
+  "area": "视频制作",
+  "title": "《纽约时报》提醒摄影师别更新 Photoshop",
+  "what": "据 HN 热帖标题，《纽约时报》因新的 AI 功能提醒摄影师暂不更新 Photoshop；讨论集中在新闻照片的真实性上（只有标题）。",
+  "use": "做海报和纪录片截图时，确认自己的修图软件有没有自动 AI 填充；新闻类素材最好保留原图存档。",
+  "links": [
+   {
+    "source": "Hacker News 热门",
+    "link": "https://www.theverge.com/ai-artificial-intelligence/1041227/the-new-york-times-warns-photographers-not-to-update-photoshop-over-ai-features"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "思考",
+  "area": "组织外联",
+  "title": "AI 数据标注能给县城「宝妈」带来工作吗",
+  "what": "端传媒 Podcast 讨论中国县城女性从事 AI 数据标注的就业问题（只有标题）。",
+  "use": "AI 背后的劳动是你频道可以讲的题目：可以和全球南方的数据标注工人报道放在一起，做「谁在训练 AI」的一期。",
+  "links": [
+   {
+    "source": "端传媒",
+    "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9wUlhwNm43UjZsVFpLbzdTNmx2Qm4zYzhkeFRsR2QxNmI0MEtSMk9jaVE4YXNhamRxVVpmR1hwYzhENTJvTzZhbGZZakxUUzloSGJxa1B1WElZZHpSUzREM3RtTUFaRE1IZ1FTeHhIYm1HTzhLczdzcV9B?oc=5"
+   }
+  ]
  }
 ]
