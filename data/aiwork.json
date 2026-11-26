@@ -375,5 +375,23 @@
     "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9wUlhwNm43UjZsVFpLbzdTNmx2Qm4zYzhkeFRsR2QxNmI0MEtSMk9jaVE4YXNhamRxVVpmR1hwYzhENTJvTzZhbGZZakxUUzloSGJxa1B1WElZZHpSUzREM3RtTUFaRE1IZ1FTeHhIYm1HTzhLczdzcV9B?oc=5"
    }
   ]
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "技巧",
+  "area": "视频制作",
+  "title": "用 ChatGPT 加 Keynote 免费画机理图",
+  "what": "少数派介绍的方法：先让 ChatGPT 把论文里的机理拆成步骤和元素，再在 Keynote 里用基本图形和箭头排版，不用专门的绘图软件。",
+  "use": "做 ACA 德语版或杜伊斯堡长视频的解释图时，先让 AI 把「资本—工资—利润」的关系列成元素清单，再在 Keynote 或 PowerPoint 里画一张流程图。",
+  "links": []
+ },
+ {
+  "date": "2026-11-26",
+  "kind": "本地部署",
+  "area": "编程部署",
+  "title": "Agora：安卓上的开源大模型聊天客户端",
+  "what": "少数派推荐的开源安卓应用，填入 API 地址和密钥就能像商业客户端一样聊天，适合用自己的 API 或兼容接口。",
+  "use": "如果在家里用 LM Studio 开了兼容 OpenAI 的本地接口，可以试着把地址填进 Agora，在手机上调用家里的模型；第一步先在同一个 Wi-Fi 下测试。",
+  "links": []
  }
 ]
