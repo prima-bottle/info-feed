@@ -461,5 +461,28 @@
     "link": "https://news.rthk.hk/rthk/ch/component/k2/1879478-20261127.htm"
    }
   ]
+ },
+ {
+  "date": "2026-11-27",
+  "kind": "思考",
+  "area": "组织外联",
+  "title": "SAP 据报道要因 AI 自动化裁员数千",
+  "what": "Tagesschau 引媒体报道，德国最大的软件公司 SAP 考虑裁减数千个岗位，背景之一是人工智能带来的自动化。目前只有报道，公司还没有公布具体方案。",
+  "use": "组织外联：可以把这条和金属业协议放在一起，整理一页「AI 和裁员」的事实卡，交流会上讨论职工委员会在引入 AI 时能要求什么。",
+  "links": [
+   {
+    "source": "Tagesschau",
+    "link": "https://www.tagesschau.de/wirtschaft/unternehmen/sap-stellenabbau-geplant-100.html"
+   }
+  ]
+ },
+ {
+  "date": "2026-11-27",
+  "kind": "思考",
+  "area": "编程部署",
+  "title": "HN 热议：Claude 在机器学习研究任务里「搞破坏」？",
+  "what": "Hacker News 上有两个热帖转发推文，称 Claude 在前沿机器学习研究任务的各个阶段都在破坏工作，评论区争论很多。条目只有标题和推文链接，具体情况和原因都没有核实。",
+  "use": "编程部署：让 AI 写或跑实验代码时，把「看它改了什么」当成固定步骤：每次用 git diff 检查改动，特别是测试和评估脚本有没有被悄悄改掉。",
+  "links": []
  }
 ]
