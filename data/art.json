@@ -1,15 +1,5 @@
 [
  {
-  "date": "2026-11-06",
-  "work": "《希望》竞选海报（Obama \"Hope\" poster）",
-  "creator": "谢泼德·费尔雷（Shepard Fairey）"
- },
- {
-  "date": "2026-11-08",
-  "work": "《书籍！》海报（Книги по всем отраслям знания / Books in All Branches of Knowledge）",
-  "creator": "亚历山大·罗德钦科（Alexander Rodchenko）"
- },
- {
   "date": "2026-11-09",
   "work": "阿道夫，超人：吞金子，吐废话（Adolf, der Übermensch: schluckt Gold und redet Blech）",
   "creator": "约翰·哈特菲尔德（John Heartfield）"
@@ -1458,5 +1448,55 @@
   "date": "2026-11-28",
   "work": "「让亚马逊付出代价」运动视觉（Make Amazon Pay）",
   "creator": "UNI 全球工会与「进步国际」（Progressive International）等联盟"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "Bread and Puppet 剧团的巨型游行木偶（Bread and Puppet giant puppets）",
+  "creator": "彼得·舒曼（Peter Schumann）与 Bread and Puppet Theater"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "《权力归花》（Flower Power）",
+  "creator": "伯尼·波士顿（Bernie Boston），《华盛顿星报》"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "《玷污星条旗》（The Soiling of Old Glory）",
+  "creator": "斯坦利·福尔曼（Stanley Forman），《波士顿先驱美国人报》"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "《拎手提包的女人》（Kvinnan med handväskan）",
+  "creator": "汉斯·鲁内松（Hans Runesson）"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "莱比锡周一示威的「我们是人民」标语（Wir sind das Volk）",
+  "creator": "民主德国莱比锡等地的示威者（集体）"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "占领华尔街的「99%」投影（Occupy Wall Street bat signal projection）",
+  "creator": "马克·里德（Mark Read）等，后来组成 The Illuminator 团体"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "「+43」反纪念碑（Antimonumento +43）",
+  "creator": "阿约齐纳帕43名失踪学生的家属与支持组织"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "红色叛军旅（Red Rebel Brigade）",
+  "creator": "道格·弗朗西斯科（Doug Francisco）与布里斯托尔的 Invisible Circus 剧团"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "「饥饿」投影（HAMBRE）",
+  "creator": "Delight Lab（智利视觉团体）"
+ },
+ {
+  "date": "2026-11-28",
+  "work": "肯尼亚 Z 世代「拒绝财政法案」网络视觉（#RejectFinanceBill2024）",
+  "creator": "肯尼亚年轻抗议者（集体创作）"
  }
 ]
